@@ -38,21 +38,21 @@ public class PeopleQuery implements Specification<People>{
     @Override
     public class Predicate toPredicate(Root<People> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
         return new PredicateBuilder(root,query,cb)
-					.and().eq("name", name) // name 이(가) null 일 경우 이 where 조건은 반영되지 않습니다.
-					.andStart()
-						.eq("firstName", lastName)
-						.or()
-						.eq("lastName", lastName)
-					.andEnd()
-					.and().like(...)
+                    .and().eq("name", name) // name 이(가) null 일 경우 이 where 조건은 반영되지 않습니다.
+                    .andStart()
+                    	.eq("firstName", lastName)
+                    	.or()
+                    	.eq("lastName", lastName)
+                    .andEnd()
+                    .and().like(...)
                     .and().in(...)
                     .and().gt(...)   //greater then
                     .and().gte(...)  //greater then or equals
                     .and().lt(...)   //less then
                     .and().lte(...)  //less then or equals
-					.order().asc("name")
-					.order().desc("age")
-					.build();
+                    .order().asc("name")
+                    .order().desc("age")
+                    .build();
     }
 }
 ----
@@ -74,7 +74,7 @@ public class PeopleService{
 	
 	public List<People> findBy(MultiValueMap<String,Object> params) {
 
-        Specification spec = new PartTreeSpecification("findByNameAndAge", params);
+		Specification spec = new PartTreeSpecification("findByNameAndAge", params);
 		return pepleRepository.findAll(spec);
 	}
 }
@@ -187,10 +187,10 @@ public class MyPeopleHandler extends RepositoryRestEventHandler<People>{  //**
 
 	@Override
 	public void handleBeforeRead(People entity, PredicateBuilder<People> builder) {
-	
+		
 		builder.and().eq("name", entity.getName())
-               .and().like(...)
-			    ...
+		       .and().like(...)
+		       ...
 		
 	}
 
@@ -221,8 +221,8 @@ public class MyPeopleHandler {
 	public void handleBeforeRead(People entity, PredicateBuilder<People> builder) {
 	
 		builder.and().eq("name", entity.getName())
-               .and().like(...)
-			    ...
+		       .and().like(...)
+		       ...
 	}
 
 }
