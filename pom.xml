@@ -5,7 +5,7 @@
 
 	<groupId>io.github.u2ware</groupId>
 	<artifactId>spring-data-rest-jpa-specification</artifactId>
-	<version>2.1.5.1.RELEASE</version>
+	<version>2.1.5.2.RELEASE</version>
 	<packaging>jar</packaging>
 
 	<name>spring-data-rest-jpa-specification</name>
