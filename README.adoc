@@ -22,6 +22,8 @@
 link:./src/main/java/org/springframework/data/jpa/repository/query/PredicateBuilder.java[PredicateBuilder]
 를 제공합니다.
 
+
+
 [source,java,indent=1]
 ----
 
