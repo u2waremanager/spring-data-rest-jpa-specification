@@ -13,7 +13,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Entity
-@Table(name="foo")
+@Table(name="example2_foo")
 public @Data @EqualsAndHashCode(callSuper=false) class FooView implements EntityView<Foo, UUID>{
 
 	@Id 

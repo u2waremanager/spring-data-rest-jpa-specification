@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponents;
@@ -176,6 +177,9 @@ public class ApplicationMockMvc {
 
 		private ApplicationMockMvc mvc;
 		private MockHttpServletRequestBuilder requestBuilder;
+		private HttpHeaders headers = new HttpHeaders();
+		private MultiValueMap<String,String> params = new LinkedMultiValueMap<>();
+		private Map<String,Object> content = new HashMap<>();
 		
 		private ApplicationMockHttpServletRequestBuilder(ApplicationMockMvc mvc, MockHttpServletRequestBuilder requestBuilder) {
 			this.mvc = mvc;
@@ -190,50 +194,76 @@ public class ApplicationMockMvc {
 //			this.requestBuilder.with(user(auth));
 //			return this;
 //		}	
+		
 		public ApplicationMockHttpServletRequestBuilder H(String key, String value) throws Exception {
-			this.requestBuilder.header(key, value);
+			headers.add(key, value);
+			return this;
+		}
+		public ApplicationMockHttpServletRequestBuilder H(Map<String,Object> src) throws Exception {
+			src.forEach((key, value)->{
+				if(value != null) {
+					headers.add(key, value.toString());
+				}
+			});
 			return this;
 		}
 		public ApplicationMockHttpServletRequestBuilder H(MultiValueMap<String,String> src) throws Exception {
-			HttpHeaders headers = new HttpHeaders();
-			headers.putAll(src);
-			this.requestBuilder.headers(headers);
+			headers.addAll(src);
 			return this;
 		}
-		public ApplicationMockHttpServletRequestBuilder P(String key, Object value) throws Exception {
-			this.requestBuilder.param(key, value.toString());
+		public ApplicationMockHttpServletRequestBuilder P(String key, String value) throws Exception {
+			params.add(key, value);
+			return this;
+		}
+		public ApplicationMockHttpServletRequestBuilder P(Map<String,Object> src) throws Exception {
+			src.forEach((key, value)->{
+				if(value != null) {
+					params.add(key, value.toString());
+				}
+			});
 			return this;
 		}
 		public ApplicationMockHttpServletRequestBuilder P(MultiValueMap<String,String> src) throws Exception {
-			this.requestBuilder.params(src);
+			params.addAll(src);
+			return this;
+		}
+		public ApplicationMockHttpServletRequestBuilder C(String key, Object value) throws Exception {
+			content.put(key, value);
 			return this;
 		}
 		public ApplicationMockHttpServletRequestBuilder C(Map<String, Object> src) throws Exception {
-			String requestContent = mapper.writeValueAsString(src);
-			this.requestBuilder.contentType(MediaType.APPLICATION_JSON_UTF8).content(requestContent);
+			content.putAll(src);
 			return this;
-		}	
-
-//		public ApplicationMockHttpServletRequestBuilder H(String uri) throws Exception {
-//			return H(mvc.uriParams(uri));
-//		}
-//		public ApplicationMockHttpServletRequestBuilder P(String uri) throws Exception {
-//			this.requestBuilder.params(mvc.uriParams(uri));
-//			return this;
-//		}
-//		public ApplicationMockHttpServletRequestBuilder C(String uri) throws Exception {
-//			String requestContent = mvc.uriString(uri);
-//			this.requestBuilder.contentType(MediaType.APPLICATION_JSON_UTF8).content(requestContent);
-//			return this;
-//		}	
+		}
+		public ApplicationMockHttpServletRequestBuilder C(MultiValueMap<String,String> src) throws Exception {
+			src.forEach((key, value)->{ 
+				if(value.size() > 0) { 
+					content.put(key, value.size() > 1 ? value : value.get(0));
+				}
+			});
+			content.putAll(src.toSingleValueMap());
+			return this;
+		}
+		
+		private void build() throws Exception {
+			this.requestBuilder.headers(headers);
+			this.requestBuilder.params(params);
+			if(content.size() > 0) {
+				String requestContent = mapper.writeValueAsString(content);
+				this.requestBuilder.contentType(MediaType.APPLICATION_JSON_UTF8).content(requestContent);
+			}
+		}
 		
 		public ApplicationResultActions is2xx(Object... matcherOrHandlers) throws Exception {
+			build();
 			return new ApplicationResultActions(mvc, mvc.mvc.perform(requestBuilder).andDo(print()).andExpect(status().is2xxSuccessful())).and(matcherOrHandlers);
 		}
 		public ApplicationResultActions is4xx(Object... matcherOrHandlers) throws Exception {
+			build();
 			return new ApplicationResultActions(mvc, mvc.mvc.perform(requestBuilder).andDo(print()).andExpect(status().is4xxClientError())).and(matcherOrHandlers);
 		}
 		public ApplicationResultActions is5xx(Object... matcherOrHandlers) throws Exception {
+			build();
 			return new ApplicationResultActions(mvc, mvc.mvc.perform(requestBuilder).andDo(print()).andExpect(status().is5xxServerError())).and(matcherOrHandlers);
 		}
 	}

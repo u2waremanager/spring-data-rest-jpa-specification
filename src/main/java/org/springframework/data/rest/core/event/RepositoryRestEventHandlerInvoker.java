@@ -37,7 +37,7 @@ public class RepositoryRestEventHandlerInvoker implements ApplicationListener<Re
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		Class<?> beanType = ClassUtils.getUserClass(bean);
-		
+
 		RepositoryEventHandler typeAnno = AnnotationUtils.findAnnotation(beanType, RepositoryEventHandler.class);
 		if (typeAnno == null) {
 			return bean;
@@ -54,6 +54,7 @@ public class RepositoryRestEventHandlerInvoker implements ApplicationListener<Re
 
 	private <T extends Annotation> void inspect(Object handler, Method method, Class<T> annotationType, Class<? extends RepositoryEvent> eventType) {
 
+		
 		T annotation = AnnotationUtils.findAnnotation(method, annotationType);
 
 		if (annotation == null) {
@@ -63,13 +64,12 @@ public class RepositoryRestEventHandlerInvoker implements ApplicationListener<Re
 		if (method.getParameterTypes().length == 0) {
 			throw new IllegalStateException("method.getParameterTypes().length == 0");
 		}
+		
+		logger.info(handler);
+		logger.info(method);
 
 		ResolvableType parameter = ResolvableType.forMethodParameter(method, 0, handler.getClass());
-		Class<?> targetType = parameter.resolve();
-		if(parameter.hasGenerics()) {
-			targetType = parameter.getGeneric(0).resolve();
-		}
-		EventHandlerMethod handlerMethod = EventHandlerMethod.of(targetType, handler, method);
+		EventHandlerMethod handlerMethod = EventHandlerMethod.of(parameter.resolve(), handler, method);
 
 
 		List<EventHandlerMethod> events = handlerMethods.get(eventType);
@@ -97,21 +97,19 @@ public class RepositoryRestEventHandlerInvoker implements ApplicationListener<Re
 		for (EventHandlerMethod handlerMethod : handlerMethods.get(eventType)) {
 
 			Object src = event.getSource();
-			Class<?> srcType = src.getClass();
-			if (ClassUtils.isAssignableValue(BeforeReadEvent.class, event)){
-				srcType = ((BeforeReadEvent)event).getSourceType();
-			}
 
-			if (!ClassUtils.isAssignable(handlerMethod.targetType, srcType)) {
+			if (!ClassUtils.isAssignable(handlerMethod.targetType, src.getClass())) {
 				continue;
 			}
-
+			
 			List<Object> parameters = new ArrayList<Object>();
 			parameters.add(src);
-//			if (event instanceof BeforePredicateEvent) {
-//				parameters.add(((BeforePredicateEvent) event).getParameters());
-//				parameters.add(((BeforePredicateEvent) event).getBuilder());
-//			}
+			if (event instanceof BeforeReadEvent) {
+				parameters.add(((BeforeReadEvent)event).getObject());
+			}
+			logger.info(handlerMethod.handler);
+			logger.info(handlerMethod.method);
+			logger.info(parameters);
 			
 			ReflectionUtils.invokeMethod(handlerMethod.method, handlerMethod.handler, parameters.toArray());
 		}

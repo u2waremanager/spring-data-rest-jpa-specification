@@ -1,4 +1,4 @@
-package io.github.u2ware.test.example2;
+package io.github.u2ware.test.example0;
 
 import java.util.UUID;
 
@@ -7,13 +7,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
 
-@Table(name="example2_foo")
 @Entity
+@Table(name="example0_foo")
 public @Data class Foo {
 
 	@Id
@@ -23,7 +24,15 @@ public @Data class Foo {
 	
 	private String name;
 
+	private String title;
+	
 	private Integer age;
+
+	@Transient
+	private String _name;
+
+	@Transient
+	private Integer _age;
 	
 	public Foo() {
 		
@@ -31,8 +40,9 @@ public @Data class Foo {
 	public Foo(UUID id) {
 		this.id = id;
 	}
-	public Foo(String name, Integer age) {
+	public Foo(String name, Integer age, String sub) {
 		this.name = name;
 		this.age = age;
+		this.title = sub;
 	}
 }
