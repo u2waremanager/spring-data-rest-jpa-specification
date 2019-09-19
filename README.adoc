@@ -1,4 +1,4 @@
-= spring-data-rest-specification
+= spring-data-rest-jpa-specification
 
 == Installation (POM)
 [source,xml,indent=1]
@@ -10,15 +10,13 @@
 
 <dependency>
     <groupId>io.github.u2ware</groupId>
-    <artifactId>spring-data-rest-specification</artifactId>
-    <version>2.1.4.RELEASE</version>
+    <artifactId>spring-data-rest-jpa-specification</artifactId>
+    <version>2.1.4.1.RELEASE</version>
 </dependency>
 ----
 
 *spring-data-rest-specification* 는 
 https://docs.spring.io/spring-boot/docs/2.1.4.RELEASE/reference/htmlsingle/[spring-boot-2.1.4.RELEASE] , 
-https://docs.spring.io/spring-data/rest/docs/3.1.6.RELEASE/reference/html/[spring-data-rest-3.1.6.RELEASE] ,
-https://docs.spring.io/spring-data/jpa/docs/2.1.6.RELEASE/reference/html/[spring-data-jpa-2.1.6.RELEASE] ,  
 기반으로 동작합니다.
 
 
