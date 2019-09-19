@@ -18,6 +18,7 @@ public class BarHandler {
 	@HandleBeforeRead
 	protected void handleBeforeRead(Bar entity, PredicateBuilder<Bar> builder) {
 		
+		
 		logger.info("handleBeforeRead : "+ entity);
 		logger.info("handleBeforeRead: "+ builder.getParameters());
 		logger.info("handleBeforeRead: "+ builder.getParameters().get("age"));

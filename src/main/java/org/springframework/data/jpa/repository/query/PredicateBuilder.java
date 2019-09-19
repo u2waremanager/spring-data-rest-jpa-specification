@@ -1,7 +1,12 @@
 package org.springframework.data.jpa.repository.query;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -16,6 +21,8 @@ public class PredicateBuilder<T> {
 	protected static Log logger = LogFactory.getLog(PredicateBuilder.class);
 	
 	private final CriteriaBuilderSupport<T> predicateBuilder;
+	private final CriteriaQuerySupport<T> orderBuilder;
+	
 	
 	private enum State{ AND, AND_START, AND_END, OR, OR_START, OR_END }
 	private State state;
@@ -25,16 +32,33 @@ public class PredicateBuilder<T> {
 	private MultiValueMap<String,Object> parameters;
 	
 	public PredicateBuilder(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-		this.predicateBuilder = new CriteriaBuilderSupport<>(root, query, builder, this);
+		this(root, query, builder, null);
 	}
 
 	public PredicateBuilder(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder, MultiValueMap<String,Object> parameters) {
 		this.predicateBuilder = new CriteriaBuilderSupport<>(root, query, builder, this);
+		this.orderBuilder = new CriteriaQuerySupport<>(root, query, builder, this);
 		this.parameters = parameters;
 	}
 	
 	public MultiValueMap<String,Object> getParameters() {
 		return parameters;
+	}
+
+	public Root<T> getRoot() {
+		return predicateBuilder.getRoot();
+	}
+	
+	public CriteriaQuery<?> getCriteriaQuery() {
+		return predicateBuilder.getCriteriaQuery();
+	}
+
+	public CriteriaBuilder getCriteriaBuilder() {
+		return predicateBuilder.getCriteriaBuilder();
+	}
+	
+	public CriteriaQuerySupport<T> order() { 
+		return orderBuilder; 
 	}
 
 	public CriteriaBuilderSupport<T> and() { 
@@ -130,9 +154,46 @@ public class PredicateBuilder<T> {
 	
 	
 	public Predicate build() {
+		orderBuilder.orderBy();
 		return predicate;
 	}
 
+	public static class CriteriaQuerySupport<T>{
+		
+		private final Root<T> root;
+		private final CriteriaQuery<?> query;
+		private final CriteriaBuilder builder;
+		private final PredicateBuilder<T> chain;
+		private List<Order> orders = new ArrayList<Order>();
+
+		private CriteriaQuerySupport(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder, PredicateBuilder<T> chain) {
+			this.root = root;
+			this.query = query;
+			this.builder = builder;
+			this.chain = chain;
+		}
+
+		private void orderBy() {
+			this.query.orderBy(orders);
+		}
+
+		public PredicateBuilder<T> asc(String property) {
+			Part part = new Part(property, root.getJavaType());
+			orders.add(builder.asc(getTypedPath(root, part)));
+			return chain;
+		}
+		public PredicateBuilder<T> desc(String property) {
+			Part part = new Part(property, root.getJavaType());
+			orders.add(builder.desc(getTypedPath(root, part)));
+			return chain;
+		}
+		
+		private <X> Expression<X> getTypedPath(Root<?> root, Part part) {
+			return QueryUtils.toExpressionRecursively(root, part.getProperty());
+		}
+	}
+	
+	
 	public static class CriteriaBuilderSupport<T>{
 		
 		private final Root<T> root;
@@ -147,7 +208,13 @@ public class PredicateBuilder<T> {
 			this.chain = chain;
 		}
 		
-		public CriteriaBuilder getCriteriaBuilder() {
+		private Root<T> getRoot() {
+			return root;
+		}
+		private CriteriaQuery<?> getCriteriaQuery() {
+			return query;
+		}
+		private CriteriaBuilder getCriteriaBuilder() {
 			return builder;
 		}
 
@@ -164,7 +231,7 @@ public class PredicateBuilder<T> {
 				
 			}catch(Exception e) {
 				logger.info(source+" -> "+e.getMessage());
-				return chain.join(null);
+				return chain.join((Predicate)null);
 			}
 		}
 		
@@ -177,7 +244,7 @@ public class PredicateBuilder<T> {
 				
 			}catch(Exception e) {
 				logger.info(source+" -> "+e.getMessage());
-				return chain.join(null);
+				return chain.join((Predicate)null);
 			}
 		}
 
@@ -222,4 +289,6 @@ public class PredicateBuilder<T> {
 			return part(property+"IsNotIn", value);
 		}
 	}
+
+
 }

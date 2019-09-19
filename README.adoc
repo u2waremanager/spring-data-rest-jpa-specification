@@ -11,20 +11,18 @@
 <dependency>
     <groupId>io.github.u2ware</groupId>
     <artifactId>spring-data-rest-jpa-specification</artifactId>
-    <version>2.1.5.1.RELEASE</version>
+    <version>2.1.5.2.RELEASE</version>
 </dependency>
 ----
-
-*spring-data-rest-specification* 는 
-https://docs.spring.io/spring-boot/docs/2.1.5.RELEASE/reference/htmlsingle/[spring-boot-2.1.5.RELEASE] , 
-기반으로 동작합니다.
 
 
 == PredicateBuilder
 
-*spring-data-rest-specification* 는 link:https://docs.spring.io/spring-data/jpa/docs/2.1.8.RELEASE/api/org/springframework/data/jpa/domain/Specification.html[Specification] 를 작성하기 위해  
+*spring-data-rest-jpa-specification* 는 link:https://docs.spring.io/spring-data/jpa/docs/2.1.8.RELEASE/api/org/springframework/data/jpa/domain/Specification.html[Specification] 를 작성하기 위해  
 link:./src/main/java/org/springframework/data/jpa/repository/query/PredicateBuilder.java[PredicateBuilder]
 를 제공합니다.
+
+
 
 [source,java,indent=1]
 ----
@@ -41,24 +39,30 @@ public class PeopleQuery implements Specification<People>{
 
     @Override
     public class Predicate toPredicate(Root<People> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-        return new PredicateBuilder()
-                .eq("name", age)   // age 가 null 일 경우 이 where 조건은 반영되지 않습니다.
-                .eq("age", age)   // age 가 null 일 경우 이 where 조건은 반영되지 않습니다.
-                .eq("firstName", firstName, Handler.IGNORE_CASE)   // 대소문자를 구분하지 않고 검색합니다. 
-                .like("lastName", lastName, Handler.CONTAINING)  //검색 파라미터에 값에 % 를 앞뒤로 붙혀서 검색합니다. 
-                .in(...)
-                .gt(...)   //greater then
-                .gte(...)  //greater then or equals
-                .lt(...)   //less then
-                .lte(...)  //less then or equals
-                .build(root, query, cb);
+        return new PredicateBuilder(root,query,cb)
+                    .and().eq("name", name) // name 이(가) null 일 경우 이 where 조건은 반영되지 않습니다.
+                    .andStart()
+                    	.eq("firstName", lastName)
+                    	.or()
+                    	.eq("lastName", lastName)
+                    .andEnd()
+                    .and().like(...)
+                    .and().in(...)
+                    .and().gt(...)   //greater then
+                    .and().gte(...)  //greater then or equals
+                    .and().lt(...)   //less then
+                    .and().lte(...)  //less then or equals
+                    .order().asc("name")
+                    .order().desc("age")
+                    .build();
     }
+}
 ----
 
-== JpaSpecification
+== PartTreeSpecification
 
-*spring-data-rest-specification* 는 link:https://docs.spring.io/spring-data/jpa/docs/2.1.8.RELEASE/api/org/springframework/data/jpa/domain/Specification.html[Specification] 를 생성하기 위해   
-link:./src/main/java/org/springframework/data/jpa/repository/query/JpaSpecification.java[JpaSpecification]
+*spring-data-rest-jpa-specification* 는 link:https://docs.spring.io/spring-data/jpa/docs/2.1.8.RELEASE/api/org/springframework/data/jpa/domain/Specification.html[Specification] 를 생성하기 위해   
+link:./src/main/java/org/springframework/data/jpa/repository/query/PartTreeSpecification.java[PartTreeSpecification]
 를 제공합니다.
 
 [source,java,indent=1]
@@ -71,8 +75,9 @@ public class PeopleService{
 	private @Autowired PepleRepository  pepleRepository; 
 	
 	public List<People> findBy(MultiValueMap<String,Object> params) {
-	
-		return pepleRepository.findAll(JpaSpecification.of(params, "findByNameAndAge"));
+
+		Specification spec = new PartTreeSpecification("findByNameAndAge", params);
+		return pepleRepository.findAll(spec);
 	}
 }
 ----
@@ -92,7 +97,7 @@ public interface PeopleRepository extends PagingAndSortingRepository<People,Long
 }
 ----
 
-*spring-data-rest-specification* 는 
+*spring-data-rest-jpa-specification* 는 
 https://docs.spring.io/spring-data/jpa/docs/2.1.6.RELEASE/api/org/springframework/data/jpa/repository/JpaSpecificationExecutor.html[JpaSpecificationExecutor] 
 를 확장한 Repository 기준으로 다음과 같은 hypermedia-driven HTTP resources 를 제공합니다.
 
@@ -138,7 +143,7 @@ public interface PeopleRepository extends PagingAndSortingRepository<People,Long
 
 == The specification based resource
 
-*spring-data-rest-specification* 는 
+*spring-data-rest-jpa-specification* 는 
 * `/{repository}/!q/{spcificationImplClassName}` 
 * `/{repository}/!q?q={spcificationImplClassName}` 
 와 같은 Resource 를 제공합니다. 
@@ -167,15 +172,10 @@ public class YourPeopleSpecification implements Specification<People>{
 }
 ----
 
-== Events based Resource
+== Resource Events  
 
-*spring-data-rest-specification* 는  
+*spring-data-rest-jpa-specification* 는  `/{repository}/!q` 에 대해 Event 를 발생합니다. 
 
-* `/{repository}/!q` 
-
-와 같은 기본 Resource 를 제공합니다. 
-
-기본적으로 findAll 과 같은 리소스를 리턴하지만,
 link:./src/main/java/org/springframework/data/rest/core/event/RepositoryRestEventHandler.java[RepositoryRestEventHandler]
 빈이 정의 되어 있다면, 다음과 같이 MyPeopleHandler 의 handleBeforeRead 를 이용하여, 
 `/{repository}/!q` 리소스에 검색 조건을 추가할 수 있습니다. 
@@ -188,16 +188,13 @@ link:./src/main/java/org/springframework/data/rest/core/event/RepositoryRestEven
 public class MyPeopleHandler extends RepositoryRestEventHandler<People>{  //**
 
 	@Override
-	public void handleBeforeRead(JpaSpecification<People> spec) {
-	
-		Pepole params = spec.getPayload();
+	public void handleBeforeRead(People entity, PredicateBuilder<People> builder) {
 		
-		spec.getPredicateBuilder().eq("name", params.getName())
-		                          .like(...)
-					  ...
+		builder.and().eq("name", entity.getName())
+		       .and().like(...)
+		       ...
 		
 	}
-<<<<<<< HEAD
 
 	@Override
 	public void handleAfterCreate(People entity) {
@@ -217,35 +214,17 @@ link:./src/main/java/org/springframework/data/rest/core/annotation/HandleBeforeR
 
 [source,java,indent=1]
 ----
-// --> /peoples/!q
-@Component
-@RepositoryEventHandler(People.class) //**
-public class MyPeopleHandler {  
-
-	@HandleBeforeRead //**
-=======
-}
-----
-
-다음과 같이 
-link:./src/main/java/org/springframework/data/rest/core/annotation/HandleBeforeRead.java[@HandleBeforeRead]
-을 사용하여 기술할수도 있습니다.
-
-[source,java,indent=1]
-----
 
 @Component
 @RepositoryEventHandler(People.class) //**
 public class MyPeopleHandler {  
 
 	@HandleBeforeRead // --> /peoples/!q
-	public void handleBeforeRead(JpaSpecification<People> spec) {
+	public void handleBeforeRead(People entity, PredicateBuilder<People> builder) {
 	
-		Pepole params = spec.getPayload();
-		
-		spec.getPredicateBuilder().eq("name", params.getName())
-		                          .like(...)
-					  ...
+		builder.and().eq("name", entity.getName())
+		       .and().like(...)
+		       ...
 	}
 
 }
@@ -278,5 +257,5 @@ public interface PeopleRepository extends PagingAndSortingRepository<People,Long
 
 
 == License
-spring-data-rest-specification is Open Source software released under the
+spring-data-rest-jpa-specification is Open Source software released under the
 http://www.apache.org/licenses/LICENSE-2.0.html[Apache 2.0 license].

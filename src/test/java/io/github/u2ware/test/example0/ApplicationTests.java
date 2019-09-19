@@ -187,6 +187,8 @@ public class ApplicationTests {
 						.eq("age", 2)
 					.andEnd()
 					.and().eq("title", null)
+					.order().asc("name")
+					.order().desc("age")
 					.build();
 			
 		});
