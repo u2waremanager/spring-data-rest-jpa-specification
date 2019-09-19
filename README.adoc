@@ -57,7 +57,7 @@ public class PeopleQuery implements Specification<People>{
 }
 ----
 
-== JpaSpecification
+== PartTreeSpecification
 
 *spring-data-rest-jpa-specification* 는 link:https://docs.spring.io/spring-data/jpa/docs/2.1.8.RELEASE/api/org/springframework/data/jpa/domain/Specification.html[Specification] 를 생성하기 위해   
 link:./src/main/java/org/springframework/data/jpa/repository/query/PartTreeSpecification.java[PartTreeSpecification]
