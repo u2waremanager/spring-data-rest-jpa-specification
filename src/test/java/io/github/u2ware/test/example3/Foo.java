@@ -8,8 +8,8 @@ import javax.persistence.Table;
 
 import lombok.Data;
 
-@Entity
 @Table(name="example3_foo")
+@Entity
 public @Data class Foo {
 
 	@Id

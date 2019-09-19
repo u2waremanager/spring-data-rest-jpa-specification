@@ -4,14 +4,15 @@ public class BeforeReadEvent extends RepositoryEvent {
 
 	private static final long serialVersionUID = 1932567984753687446L;
 
-	private Class<?> type;
+	private Object object;
 	
-	public BeforeReadEvent(Object source, Class<?> type) {
+	public BeforeReadEvent(Object source, Object object) {
 		super(source);
-		this.type = type;
+		this.object = object;
 	}
 	
-	public Class<?> getSourceType() {
-		return type;
+	public Object getObject() {
+		return object;
 	}
+
 }

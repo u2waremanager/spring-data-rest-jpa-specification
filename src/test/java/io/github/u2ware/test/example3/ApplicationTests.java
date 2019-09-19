@@ -67,6 +67,8 @@ public class ApplicationTests {
 		$.GET("/foos/"+f1).is2xx();
 		$.GET("/bars/"+f1).is2xx();
 		
+		$.GET("/foos/"+UUID.randomUUID()).is4xx();
+		$.GET("/bars/"+UUID.randomUUID()).is4xx();
 		
 		Map<String, Object> c = new HashMap<String,Object>();
 		c.put("name", "John");

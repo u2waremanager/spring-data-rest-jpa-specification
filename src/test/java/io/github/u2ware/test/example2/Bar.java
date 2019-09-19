@@ -35,6 +35,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+@Table(name="example2_bar")
 @Entity
 public @Data class Bar {
 
@@ -134,13 +135,13 @@ public @Data class Bar {
 
 	@RestResource(exported=true) //
 	@ManyToOne
-	@JoinFormula("( SELECT t.id FROM foo t WHERE t.id = foo)")
+	@JoinFormula("( SELECT t.id FROM example2_foo t WHERE t.id = foo)")
 	@JsonProperty(access=Access.READ_ONLY) 
 	private Foo foo23;
 
 	
 	@ManyToOne
-	@JoinFormula("( SELECT t.id FROM foo t WHERE t.id = foo)")
+	@JoinFormula("( SELECT t.id FROM example2_foo t WHERE t.id = foo)")
 	@JsonProperty(access=Access.READ_ONLY) 
 	private FooView foo24;
 
