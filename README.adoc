@@ -1,0 +1,264 @@
+= spring-data-rest-jpa-specification
+
+== Installation (POM)
+[source,xml,indent=1]
+----
+<repository>
+    <id>u2ware-mvm-repo</id>
+    <url>https://raw.github.com/u2ware/u2ware.github.com/mvn-repo/</url>
+</repository>
+
+<dependency>
+    <groupId>io.github.u2ware</groupId>
+    <artifactId>spring-data-rest-jpa-specification</artifactId>
+    <version>2.1.4.1.RELEASE</version>
+</dependency>
+----
+
+*spring-data-rest-specification* 는 
+https://docs.spring.io/spring-boot/docs/2.1.4.RELEASE/reference/htmlsingle/[spring-boot-2.1.4.RELEASE] , 
+기반으로 동작합니다.
+
+
+== PredicateBuilder
+
+*spring-data-rest-specification* 는 link:https://docs.spring.io/spring-data/jpa/docs/2.1.6.RELEASE/api/org/springframework/data/jpa/domain/Specification.html[Specification] 를 작성하기 위해  
+link:./src/main/java/org/springframework/data/jpa/repository/query/PredicateBuilder.java[PredicateBuilder]
+를 제공합니다.
+
+[source,java,indent=1]
+----
+
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.query.PredicateBuilder;
+
+public class PeopleQuery implements Specification<People>{
+
+    private String name;
+    private String firstName;
+    private String lastName;
+    private Integer age;
+
+    @Override
+    public class Predicate toPredicate(Root<People> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+        return new PredicateBuilder()
+                .eq("name", age)   // age 가 null 일 경우 이 where 조건은 반영되지 않습니다.
+                .eq("age", age)   // age 가 null 일 경우 이 where 조건은 반영되지 않습니다.
+                .eq("firstName", firstName, Handler.IGNORE_CASE)   // 대소문자를 구분하지 않고 검색합니다. 
+                .like("lastName", lastName, Handler.CONTAINING)  //검색 파라미터에 값에 % 를 앞뒤로 붙혀서 검색합니다. 
+                .in(...)
+                .gt(...)   //greater then
+                .gte(...)  //greater then or equals
+                .lt(...)   //less then
+                .lte(...)  //less then or equals
+                .build(root, query, cb);
+    }
+----
+
+== JpaSpecification
+
+*spring-data-rest-specification* 는 link:https://docs.spring.io/spring-data/jpa/docs/2.1.6.RELEASE/api/org/springframework/data/jpa/domain/Specification.html[Specification] 를 생성하기 위해   
+link:./src/main/java/org/springframework/data/jpa/repository/query/JpaSpecification.java[JpaSpecification]
+를 제공합니다.
+
+[source,java,indent=1]
+----
+
+import org.springframework.data.jpa.repository.query.JpaSpecification;
+
+public class PeopleService{
+
+	private @Autowired PepleRepository  pepleRepository; 
+	
+	public List<People> findBy(MultiValueMap<String,Object> params) {
+	
+		return pepleRepository.findAll(JpaSpecification.of(params, "findByNameAndAge"));
+	}
+}
+----
+
+== The dynamic query method resource
+
+https://docs.spring.io/spring-data/rest/docs/3.1.6.RELEASE/reference/html/#repository-resources.query-method-resource[spring-data-rest] 는 
+아래와 같이 정의된 https://docs.spring.io/spring-data/jpa/docs/2.1.6.RELEASE/reference/html/#repositories.query-methods.query-creation[Query Method] 에 대해
+ _/people/search/findByNameStartsWith_ 주소로 Resource 를 제공하는것으로 알려져 있습니다.
+[source,java,indent=1]
+----
+// --> /people/search/findByNameStartsWith 
+public interface PeopleRepository extends PagingAndSortingRepository<People,Long>{
+
+    public Page findByNameStartsWith(@Param("name") String name, Pageable p);
+
+}
+----
+
+*spring-data-rest-specification* 는 
+https://docs.spring.io/spring-data/jpa/docs/2.1.6.RELEASE/api/org/springframework/data/jpa/repository/JpaSpecificationExecutor.html[JpaSpecificationExecutor] 
+를 확장한 Repository 기준으로 다음과 같은 hypermedia-driven HTTP resources 를 제공합니다.
+
+* `/{repository}/!q/{queryMethod}` 
+* `/{repository}/!q?q={queryMethod}` 
+
+즉, 인터페이스에 메소드 선언이 없더라도 동적으로 https://docs.spring.io/spring-data/jpa/docs/2.1.6.RELEASE/reference/html/#repositories.query-methods.query-creation[Query Method] 기반의 여러 Resource 를 사용할 수 있습니다.
+
+[source,java,indent=1]
+----
+
+// --> /peoples/!q/findByNameStartsWith
+// --> /peoples/!q?q=findByNameStartsWith
+// --> /peoples/!q/findByBirthday
+// --> /peoples/!q?q=findByBirthday
+// --> /peoples/!q/findByNameAndAge 
+// --> /peoples/!q?q=findByNameAndAge
+// --> ...
+// --> ...
+public interface PeopleRepository extends PagingAndSortingRepository<People,Long>,
+                                          JpaSpecificationExecutor<People> {  // **
+
+
+}
+----
+또한, parameter 값의 존재 여부에 따라 where 조건이 동적으로 제거 됩니다.
+
+|===
+|요청주소 및 파라미터 | 실행되는 Query Method
+
+| /peoples/!q/findByNameAndAge?name=홍길동&age=16
+| findByNameAndAge(....){}
+
+| /peoples/!q/findByNameAndAge?name=홍길동
+| findByName(....){}
+
+| /peoples/!q/findByNameAndAge?age=홍길동
+| findByAge(....){}
+
+| /peoples/!q/findByNameAndAge  
+| findAll(....){}
+|===
+
+== The specification based resource
+
+*spring-data-rest-specification* 는 
+* `/{repository}/!q/{spcificationImplClassName}` 
+* `/{repository}/!q?q={spcificationImplClassName}` 
+와 같은 Resource 를 제공합니다. 
+
+https://docs.spring.io/spring-data/jpa/docs/2.1.6.RELEASE/api/org/springframework/data/jpa/domain/Specification.html[Specification] 를 구현한 클래스가 존재한다면, 해당 클래스 이름으로 Resource 를 사용할 수 있습니다. 
+
+[source,java,indent=1]
+----
+package com.mycompany;
+
+// --> /peoples/!q/com.mycompany.MyPeopleSpecification
+public class MyPeopleSpecification implements Specification<People>{ 
+
+    @Override
+    public Predicate toPredicate(Root<People> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+        ...
+    }
+}
+
+// --> /peoples/!q/com.mycompany.YourPeopleSpecification
+public class YourPeopleSpecification implements Specification<People>{ 
+    @Override
+    public Predicate toPredicate(Root<People> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+        ...
+    }
+}
+----
+
+== Events based Resource
+
+*spring-data-rest-specification* 는  
+
+* `/{repository}/!q` 
+
+와 같은 기본 Resource 를 제공합니다. 
+
+기본적으로 findAll 과 같은 리소스를 리턴하지만,
+link:./src/main/java/org/springframework/data/rest/core/event/RepositoryRestEventHandler.java[RepositoryRestEventHandler]
+빈이 정의 되어 있다면, 다음과 같이 MyPeopleHandler 의 handleBeforeRead 를 이용하여, 
+`/{repository}/!q` 리소스에 검색 조건을 추가할 수 있습니다. 
+
+
+[source,java,indent=1]
+----
+// --> /peoples/!q
+@Component
+public class MyPeopleHandler extends RepositoryRestEventHandler<People>{  //**
+
+	@Override
+	public void handleBeforeRead(JpaSpecification<People> spec) {
+	
+		Pepole params = spec.getPayload();
+		
+		spec.getPredicateBuilder().eq("name", params.getName())
+		                          .like(...)
+					  ...
+		
+	}
+}
+----
+
+다음과 같이 
+link:./src/main/java/org/springframework/data/rest/core/annotation/HandleBeforeRead.java[@HandleBeforeRead]
+을 사용하여 기술할수도 있습니다.
+
+[source,java,indent=1]
+----
+
+@Component
+@RepositoryEventHandler(People.class) //**
+public class MyPeopleHandler {  
+
+	@HandleBeforeRead // --> /peoples/!q
+	public void handleBeforeRead(JpaSpecification<People> spec) {
+	
+		Pepole params = spec.getPayload();
+		
+		spec.getPredicateBuilder().eq("name", params.getName())
+		                          .like(...)
+					  ...
+	}
+
+	@HandleAfterCreate
+	public void handleAfterCreate(People entity) {
+		... logic to handle inspecting the entity before the Repository saves it
+	}
+
+	@HandleAfterDelete
+	public void handleAfterDelete(People entity) {
+		... send a message that this entity has been delete
+	}
+}
+----
+
+
+== Method level security 
+
+
+`/{repository}/!q/{queryMethod Or spcificationImplClassName}` 에 대해 method level security 를 설정할 수 있습니다.
+
+[source,java,indent=1]
+----
+@Configuration 
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true) // **
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter { 
+    ...
+}
+
+public interface PeopleRepository extends PagingAndSortingRepository<People,Long>,
+                                          JpaSpecificationExecutor<People> {  
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")  // **
+    @Override
+    Page<People> findAll(Specification<People> spec, Pageable pageable);
+    
+}
+----
+
+
+== License
+spring-data-rest-specification is Open Source software released under the
+http://www.apache.org/licenses/LICENSE-2.0.html[Apache 2.0 license].
