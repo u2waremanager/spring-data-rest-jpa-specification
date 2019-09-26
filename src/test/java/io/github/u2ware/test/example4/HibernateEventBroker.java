@@ -1,10 +1,5 @@
 package io.github.u2ware.test.example4;
 
-//import java.io.Serializable;
-//import java.util.Iterator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
@@ -20,18 +15,23 @@ import org.hibernate.event.service.spi.EventListenerRegistry;
 import org.hibernate.event.spi.EventType;
 import org.hibernate.event.spi.PostLoadEvent;
 import org.hibernate.event.spi.PostLoadEventListener;
-import org.hibernate.event.spi.PreCollectionRecreateEvent;
-import org.hibernate.event.spi.PreCollectionRecreateEventListener;
 import org.hibernate.event.spi.PreLoadEvent;
 import org.hibernate.event.spi.PreLoadEventListener;
 import org.hibernate.internal.SessionFactoryImpl;
 //import org.hibernate.type.Type;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.data.rest.core.event.hibernate.HibernatePostLoadEvent;
+import org.springframework.expression.EvaluationContext;
+import org.springframework.expression.Expression;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.ParserContext;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -193,26 +193,36 @@ PostLoadEventListener, PreLoadEventListener {
 
 	private String PREPARE_STATEMENT_REGEX = "\\{(.*?)\\}";
 	
+	private @Autowired HibernatePrepareStatementAware event;
 	@Override
 	public String onPrepareStatement(String sql) {
 		
+		String expressionString = sql;
+		Object rootObject = event;
 		
-		String result = sql;
+		ExpressionParser parser = new SpelExpressionParser();
+		Expression exp = parser.parseExpression(expressionString, ParserContext.TEMPLATE_EXPRESSION);
+		EvaluationContext ctx = new StandardEvaluationContext(rootObject);
+		String result = exp.getValue(ctx, String.class);		
+		
+		logger.info(sql+" -> "+result);
 
-		Pattern pattern = Pattern.compile(PREPARE_STATEMENT_REGEX);
-		Matcher matcher = pattern.matcher(sql);
-		while (matcher.find()){
-			String target = matcher.group();
-			String beanName = matcher.group(1);
-			try {
-				HibernatePrepareStatementAware aware = context.getBean(beanName, HibernatePrepareStatementAware.class);
-				String replacement = aware.getStatement();
-				result = result.replace(target, replacement);
-				logger.info(target+" -> "+replacement);
-			}catch(Exception e) {
-				logger.info(target, e);
-			}
-		}
+//		Pattern pattern = Pattern.compile(PREPARE_STATEMENT_REGEX);
+//		Matcher matcher = pattern.matcher(sql);
+//		while (matcher.find()){
+//			String target = matcher.group();
+//			String beanName = matcher.group(1);
+//			try {
+//				HibernatePrepareStatementAware aware = context.getBean(beanName, HibernatePrepareStatementAware.class);
+//				String replacement = aware.getStatement();
+//				result = result.replace(target, replacement);
+//				logger.info(target+" -> "+replacement);
+//			}catch(Exception e) {
+//				logger.info(target, e);
+//			}
+//		}
+//		return result;
+		
 		return result;
 	}
 
