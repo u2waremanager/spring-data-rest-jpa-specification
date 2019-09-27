@@ -1,4 +1,4 @@
-package io.github.u2ware.test.example4;
+package org.springframework.data.rest.core.event;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
@@ -18,35 +18,25 @@ import org.hibernate.event.spi.PostLoadEventListener;
 import org.hibernate.event.spi.PreLoadEvent;
 import org.hibernate.event.spi.PreLoadEventListener;
 import org.hibernate.internal.SessionFactoryImpl;
-//import org.hibernate.type.Type;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
-import org.springframework.data.rest.core.event.hibernate.HibernatePostLoadEvent;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
-import org.springframework.stereotype.Component;
 
-@Component
-public class HibernateEventBroker extends EmptyInterceptor 
-implements ApplicationContextAware, ApplicationEventPublisherAware, 
-PostLoadEventListener, PreLoadEventListener {
+public class RepositoryRestEventConfigure extends EmptyInterceptor implements ApplicationEventPublisherAware, PostLoadEventListener, PreLoadEventListener {
 
 	private static final long serialVersionUID = 2787103521260283735L;
 
 	protected Log logger = LogFactory.getLog(getClass());
 
-	@PersistenceUnit
-	private EntityManagerFactory emf;
+	private @PersistenceUnit EntityManagerFactory emf;
+	private @Autowired(required = false) PrepareStatementContext hibernatePrepareStatement;
 
-	private ApplicationContext context;
 	private ApplicationEventPublisher publisher;
 	private boolean enableHandleLoad = true;
 
@@ -57,6 +47,12 @@ PostLoadEventListener, PreLoadEventListener {
 	public void setEnableHandleLoad(boolean enableHandleLoad) {
 		this.enableHandleLoad = enableHandleLoad;
 	}
+	
+	@Override
+	public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
+		this.publisher = publisher;
+	}
+	
 
 	@PostConstruct
 	protected void init() {
@@ -67,7 +63,6 @@ PostLoadEventListener, PreLoadEventListener {
 		EventListenerRegistry registry = sessionFactory.getServiceRegistry().getService(EventListenerRegistry.class);
 		registry.getEventListenerGroup(EventType.POST_LOAD).appendListener(this);
 		registry.getEventListenerGroup(EventType.PRE_LOAD).appendListener(this);
-		//registry.getEventListenerGroup(EventType.PRE_COLLECTION_RECREATE).appendListener(this);
 	}
 
 	@Override
@@ -77,19 +72,26 @@ PostLoadEventListener, PreLoadEventListener {
 	}
 	@Override
 	public void onPreLoad(PreLoadEvent event) {
-		logger.info("onPreLoad 1"+event.getEntityName());
+		if (!isEnableHandleLoad()) return;
+		publisher.publishEvent(new HibernatePreLoadEvent(event.getEntity()));
 	}
 
 
+	@Override
+	public String onPrepareStatement(String sql) {
+		
+		if(hibernatePrepareStatement == null) return sql;
+		
+		String expressionString = sql;
+		Object rootObject = hibernatePrepareStatement;
+		ExpressionParser parser = new SpelExpressionParser();
+		Expression exp = parser.parseExpression(expressionString, ParserContext.TEMPLATE_EXPRESSION);
+		EvaluationContext ctx = new StandardEvaluationContext(rootObject);
+		String result = exp.getValue(ctx, String.class);		
+		return result;
+	}
 	
-	@Override
-	public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
-		this.publisher = publisher;
-	}
-	@Override
-	public void setApplicationContext(ApplicationContext context) throws BeansException {
-		this.context = context;
-	}
+	
 
 	//////////////////////////////////////
 	//
@@ -189,42 +191,6 @@ PostLoadEventListener, PreLoadEventListener {
 //		logger.info("afterTransactionCompletion");
 //		
 //	}
-
-
-	private String PREPARE_STATEMENT_REGEX = "\\{(.*?)\\}";
-	
-	private @Autowired HibernatePrepareStatementAware event;
-	@Override
-	public String onPrepareStatement(String sql) {
-		
-		String expressionString = sql;
-		Object rootObject = event;
-		
-		ExpressionParser parser = new SpelExpressionParser();
-		Expression exp = parser.parseExpression(expressionString, ParserContext.TEMPLATE_EXPRESSION);
-		EvaluationContext ctx = new StandardEvaluationContext(rootObject);
-		String result = exp.getValue(ctx, String.class);		
-		
-		logger.info(sql+" -> "+result);
-
-//		Pattern pattern = Pattern.compile(PREPARE_STATEMENT_REGEX);
-//		Matcher matcher = pattern.matcher(sql);
-//		while (matcher.find()){
-//			String target = matcher.group();
-//			String beanName = matcher.group(1);
-//			try {
-//				HibernatePrepareStatementAware aware = context.getBean(beanName, HibernatePrepareStatementAware.class);
-//				String replacement = aware.getStatement();
-//				result = result.replace(target, replacement);
-//				logger.info(target+" -> "+replacement);
-//			}catch(Exception e) {
-//				logger.info(target, e);
-//			}
-//		}
-//		return result;
-		
-		return result;
-	}
 
 
 }

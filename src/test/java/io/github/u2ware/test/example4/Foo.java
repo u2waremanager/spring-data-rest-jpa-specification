@@ -4,13 +4,9 @@ import java.util.UUID;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Formula;
-import org.hibernate.annotations.JoinFormula;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
@@ -49,7 +45,7 @@ public @Data class Foo {
 	private UUID title;
 	
 	
-	@Formula("(SELECT count(t.id) FROM example4_bar t WHERE t.name = {fooStatement})")
+	@Formula("(SELECT count(t.id) FROM example4_bar t WHERE t.name = '#{fooStatement1.statement}')")
 	@JsonProperty(access=Access.READ_ONLY) 
 	private Long count;
 

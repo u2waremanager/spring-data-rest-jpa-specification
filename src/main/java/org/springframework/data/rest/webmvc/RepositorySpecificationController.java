@@ -14,7 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.query.PredicateBuilder;
-import org.springframework.data.rest.core.event.BeforeReadEvent;
+import org.springframework.data.rest.core.event.PredicateBuilderEvent;
 import org.springframework.data.rest.webmvc.support.DefaultedPageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -37,8 +37,8 @@ public class RepositorySpecificationController extends AbstractRepositoryControl
 
 	protected Log logger = LogFactory.getLog(getClass());
 	
-	private static final String QUERY = "!q";
-	private static final String BASE_MAPPING = "/{repository}/" + QUERY;
+	private static final String QUERY = "/specification/!q";
+	private static final String BASE_MAPPING = "/{repository}" + QUERY;
 
 	@RequestMapping(value = BASE_MAPPING, method = RequestMethod.OPTIONS)
 	public HttpEntity<?> optionsForSpecification() {
@@ -139,12 +139,16 @@ public class RepositorySpecificationController extends AbstractRepositoryControl
 
 			
 			Specification specification = (root, query, builder) -> {
-				T source = (T) convertValue(parameters, domainType);
-				PredicateBuilder<T> pd = new PredicateBuilder<T>(root, query, builder, parameters);
+				T entity = (T) convertValue(parameters, domainType);
+				
+				PredicateBuilder<T> pd = new PredicateBuilder<T>(root, query, builder);
+				pd.setRequestParam(parameters);
+				pd.setRequestParamToEntity(entity);
+				
 				if (StringUtils.hasLength(search)) {
-					pd.and().partTree(search, source);
+					pd.and().partTree(search);
 				}else {
-					publisher.publishEvent(new BeforeReadEvent(source, pd));
+					publisher.publishEvent(new PredicateBuilderEvent(pd));
 				}
 				return pd.build();
 			};

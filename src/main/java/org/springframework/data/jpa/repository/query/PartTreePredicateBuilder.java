@@ -29,6 +29,7 @@ import org.springframework.data.repository.query.parser.PartTree;
 import org.springframework.data.repository.query.parser.PartTree.OrPart;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.ObjectUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -61,8 +62,17 @@ public class PartTreePredicateBuilder<X> {
 		this.builder = builder;
 	}
 	
-	public Predicate build(PartTree partTree, X value) {
-		return toPredicate(partTree, new BeanWrapperImpl(value));
+	public Predicate build(PartTree partTree, X params){
+		return build(partTree, new BeanWrapperImpl(params));
+	}
+	public Predicate build(PartTree partTree, Object... params){
+		return build(partTree, new BeanWrapperObjectArray(params));
+	}
+	public Predicate build(PartTree partTree, MultiValueMap<String,Object> params){
+		return build(partTree, new BeanWrapperMultiValue(params));
+	}
+	public Predicate build(PartTree partTree, BeanWrapper value) {
+		return toPredicate(partTree, value);
 	}
 
 	private Predicate toPredicate(PartTree tree, BeanWrapper parameter) {

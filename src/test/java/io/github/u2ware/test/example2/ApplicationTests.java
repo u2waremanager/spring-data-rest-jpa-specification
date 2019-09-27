@@ -55,10 +55,10 @@ public class ApplicationTests {
 	public void contextLoads() throws Exception {
 
 
-		String uri1 = $.GET("/foos/!q/findByNameAndAge").P("name", "a").P("age","1").is2xx().andReturn().path("_embedded.foos[0]._links.self.href");
+		String uri1 = $.GET("/foos/specification/!q/findByNameAndAge").P("name", "a").P("age","1").is2xx().andReturn().path("_embedded.foos[0]._links.self.href");
 		logger.info(uri1);
 
-		String uri2 = $.GET("/foos/!q/findByNameAndAge").P("name", "b").P("age","2").is2xx().andReturn().path("_embedded.foos[0]._links.self.href");
+		String uri2 = $.GET("/foos/specification/!q/findByNameAndAge").P("name", "b").P("age","2").is2xx().andReturn().path("_embedded.foos[0]._links.self.href");
 		logger.info(uri2);
 		
 		

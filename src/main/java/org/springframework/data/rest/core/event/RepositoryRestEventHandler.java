@@ -18,10 +18,11 @@ public abstract class RepositoryRestEventHandler<T> implements ApplicationListen
 	public final void onApplicationEvent(RepositoryEvent event) {
 
 		Class<?> srcType = event.getSource().getClass();
-//		if (event instanceof BeforeReadEvent) {
-//			BeforeReadEvent e = (BeforeReadEvent)event;
-//			srcType = e.getSourceType();
-//		}
+		if (event instanceof PredicateBuilderEvent) {
+			PredicateBuilderEvent e = (PredicateBuilderEvent)event;
+			PredicateBuilder<?> builder = (PredicateBuilder<?>)e.getSource();
+			srcType = builder.getEntityType();
+		}
 		
 		if (!INTERESTED_TYPE.isAssignableFrom(srcType)) {
 			return;
@@ -45,12 +46,15 @@ public abstract class RepositoryRestEventHandler<T> implements ApplicationListen
 		} else if (event instanceof AfterDeleteEvent) {
 			handleAfterDelete((T) event.getSource());
 		
-		}else if (event instanceof AfterReadEvent) {
-			handleAfterRead((T) event.getSource());
+			
+		}else if (event instanceof HibernatePreLoadEvent) {
+			handleHibernatePreLoad((T) event.getSource());
 
-		}else if (event instanceof BeforeReadEvent) {
-			BeforeReadEvent r = (BeforeReadEvent) event;
-			handleBeforeRead((T) event.getSource(), (PredicateBuilder<T>)r.getObject() );
+		}else if (event instanceof HibernatePostLoadEvent) {
+			handleHibernatePostLoad((T) event.getSource());
+			
+		}else if (event instanceof PredicateBuilderEvent) {
+			handlePredicateBuilder((PredicateBuilder<T>) event.getSource());
 		}
 	}
 	
@@ -67,10 +71,13 @@ public abstract class RepositoryRestEventHandler<T> implements ApplicationListen
 	
 	protected void handleAfterDelete(T entity) {}
 	
-	protected void handleBeforeRead(T entity, PredicateBuilder<T> spec) {}
+	
+	protected void handleHibernatePreLoad(T entity){}
 
-	protected void handleAfterRead(T entity){}
-
+	protected void handleHibernatePostLoad(T entity){}
+	
+	protected void handlePredicateBuilder(PredicateBuilder<T> entity) {}
+	
 	// @EventListener
 	// @RepositoryEventHandler
 	// @HandleBeforeCreate
