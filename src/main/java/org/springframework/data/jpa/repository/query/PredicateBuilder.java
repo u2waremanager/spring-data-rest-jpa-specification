@@ -14,6 +14,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.data.jpa.repository.query.PartTreePredicateBuilder.BeanWrapperMultiValue;
+import org.springframework.data.jpa.repository.query.PartTreePredicateBuilder.BeanWrapperObjectArray;
 import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.PartTree;
 import org.springframework.util.MultiValueMap;

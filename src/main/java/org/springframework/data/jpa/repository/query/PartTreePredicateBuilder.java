@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -21,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.BeansException;
 import org.springframework.data.mapping.PropertyPath;
 import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.Part.IgnoreCaseType;
@@ -345,4 +348,38 @@ public class PartTreePredicateBuilder<X> {
 	private boolean canUpperCase(Expression<?> expression) {
 		return String.class.equals(expression.getJavaType());
 	}
+	
+	//////////////////////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////////////////////
+	public static class BeanWrapperMultiValue extends BeanWrapperImpl {
+		
+		private Map<String, ?> source;
+		
+		public BeanWrapperMultiValue(Map<String, ?> source) {
+			this.source = source;
+		}
+		
+		@Override
+		public Object getPropertyValue(String propertyName) throws BeansException {
+			return source.get(propertyName);
+		}
+	}
+	
+	public static class BeanWrapperObjectArray extends BeanWrapperImpl {
+		
+		private Object[] source;
+		private AtomicInteger index;
+		
+		public BeanWrapperObjectArray(Object... source ) {
+			this.source = source;
+			this.index = new AtomicInteger(0);
+		}
+		
+		@Override
+		public Object getPropertyValue(String propertyName) throws BeansException {
+			return source[index.getAndAdd(1)];
+		}
+	}
+	
 }
