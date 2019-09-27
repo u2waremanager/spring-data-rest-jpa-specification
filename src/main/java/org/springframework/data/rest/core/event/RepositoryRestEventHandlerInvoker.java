@@ -11,13 +11,12 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationListener;
-import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.data.rest.core.annotation.HandleHibernatePreLoad;
-import org.springframework.data.rest.core.annotation.HandlePredicateBuilder;
 import org.springframework.data.jpa.repository.query.PredicateBuilder;
 import org.springframework.data.rest.core.annotation.HandleHibernatePostLoad;
+import org.springframework.data.rest.core.annotation.HandleHibernatePreLoad;
+import org.springframework.data.rest.core.annotation.HandlePredicateBuilder;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
 import org.springframework.data.rest.core.event.AnnotatedEventHandlerInvoker.EventHandlerMethod;
 import org.springframework.util.ClassUtils;
@@ -28,7 +27,7 @@ import org.springframework.util.ReflectionUtils;
 //AnnotatedEventHandlerInvoker
 public class RepositoryRestEventHandlerInvoker implements ApplicationListener<RepositoryEvent>, BeanPostProcessor {
 
-	//protected Log logger = LogFactory.getLog(getClass());
+	protected Log logger = LogFactory.getLog(getClass());
 	
 	private MultiValueMap<Class<? extends RepositoryEvent>, EventHandlerMethod> handlerMethods = new LinkedMultiValueMap<Class<? extends RepositoryEvent>, EventHandlerMethod>();
 
