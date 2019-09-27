@@ -57,13 +57,22 @@ public class ApplicationTests {
 	@Test
 	public void contextLoads() throws Exception {
 
+		
+		$.OPTIONS("/foos/!q").is2xx();
+		$.OPTIONS("/foos/1").is2xx();
+		$.POST("/foos/!q").is2xx();
+		$.GET("/foos/!q").is2xx();
+		$.GET("/foos/1").is2xx();
+		
 		//////////////////////////////////////////////////////////////////////////
 		// 
 		///////////////////////////////////////////////////////////////////////////
-		$.POST("/foos/specification/!q")
+		$.POST("/foos/!q")
 			.P("name", "name1").P("name", "name2").P("name", "name3")
 			.P("longValue", "11").P("longValue", "22").P("longValue", "33")
 			.P("uriValue", "http://google.com").P("uriValue", "http://apple.com").P("uriValue", "http://microsoft.com")
 		.is2xx();
+		
+		
 	}
 }

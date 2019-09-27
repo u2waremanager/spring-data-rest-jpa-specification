@@ -37,7 +37,7 @@ public class RepositorySpecificationController extends AbstractRepositoryControl
 
 	protected Log logger = LogFactory.getLog(getClass());
 	
-	private static final String QUERY = "/specification/!q";
+	private static final String QUERY = "/!q";
 	private static final String BASE_MAPPING = "/{repository}" + QUERY;
 
 	@RequestMapping(value = BASE_MAPPING, method = RequestMethod.OPTIONS)
@@ -45,7 +45,7 @@ public class RepositorySpecificationController extends AbstractRepositoryControl
 		return super.optionsForAllResource();
 	}
 	
-	@RequestMapping(value = BASE_MAPPING + "/{search}", method = RequestMethod.OPTIONS)
+	@RequestMapping(value = BASE_MAPPING + "/{search:.+}", method = RequestMethod.OPTIONS)
 	public HttpEntity<?> optionsForSpecification(@PathVariable String search) {
 		return super.optionsForAllResource();
 	}
@@ -55,7 +55,7 @@ public class RepositorySpecificationController extends AbstractRepositoryControl
 		return super.headForAllResource();
 	}
 
-	@RequestMapping(value = BASE_MAPPING + "/{search}", method = RequestMethod.HEAD)
+	@RequestMapping(value = BASE_MAPPING + "/{search:.+}", method = RequestMethod.HEAD)
 	public HttpEntity<?> headForSpecification(@PathVariable String search) throws HttpRequestMethodNotSupportedException {
 		return super.headForAllResource();
 	}
