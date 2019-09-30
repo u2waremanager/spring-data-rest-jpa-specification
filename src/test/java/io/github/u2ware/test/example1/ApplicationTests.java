@@ -38,10 +38,6 @@ public class ApplicationTests {
 		MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
 		this.$ = new ApplicationMockMvc(mvc, springDataRestBasePath);
 		
-		fooRepository.save(new Foo("a", 1));		
-		fooRepository.save(new Foo("a", 2));		
-		fooRepository.save(new Foo("b", 1));		
-		fooRepository.save(new Foo("b", 2));		
 
 //		barRepository.save(new Bar("a", 1));		
 //		barRepository.save(new Bar("a", 2));		
@@ -58,21 +54,28 @@ public class ApplicationTests {
 	public void contextLoads() throws Exception {
 
 		
-		$.OPTIONS("/foos/!q").is2xx();
-		$.OPTIONS("/foos/1").is2xx();
-		$.POST("/foos/!q").is2xx();
-		$.GET("/foos/!q").is2xx();
-		$.GET("/foos/1").is2xx();
+//		$.OPTIONS("/foos/!q").is2xx();
+//		$.OPTIONS("/foos/1").is2xx();
+//		$.POST("/foos/!q").is2xx();
+//		$.GET("/foos/!q").is2xx();
+//		$.GET("/foos/1").is2xx();
 		
 		//////////////////////////////////////////////////////////////////////////
 		// 
 		///////////////////////////////////////////////////////////////////////////
-		$.POST("/foos/!q")
-			.P("name", "name1").P("name", "name2").P("name", "name3")
-			.P("longValue", "11").P("longValue", "22").P("longValue", "33")
-			.P("uriValue", "http://google.com").P("uriValue", "http://apple.com").P("uriValue", "http://microsoft.com")
-		.is2xx();
+//		$.POST("/foos/!q")
+//			.P("name", "name1").P("name", "name2").P("name", "name3")
+//			.P("longValue", "11").P("longValue", "22").P("longValue", "33")
+//			.P("uriValue", "http://google.com").P("uriValue", "http://apple.com").P("uriValue", "http://microsoft.com")
+//		.is2xx();
 		
-		
+		Foo foo1 = fooRepository.save(new Foo("a", 1));		
+//		fooRepository.save(new Foo("a", 2));		
+//		fooRepository.save(new Foo("b", 1));		
+//		fooRepository.save(new Foo("b", 2));		
+//
+//		fooRepository.findById(foo1.getSeq());
+//		
+		$.GET("/foos/!q").is2xx();
 	}
 }

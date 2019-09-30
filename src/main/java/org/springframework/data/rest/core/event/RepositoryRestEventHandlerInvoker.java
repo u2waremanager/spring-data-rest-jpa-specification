@@ -69,7 +69,8 @@ public class RepositoryRestEventHandlerInvoker implements ApplicationListener<Re
 		}
 
 		ResolvableType parameter = ResolvableType.forMethodParameter(method, 0, handler.getClass());
-		EventHandlerMethod handlerMethod = EventHandlerMethod.of(parameter.resolve(), handler, method);
+		Class<?> targetType = parameter.hasGenerics() ? parameter.getGeneric(0).resolve() : parameter.resolve();
+		EventHandlerMethod handlerMethod = EventHandlerMethod.of(targetType, handler, method);
 
 
 		List<EventHandlerMethod> events = handlerMethods.get(eventType);
@@ -99,10 +100,8 @@ public class RepositoryRestEventHandlerInvoker implements ApplicationListener<Re
 			Object src = event.getSource();
 
 			Class<?> srcType = src.getClass();
-			if (src instanceof PredicateBuilderEvent) {
-				PredicateBuilderEvent e = (PredicateBuilderEvent)event;
-				PredicateBuilder<?> builder = (PredicateBuilder<?>)e.getSource();
-				srcType = builder.getEntityType();
+			if(src instanceof PredicateBuilder) {
+				srcType = ((PredicateBuilder<?>)src).getEntityType();
 			}
 			
 			if (!ClassUtils.isAssignable(handlerMethod.targetType, srcType)) {

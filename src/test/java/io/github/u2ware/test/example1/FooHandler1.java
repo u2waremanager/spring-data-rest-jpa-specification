@@ -19,10 +19,10 @@ public class FooHandler1 extends RepositoryRestEventHandler<Foo>{
 	
 	@Override
 	protected void handlePredicateBuilder(PredicateBuilder<Foo> builder) {
-		logger.info("handleBeforeRead1: "+ builder);
-		logger.info("handleBeforeRead1: "+ builder.getRequestParam());
-		logger.info("handleBeforeRead1: "+ builder.getRequestParam().get("age"));
-		logger.info("handleBeforeRead1: "+ builder.getRequestParam().get("name"));
+		logger.info("handlePredicateBuilder1: "+ builder);
+		logger.info("handlePredicateBuilder1: "+ builder.getRequestParam());
+		logger.info("handlePredicateBuilder1: "+ builder.getRequestParam().get("age"));
+		logger.info("handlePredicateBuilder1: "+ builder.getRequestParam().get("name"));
 	}
 	
 	
