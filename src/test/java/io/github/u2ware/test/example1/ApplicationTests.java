@@ -76,6 +76,6 @@ public class ApplicationTests {
 //
 //		fooRepository.findById(foo1.getSeq());
 //		
-		$.GET("/foos/!q").is2xx();
+		$.GET("/bars/!q").is2xx();
 	}
 }
