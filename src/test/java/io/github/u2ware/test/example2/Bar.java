@@ -23,6 +23,8 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JoinFormula;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.data.rest.webmvc.view.EntityViewDeserializer;
 
@@ -139,7 +141,7 @@ public @Data class Bar {
 	@JsonProperty(access=Access.READ_ONLY) 
 	private Foo foo23;
 
-	
+	@NotFound(action = NotFoundAction.IGNORE)
 	@ManyToOne
 	@JoinFormula("( SELECT t.id FROM example2_foo t WHERE t.id = foo)")
 	@JsonProperty(access=Access.READ_ONLY) 

@@ -139,7 +139,7 @@ public class ApplicationTests {
 		});
 	}
 	
-//	@Test
+	@Test
 	public void partTreeSpecificationTests() throws Exception{
 		
 		//////////////////////////////////////////////////////////////////////////
@@ -164,6 +164,9 @@ public class ApplicationTests {
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
+		
+		Assert.assertEquals(1, repository.findAll(new PartTreeSpecification<Foo>("findByNameAndAge", "a", 1)).size());
+		
 	}
 	
 	@Test
@@ -192,6 +195,8 @@ public class ApplicationTests {
 					.build();
 			
 		});
+		
+		
 		
 	}
 	

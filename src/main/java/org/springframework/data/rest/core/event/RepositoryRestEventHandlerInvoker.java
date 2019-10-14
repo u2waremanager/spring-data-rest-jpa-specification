@@ -13,8 +13,10 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.data.rest.core.annotation.HandleAfterRead;
-import org.springframework.data.rest.core.annotation.HandleBeforeRead;
+import org.springframework.data.jpa.repository.query.PredicateBuilder;
+import org.springframework.data.rest.core.annotation.HandleHibernatePostLoad;
+import org.springframework.data.rest.core.annotation.HandleHibernatePreLoad;
+import org.springframework.data.rest.core.annotation.HandlePredicateBuilder;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
 import org.springframework.data.rest.core.event.AnnotatedEventHandlerInvoker.EventHandlerMethod;
 import org.springframework.util.ClassUtils;
@@ -45,8 +47,9 @@ public class RepositoryRestEventHandlerInvoker implements ApplicationListener<Re
 		
 		
 		for (Method method : ReflectionUtils.getUniqueDeclaredMethods(beanType)) {
-			inspect(bean, method, HandleAfterRead.class, AfterReadEvent.class);
-			inspect(bean, method, HandleBeforeRead.class, BeforeReadEvent.class);
+			inspect(bean, method, HandleHibernatePreLoad.class, HibernatePreLoadEvent.class);
+			inspect(bean, method, HandleHibernatePostLoad.class, HibernatePostLoadEvent.class);
+			inspect(bean, method, HandlePredicateBuilder.class, PredicateBuilderEvent.class);
 		}
 
 		return bean;
@@ -64,12 +67,10 @@ public class RepositoryRestEventHandlerInvoker implements ApplicationListener<Re
 		if (method.getParameterTypes().length == 0) {
 			throw new IllegalStateException("method.getParameterTypes().length == 0");
 		}
-		
-		logger.info(handler);
-		logger.info(method);
 
 		ResolvableType parameter = ResolvableType.forMethodParameter(method, 0, handler.getClass());
-		EventHandlerMethod handlerMethod = EventHandlerMethod.of(parameter.resolve(), handler, method);
+		Class<?> targetType = parameter.hasGenerics() ? parameter.getGeneric(0).resolve() : parameter.resolve();
+		EventHandlerMethod handlerMethod = EventHandlerMethod.of(targetType, handler, method);
 
 
 		List<EventHandlerMethod> events = handlerMethods.get(eventType);
@@ -98,18 +99,20 @@ public class RepositoryRestEventHandlerInvoker implements ApplicationListener<Re
 
 			Object src = event.getSource();
 
-			if (!ClassUtils.isAssignable(handlerMethod.targetType, src.getClass())) {
+			Class<?> srcType = src.getClass();
+			if(src instanceof PredicateBuilder) {
+				srcType = ((PredicateBuilder<?>)src).getEntityType();
+			}
+			
+			if (!ClassUtils.isAssignable(handlerMethod.targetType, srcType)) {
 				continue;
 			}
 			
 			List<Object> parameters = new ArrayList<Object>();
 			parameters.add(src);
-			if (event instanceof BeforeReadEvent) {
-				parameters.add(((BeforeReadEvent)event).getObject());
-			}
-			logger.info(handlerMethod.handler);
-			logger.info(handlerMethod.method);
-			logger.info(parameters);
+//			if (event instanceof BeforeReadEvent) {
+//				parameters.add(((BeforeReadEvent)event).getObject());
+//			}
 			
 			ReflectionUtils.invokeMethod(handlerMethod.method, handlerMethod.handler, parameters.toArray());
 		}

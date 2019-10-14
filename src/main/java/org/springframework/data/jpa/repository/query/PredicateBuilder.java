@@ -12,6 +12,10 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.data.jpa.repository.query.PartTreePredicateBuilder.BeanWrapperMultiValue;
+import org.springframework.data.jpa.repository.query.PartTreePredicateBuilder.BeanWrapperObjectArray;
 import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.PartTree;
 import org.springframework.util.MultiValueMap;
@@ -29,22 +33,31 @@ public class PredicateBuilder<T> {
 	
 	private Predicate predicate;
 	private Predicate subPredicate;
-	private MultiValueMap<String,Object> parameters;
+	private MultiValueMap<String,Object> requestParam;
+	private T requestParamToEntity;
 	
 	public PredicateBuilder(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-		this(root, query, builder, null);
-	}
-
-	public PredicateBuilder(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder, MultiValueMap<String,Object> parameters) {
 		this.predicateBuilder = new CriteriaBuilderSupport<>(root, query, builder, this);
 		this.orderBuilder = new CriteriaQuerySupport<>(root, query, builder, this);
-		this.parameters = parameters;
-	}
-	
-	public MultiValueMap<String,Object> getParameters() {
-		return parameters;
 	}
 
+	public void setRequestParam(MultiValueMap<String,Object> requestParam) {
+		this.requestParam = requestParam;
+	}
+	public MultiValueMap<String,Object> getRequestParam() {
+		return requestParam;
+	}
+	public T getRequestParamToEntity() {
+		return requestParamToEntity;
+	}
+	public void setRequestParamToEntity(T requestParamToEntity) {
+		this.requestParamToEntity = requestParamToEntity;
+	}
+
+	public Class<? extends T> getEntityType() {
+		return predicateBuilder.getRoot().getJavaType();
+	}
+	
 	public Root<T> getRoot() {
 		return predicateBuilder.getRoot();
 	}
@@ -218,12 +231,19 @@ public class PredicateBuilder<T> {
 			return builder;
 		}
 
-//		public PredicateBuilder<T> partTree(String source){
-//			return partTree(source, chain.getParameters());
-//		}
-		
+		public PredicateBuilder<T> partTree(String source){
+			return partTree(source, chain.getRequestParam());
+		}
 		public PredicateBuilder<T> partTree(String source, T params){
-			
+			return partTree(source, new BeanWrapperImpl(params));
+		}
+		public PredicateBuilder<T> partTree(String source, Object... params){
+			return partTree(source, new BeanWrapperObjectArray(params));
+		}
+		public PredicateBuilder<T> partTree(String source, MultiValueMap<String,Object> params){
+			return partTree(source, new BeanWrapperMultiValue(params));
+		}
+		public PredicateBuilder<T> partTree(String source, BeanWrapper params){
 			try {
 				PartTree partTree = new PartTree(source, root.getJavaType());
 				Predicate predicate = new PartTreePredicateBuilder<>(root, query, builder).build(partTree, params);
@@ -234,6 +254,7 @@ public class PredicateBuilder<T> {
 				return chain.join((Predicate)null);
 			}
 		}
+
 		
 		public PredicateBuilder<T> part(String source, Object params){
 
@@ -288,6 +309,42 @@ public class PredicateBuilder<T> {
 		public PredicateBuilder<T> notIn(String property, Object value) {
 			return part(property+"IsNotIn", value);
 		}
+		
+		
+		public PredicateBuilder<T> eq(String property){
+			return part(property, chain.getRequestParam().get(property));
+		}
+		public PredicateBuilder<T> notEq(String property){
+			return part(property+"Not", chain.getRequestParam().get(property));
+		}
+		public PredicateBuilder<T> like(String property){
+			return part(property+"ContainingIgnoreCase", chain.getRequestParam().get(property));
+		}
+		public PredicateBuilder<T> notLike(String property){
+			return part(property+"NotContainingIgnoreCase", chain.getRequestParam().get(property));
+		}
+		public PredicateBuilder<T> between(String property) {
+			return part(property+"IsBetween", chain.getRequestParam().get(property));
+		}
+		public PredicateBuilder<T> gt(String property) {
+			return part(property+"IsGreaterThan", chain.getRequestParam().get(property));
+		}
+		public PredicateBuilder<T> gte(String property) {
+			return part(property+"IsGreaterThanEqual", chain.getRequestParam().get(property));
+		}
+		public PredicateBuilder<T> lt(String property) {
+			return part(property+"IsLessThan", chain.getRequestParam().get(property));
+		}
+		public PredicateBuilder<T> lte(String property) {
+			return part(property+"IsLessThanEqual", chain.getRequestParam().get(property));
+		}
+		public PredicateBuilder<T> in(String property) {
+			return part(property+"IsIn", chain.getRequestParam().get(property));
+		}
+		public PredicateBuilder<T> notIn(String property) {
+			return part(property+"IsNotIn", chain.getRequestParam().get(property));
+		}
+		
 	}
 
 

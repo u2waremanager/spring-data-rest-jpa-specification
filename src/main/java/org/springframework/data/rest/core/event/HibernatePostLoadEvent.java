@@ -1,10 +1,9 @@
-package org.springframework.data.rest.core.event.hibernate;
+package org.springframework.data.rest.core.event;
 
 import org.springframework.data.rest.core.event.RepositoryEvent;
 
+@SuppressWarnings("serial")
 public class HibernatePostLoadEvent extends RepositoryEvent {
-
-	private static final long serialVersionUID = 1932567984753687446L;
 
 	public HibernatePostLoadEvent(Object source) {
 		super(source);
