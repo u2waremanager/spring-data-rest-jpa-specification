@@ -11,7 +11,7 @@
 <dependency>
     <groupId>io.github.u2ware</groupId>
     <artifactId>spring-data-rest-jpa-specification</artifactId>
-    <version>2.1.5.2.RELEASE</version>
+    <version>2.1.5.3.RELEASE</version>
 </dependency>
 ----
 
@@ -188,8 +188,10 @@ link:./src/main/java/org/springframework/data/rest/core/event/RepositoryRestEven
 public class MyPeopleHandler extends RepositoryRestEventHandler<People>{  //**
 
 	@Override
-	public void handleBeforeRead(People entity, PredicateBuilder<People> builder) {
+	public void handlePredicateBuilder(PredicateBuilder<People> builder) {
 		
+        People entity = builder.getRequestParamToEntity();
+
 		builder.and().eq("name", entity.getName())
 		       .and().like(...)
 		       ...
@@ -209,7 +211,7 @@ public class MyPeopleHandler extends RepositoryRestEventHandler<People>{  //**
 ----
 
 다음과 같이 
-link:./src/main/java/org/springframework/data/rest/core/annotation/HandleBeforeRead.java[@HandleBeforeRead]
+link:./src/main/java/org/springframework/data/rest/core/annotation/HandlePredicateBuilder.java[@HandlePredicateBuilder]
 을 사용하는 방법도 있습니다.
 
 [source,java,indent=1]
@@ -219,10 +221,12 @@ link:./src/main/java/org/springframework/data/rest/core/annotation/HandleBeforeR
 @RepositoryEventHandler(People.class) //**
 public class MyPeopleHandler {  
 
-	@HandleBeforeRead // --> /peoples/!q
-	public void handleBeforeRead(People entity, PredicateBuilder<People> builder) {
+	@HandlePredicateBuilder // --> /peoples/!q
+	public void handlePredicateBuilder(PredicateBuilder<People> builder) {
 	
-		builder.and().eq("name", entity.getName())
+        MultiValueMap<String,Object> params = builder.getRequestParam();
+
+		builder.and().eq("age", params.getFirst("age")) 
 		       .and().like(...)
 		       ...
 	}
