@@ -1,15 +1,14 @@
 package org.springframework.data.rest.core.event;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.GenericTypeResolver;
-import org.springframework.data.jpa.repository.query.PredicateBuilder;
+import org.springframework.data.jpa.repository.query.JPAQueryBuilder;
+import org.springframework.data.jpa.repository.query.PartTreeQueryBuilder;
 
 //AbstractRepositoryEventListener
 public abstract class RepositoryRestEventHandler<T> implements ApplicationListener<RepositoryEvent> {
 
-	protected Log logger = LogFactory.getLog(getClass());
+//	protected Log logger = LogFactory.getLog(getClass());
 
 	private final Class<?> INTERESTED_TYPE = GenericTypeResolver.resolveTypeArgument(getClass(), RepositoryRestEventHandler.class);
 
@@ -18,10 +17,12 @@ public abstract class RepositoryRestEventHandler<T> implements ApplicationListen
 	public final void onApplicationEvent(RepositoryEvent event) {
 
 		Class<?> srcType = event.getSource().getClass();
-		if (event instanceof PredicateBuilderEvent) {
-			PredicateBuilderEvent e = (PredicateBuilderEvent)event;
-			PredicateBuilder<?> builder = (PredicateBuilder<?>)e.getSource();
-			srcType = builder.getEntityType();
+		if (event instanceof JPAQueryBuilderEvent) {
+			JPAQueryBuilderEvent e = (JPAQueryBuilderEvent)event;
+			srcType = e.getEntityType();
+		}else if(event instanceof PartTreeQueryBuilderEvent) {
+			PartTreeQueryBuilderEvent e = (PartTreeQueryBuilderEvent)event;
+			srcType = e.getEntityType();
 		}
 		
 		if (!INTERESTED_TYPE.isAssignableFrom(srcType)) {
@@ -53,8 +54,11 @@ public abstract class RepositoryRestEventHandler<T> implements ApplicationListen
 		}else if (event instanceof HibernatePostLoadEvent) {
 			handleHibernatePostLoad((T) event.getSource());
 			
-		}else if (event instanceof PredicateBuilderEvent) {
-			handlePredicateBuilder((PredicateBuilder<T>) event.getSource());
+		}else if (event instanceof JPAQueryBuilderEvent) {
+			handleQueryBuilder((JPAQueryBuilder<T>) event.getSource());
+		
+		}else if (event instanceof PartTreeQueryBuilderEvent) {
+			handleQueryBuilder((PartTreeQueryBuilder<T>) event.getSource());
 		}
 	}
 	
@@ -71,12 +75,13 @@ public abstract class RepositoryRestEventHandler<T> implements ApplicationListen
 	
 	protected void handleAfterDelete(T entity) {}
 	
-	
 	protected void handleHibernatePreLoad(T entity){}
 
 	protected void handleHibernatePostLoad(T entity){}
 	
-	protected void handlePredicateBuilder(PredicateBuilder<T> entity) {}
+	protected void handleQueryBuilder(JPAQueryBuilder<T> builder) {}
+	
+	protected void handleQueryBuilder(PartTreeQueryBuilder<T> builder) {}
 	
 	// @EventListener
 	// @RepositoryEventHandler

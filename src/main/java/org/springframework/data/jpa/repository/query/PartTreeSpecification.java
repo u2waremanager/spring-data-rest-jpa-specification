@@ -8,8 +8,8 @@ import javax.persistence.criteria.Root;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.query.PartTreePredicateBuilder.BeanWrapperMultiValue;
-import org.springframework.data.jpa.repository.query.PartTreePredicateBuilder.BeanWrapperObjectArray;
+import org.springframework.data.jpa.repository.query.PartTreeQueryBuilderSupport.BeanWrapperMultiValue;
+import org.springframework.data.jpa.repository.query.PartTreeQueryBuilderSupport.BeanWrapperObjectArray;
 import org.springframework.data.repository.query.parser.PartTree;
 import org.springframework.util.MultiValueMap;
 
@@ -36,7 +36,7 @@ public class PartTreeSpecification<T> implements Specification<T> {
 	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 		
 		PartTree partTree = new PartTree(source, root.getJavaType());
-		return new PartTreePredicateBuilder<T>(root, query, builder).build(partTree, params);
+		return new PartTreeQueryBuilderSupport<T>(root, query, builder).build(partTree, params);
 	}
 	
 	

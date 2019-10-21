@@ -21,7 +21,6 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.data.mapping.PropertyPath;
@@ -39,7 +38,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class PartTreePredicateBuilder<X> {
+public class PartTreeQueryBuilderSupport<X> {
 
 	protected Log logger = LogFactory.getLog(getClass());
 
@@ -54,7 +53,7 @@ public class PartTreePredicateBuilder<X> {
 	//private final CriteriaQuery<?> query;
 	private final CriteriaBuilder builder;
 	
-	public PartTreePredicateBuilder(Root<X> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+	public PartTreeQueryBuilderSupport(Root<X> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 		
 		Assert.notNull(root, "root is requried");
 		Assert.notNull(query, "query is requried");
@@ -64,21 +63,22 @@ public class PartTreePredicateBuilder<X> {
 		//this.query = query;
 		this.builder = builder;
 	}
+
+//	public Class<?> getEntityType() {
+//		return root.getJavaType();
+//	}	
 	
 	public Predicate build(PartTree partTree, X params){
-		return build(partTree, new BeanWrapperImpl(params));
+		return toPredicate(partTree, new QueryParameters<>(params));
 	}
 	public Predicate build(PartTree partTree, Object... params){
-		return build(partTree, new BeanWrapperObjectArray(params));
+		return toPredicate(partTree, new QueryParameters<>(params));
 	}
 	public Predicate build(PartTree partTree, MultiValueMap<String,Object> params){
-		return build(partTree, new BeanWrapperMultiValue(params));
-	}
-	public Predicate build(PartTree partTree, BeanWrapper value) {
-		return toPredicate(partTree, value);
+		return toPredicate(partTree, new QueryParameters<>(params));
 	}
 
-	private Predicate toPredicate(PartTree tree, BeanWrapper parameter) {
+	private Predicate toPredicate(PartTree tree, QueryParameters<?> parameter) {
 
 		Predicate base = null;
 
@@ -102,7 +102,7 @@ public class PartTreePredicateBuilder<X> {
 		return base;
 	}
 	
-	private Predicate and(Part part, Predicate base, BeanWrapper parameter) {
+	private Predicate and(Part part, Predicate base, QueryParameters<?> parameter) {
 		Predicate criteria = create(part, parameter);
 		return criteria != null ? ( (base != null) ? builder.and(base, criteria) : criteria ): base;
 	}
@@ -111,8 +111,8 @@ public class PartTreePredicateBuilder<X> {
 		return builder.or(base, predicate);
 	}
 
-	private Predicate create(Part part, BeanWrapper parameter) {
-		return build(part, parameter.getPropertyValue(part.getProperty().getSegment()));
+	private Predicate create(Part part, QueryParameters<?> parameter) {
+		return build(part, parameter.get(part.getProperty().getSegment()));
 	}
 	
 
@@ -317,8 +317,11 @@ public class PartTreePredicateBuilder<X> {
 		return getTypedPath(root, part);
 	}
 	
-	private <T> Expression<T> getTypedPath(Root<?> root, Part part) {
+	private static <T> Expression<T> getTypedPath(Root<?> root, Part part) {
 		return QueryUtils.toExpressionRecursively(root, part.getProperty());
+	}
+	public static <T> Expression<T> getTypedPath(Root<?> root, String property) {
+		return getTypedPath(root, new Part(property, root.getJavaType()));
 	}
 	
 	private <T> Expression<T> getIgnoreCasedPath(Root<?> root, Part part) {
@@ -348,6 +351,7 @@ public class PartTreePredicateBuilder<X> {
 	private boolean canUpperCase(Expression<?> expression) {
 		return String.class.equals(expression.getJavaType());
 	}
+	
 	
 	//////////////////////////////////////////////////////////////////////
 	//
@@ -381,5 +385,6 @@ public class PartTreePredicateBuilder<X> {
 			return source[index.getAndAdd(1)];
 		}
 	}
+
 	
 }

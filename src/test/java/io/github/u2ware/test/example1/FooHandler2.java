@@ -2,11 +2,11 @@ package io.github.u2ware.test.example1;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.data.jpa.repository.query.PredicateBuilder;
+import org.springframework.data.jpa.repository.query.PartTreeQueryBuilder;
 import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
 import org.springframework.data.rest.core.annotation.HandleHibernatePostLoad;
 import org.springframework.data.rest.core.annotation.HandleHibernatePreLoad;
-import org.springframework.data.rest.core.annotation.HandlePredicateBuilder;
+import org.springframework.data.rest.core.annotation.HandlePartTreeQueryBuilder;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
 import org.springframework.stereotype.Component;
 
@@ -15,15 +15,14 @@ import org.springframework.stereotype.Component;
 public class FooHandler2 {
 
 	protected Log logger = LogFactory.getLog(getClass());
-	
 
 	@HandleHibernatePreLoad
 	protected void handleHibernatePreLoad(Foo entity) {
-		logger.info("handleHibernatePreLoad Foo");
+		logger.info("handleHibernatePreLoad Foo "+entity.getSeq());
 	}
 	@HandleHibernatePostLoad
 	protected void handleHibernatePostLoad(Foo entity) {
-		logger.info("handleHibernatePostLoad Foo");
+		logger.info("handleHibernatePostLoad Foo "+entity.getSeq());
 	}
 	
 	@HandleBeforeCreate
@@ -33,12 +32,12 @@ public class FooHandler2 {
 	
 	
 	
-	@HandlePredicateBuilder
-	protected void handlePredicateBuilder(PredicateBuilder<Foo> builder) {
+	@HandlePartTreeQueryBuilder
+	protected void handleQueryBuilder(PartTreeQueryBuilder<Foo> builder) {
 		
 		
-		logger.info("handlePredicateBuilder2: "+ builder.getRequestParamToEntity());
-		logger.info("handlePredicateBuilder2: "+ builder.getRequestParam());
+		logger.info("handleQueryBuilder2: "+ builder);
+		logger.info("handleQueryBuilder2: "+ builder);
 		
 		
 //		builder.and().eq("name");

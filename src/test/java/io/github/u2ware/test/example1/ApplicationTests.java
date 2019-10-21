@@ -69,13 +69,20 @@ public class ApplicationTests {
 //			.P("uriValue", "http://google.com").P("uriValue", "http://apple.com").P("uriValue", "http://microsoft.com")
 //		.is2xx();
 		
-		Foo foo1 = fooRepository.save(new Foo("a", 1));		
-//		fooRepository.save(new Foo("a", 2));		
-//		fooRepository.save(new Foo("b", 1));		
-//		fooRepository.save(new Foo("b", 2));		
-//
-//		fooRepository.findById(foo1.getSeq());
-//		
-		$.GET("/bars/!q").is2xx();
+		Foo f1 = new Foo("a", 1);
+		Foo f2 = new Foo("a", 2);
+		Foo f3 = new Foo("b", 1);
+		Foo f4 = new Foo("b", 2);
+		
+		f1 = fooRepository.save(f1);		
+		f2 = fooRepository.save(f2);		
+		f3 = fooRepository.save(f3);		
+		f4 = fooRepository.save(f4);		
+
+		$.GET("/foos/!q").is2xx();
+		
+
+		$.GET("/foos/"+f1.getSeq()).is2xx();
+	
 	}
 }

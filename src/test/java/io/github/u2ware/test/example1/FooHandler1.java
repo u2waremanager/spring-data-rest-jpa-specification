@@ -2,7 +2,7 @@ package io.github.u2ware.test.example1;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.data.jpa.repository.query.PredicateBuilder;
+import org.springframework.data.jpa.repository.query.PartTreeQueryBuilder;
 import org.springframework.data.rest.core.event.RepositoryRestEventHandler;
 import org.springframework.stereotype.Component;
 
@@ -18,11 +18,12 @@ public class FooHandler1 extends RepositoryRestEventHandler<Foo>{
 	
 	
 	@Override
-	protected void handlePredicateBuilder(PredicateBuilder<Foo> builder) {
-		logger.info("handlePredicateBuilder1: "+ builder);
-		logger.info("handlePredicateBuilder1: "+ builder.getRequestParam());
-		logger.info("handlePredicateBuilder1: "+ builder.getRequestParam().get("age"));
-		logger.info("handlePredicateBuilder1: "+ builder.getRequestParam().get("name"));
+	protected void handleQueryBuilder(PartTreeQueryBuilder<Foo> builder) {
+		logger.info("handleQueryBuilder1: "+ builder);
+		logger.info("handleQueryBuilder1: "+ builder.getQueryParameters());
+		logger.info("handleQueryBuilder1: "+ builder.getQueryParameters().get());
+		logger.info("handleQueryBuilder1: "+ builder.getQueryParameters().get("age"));
+		logger.info("handleQueryBuilder1: "+ builder.getQueryParameters().get("name"));
 	}
 	
 	

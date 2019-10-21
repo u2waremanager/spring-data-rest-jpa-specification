@@ -1,25 +1,19 @@
 package org.springframework.data.rest.webmvc;
 
-import java.beans.PropertyDescriptor;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.query.PredicateBuilder;
-import org.springframework.data.rest.core.event.PredicateBuilderEvent;
+import org.springframework.data.jpa.repository.query.PartTreeQueryBuilder;
+import org.springframework.data.jpa.repository.query.QueryParameters;
+import org.springframework.data.rest.core.event.PartTreeQueryBuilderEvent;
 import org.springframework.data.rest.webmvc.support.DefaultedPageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -29,8 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RepositoryRestController
 public class RepositorySpecificationController extends AbstractRepositoryController{
@@ -139,18 +131,15 @@ public class RepositorySpecificationController extends AbstractRepositoryControl
 
 			
 			Specification specification = (root, query, builder) -> {
-				T entity = (T) convertValue(parameters, domainType);
-				
-				PredicateBuilder<T> pd = new PredicateBuilder<T>(root, query, builder);
-				pd.setRequestParam(parameters);
-				pd.setRequestParamToEntity(entity);
+				PartTreeQueryBuilder<T> pb = PartTreeQueryBuilder.of(root, query, builder);
+				pb.setQueryParameters(new QueryParameters<>(parameters, domainType));
 				
 				if (StringUtils.hasLength(search)) {
-					pd.and().partTree(search);
+					pb.where().and().partTree(search);
 				}else {
-					publisher.publishEvent(new PredicateBuilderEvent(pd));
+					publisher.publishEvent(new PartTreeQueryBuilderEvent(pb, domainType));
 				}
-				return pd.build();
+				return pb.build();
 			};
 			logger.info("specification: "+specification);
 
@@ -176,40 +165,7 @@ public class RepositorySpecificationController extends AbstractRepositoryControl
 		}
 	}
 
-	
-	private ObjectMapper objectMapper = new ObjectMapper();
-	
-	private <T> T convertValue(MultiValueMap<String, Object> parameters, Class<T> clazz) {
-
-		Map<String, Object> temp = new HashMap<String, Object>();
-
-		BeanWrapper beanWrapper = new BeanWrapperImpl(clazz);
-		for (String name : parameters.keySet()) {
-			try {
-				PropertyDescriptor pd = beanWrapper.getPropertyDescriptor(name);
-				if (pd != null) {
-
-					Class<?> type = pd.getPropertyType();
-					List<?> source = parameters.get(name);
-					Object value = null;
-					if (source != null) {
-						if (ClassUtils.isAssignableValue(type, source) || type.isArray()) {
-							value = source;
-						} else {
-							value = source.size() > 0 ? source.get(0) : null;
-						}
-					}
-					if (value != null) {
-						temp.put(name, value);
-					}
-				}
-			} catch (Exception e) {
-
-			}
-		}
-		return objectMapper.convertValue(temp, clazz);
-	}	
-	
+		
 
 }
 

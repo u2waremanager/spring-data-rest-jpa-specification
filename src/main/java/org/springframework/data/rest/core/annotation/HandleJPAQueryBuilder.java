@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-public @interface HandlePredicateBuilder {
+public @interface HandleJPAQueryBuilder {
 
 }

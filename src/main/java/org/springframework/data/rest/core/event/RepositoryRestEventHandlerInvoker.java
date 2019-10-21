@@ -13,10 +13,12 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.data.jpa.repository.query.PredicateBuilder;
+import org.springframework.data.jpa.repository.query.JPAQueryBuilder;
+import org.springframework.data.jpa.repository.query.PartTreeQueryBuilder;
 import org.springframework.data.rest.core.annotation.HandleHibernatePostLoad;
 import org.springframework.data.rest.core.annotation.HandleHibernatePreLoad;
-import org.springframework.data.rest.core.annotation.HandlePredicateBuilder;
+import org.springframework.data.rest.core.annotation.HandleJPAQueryBuilder;
+import org.springframework.data.rest.core.annotation.HandlePartTreeQueryBuilder;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
 import org.springframework.data.rest.core.event.AnnotatedEventHandlerInvoker.EventHandlerMethod;
 import org.springframework.util.ClassUtils;
@@ -49,7 +51,8 @@ public class RepositoryRestEventHandlerInvoker implements ApplicationListener<Re
 		for (Method method : ReflectionUtils.getUniqueDeclaredMethods(beanType)) {
 			inspect(bean, method, HandleHibernatePreLoad.class, HibernatePreLoadEvent.class);
 			inspect(bean, method, HandleHibernatePostLoad.class, HibernatePostLoadEvent.class);
-			inspect(bean, method, HandlePredicateBuilder.class, PredicateBuilderEvent.class);
+			inspect(bean, method, HandlePartTreeQueryBuilder.class, PartTreeQueryBuilderEvent.class);
+			inspect(bean, method, HandleJPAQueryBuilder.class, JPAQueryBuilderEvent.class);
 		}
 
 		return bean;
@@ -100,8 +103,10 @@ public class RepositoryRestEventHandlerInvoker implements ApplicationListener<Re
 			Object src = event.getSource();
 
 			Class<?> srcType = src.getClass();
-			if(src instanceof PredicateBuilder) {
-				srcType = ((PredicateBuilder<?>)src).getEntityType();
+			if(src instanceof PartTreeQueryBuilder) {
+				srcType = ((PartTreeQueryBuilderEvent)event).getEntityType();
+			}else if(src instanceof JPAQueryBuilder) {
+				srcType = ((JPAQueryBuilderEvent)event).getEntityType();
 			}
 			
 			if (!ClassUtils.isAssignable(handlerMethod.targetType, srcType)) {
