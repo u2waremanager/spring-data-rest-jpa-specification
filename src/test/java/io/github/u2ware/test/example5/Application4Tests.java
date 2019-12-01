@@ -127,7 +127,8 @@ public class Application4Tests {
 					.eq("age", 2)
 				.andEnd()
 				.and().eq("age", 5)
-				.build(PageRequest.of(0, 2, Direction.ASC, "age"));
+				.pageable(PageRequest.of(0, 2, Direction.ASC, "age"))
+				.build();
 //			.order()
 //				.asc("name")
 //				.desc("name")

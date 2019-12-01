@@ -1,5 +1,6 @@
 package io.github.u2ware.test.example5;
 
+import java.util.Set;
 import java.util.UUID;
 
 import javax.persistence.Entity;
@@ -7,6 +8,10 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
+import org.springframework.util.StringUtils;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
 
@@ -18,9 +23,40 @@ public @Data class DomainSample {
 	private String name;
 	private Integer age;
 
+	@JsonIgnore
+	private String typesData;
+	
+	public Set<String> getTypes(){
+		return StringUtils.commaDelimitedListToSet(getTypesData());
+	}
+	
+	public void setTypes(Set<String> types) {
+		setTypesData(StringUtils.collectionToCommaDelimitedString(types));
+	}
+
+
+	
+	//@Convert(converter = StringArrayConverter.class)
+//	private String[] types;
+	
+//	@ElementCollection(fetch = FetchType.EAGER)
+//	private List<String> types;
+	
+//	@Column(columnDefinition = "varchar(255)[]")
+//	private String[] types;
+	
+	
+//	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+//	private List<Integer> types;
+	
+//	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+//    public List<Integer> getTypes() {
+//        return types;
+//    }   
+	
 	public DomainSample() {
 		setId(UUID.randomUUID());
-		setName("DomainSample-"+UUID.randomUUID());
+		setName("DomainSample-"+UUID.randomUUID()+"a,b,c,d");
 		setAge((int)System.currentTimeMillis());
 	}
 

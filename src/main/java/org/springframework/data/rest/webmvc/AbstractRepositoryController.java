@@ -455,7 +455,7 @@ public class AbstractRepositoryController {
 	 * @param httpMethod
 	 * @return
 	 */
-	private ResponseEntity<ResourceSupport> saveAndReturn(Object domainObject, RepositoryInvoker invoker,
+	protected ResponseEntity<ResourceSupport> saveAndReturn(Object domainObject, RepositoryInvoker invoker,
 			HttpMethod httpMethod, PersistentEntityResourceAssembler assembler, boolean returnBody) {
 
 		publisher.publishEvent(new BeforeSaveEvent(domainObject));
@@ -483,7 +483,7 @@ public class AbstractRepositoryController {
 	 * @param invoker
 	 * @return
 	 */
-	private ResponseEntity<ResourceSupport> createAndReturn(Object domainObject, RepositoryInvoker invoker,
+	protected ResponseEntity<ResourceSupport> createAndReturn(Object domainObject, RepositoryInvoker invoker,
 			PersistentEntityResourceAssembler assembler, boolean returnBody) {
 
 		publisher.publishEvent(new BeforeCreateEvent(domainObject));
@@ -522,7 +522,7 @@ public class AbstractRepositoryController {
 	 * @throws HttpRequestMethodNotSupportedException
 	 * @throws {@link ResourceNotFoundException}
 	 */
-	private Optional<Object> getItemResource(RootResourceInformation resourceInformation, Serializable id)
+	protected Optional<Object> getItemResource(RootResourceInformation resourceInformation, Serializable id)
 			throws HttpRequestMethodNotSupportedException, ResourceNotFoundException {
 
 		resourceInformation.verifySupportedMethod(HttpMethod.GET, ResourceType.ITEM);

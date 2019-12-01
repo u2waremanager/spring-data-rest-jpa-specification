@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.jpa.repository.query.PartTreeQueryBuilder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -17,7 +18,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 //import static io.github.u2ware.test.ApplicationMockMvc.ApplicationResultActions.sizeMatch;
 import io.github.u2ware.test.ApplicationMockMvc;
-import io.github.u2ware.test.example5.PredicateBuilderddd;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -60,7 +60,7 @@ public class ApplicationTests {
 		
 		
 		logger.info(fooRepository.findAll((root, query, builder) -> {
-			return new PredicateBuilderddd<>(root, query, builder).and().eq("name", "a").build();
+			return PartTreeQueryBuilder.of(root, query, builder).where().and().eq("name", "a").build();
 		}));
 		
 		

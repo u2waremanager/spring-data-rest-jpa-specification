@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.jpa.repository.query.PartTreeQueryBuilder;
 import org.springframework.data.jpa.repository.query.PartTreeQueryBuilderSupport;
 import org.springframework.data.jpa.repository.query.PartTreeSpecification;
 import org.springframework.data.repository.query.parser.Part;
@@ -27,7 +28,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 //import static io.github.u2ware.test.ApplicationMockMvc.ApplicationResultActions.sizeMatch;
 import io.github.u2ware.test.ApplicationMockMvc;
-import io.github.u2ware.test.example5.PredicateBuilderddd;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -139,7 +139,7 @@ public class ApplicationTests {
 		});
 	}
 	
-	@Test
+//	@Test
 	public void partTreeSpecificationTests() throws Exception{
 		
 		//////////////////////////////////////////////////////////////////////////
@@ -175,23 +175,31 @@ public class ApplicationTests {
 		///////////////////////////////////////////////////
 		//
 		////////////////////////////////////////////////////
+		logger.info("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 		repository.findAll((root, query, builder)->{
 			
-			return new PredicateBuilderddd<>(root, query, builder)
-					.and().eq("name", "1")
-					.andStart()
-						.eq("name", "a")
-						.or()
-						.eq("age", 2)
-					.andEnd()
-					.andStart()
-						.eq("name", "a")
-						.or()
-						.eq("age", 2)
-					.andEnd()
-					.and().eq("title", null)
-					.order().asc("name")
-					.order().desc("age")
+			return PartTreeQueryBuilder.of(root, query, builder)
+					.where()
+//						.and().eq("name", "1")
+						.andStart()
+							.eq("name", "a")
+							.or()
+							.eq("age", 2)
+						.andEnd()
+//						.andStart()
+//							.eq("name", "a")
+//							.or()
+//							.eq("age", 2)
+//						.andEnd()
+//						.andStart()
+//							.eq("name", "a")
+//							.and()
+//							.eq("age", 2)
+//						.andEnd()
+//						.and().eq("title", null)
+					.order()
+						.asc("name")
+						.desc("age")
 					.build();
 			
 		});

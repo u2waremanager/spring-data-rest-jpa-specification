@@ -1,5 +1,6 @@
 package org.springframework.data.rest.webmvc;
 
+import java.io.Serializable;
 import java.util.Optional;
 
 import org.apache.commons.logging.Log;
@@ -9,10 +10,15 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.query.PartTreeQueryBuilder;
 import org.springframework.data.jpa.repository.query.QueryParameters;
+import org.springframework.data.mapping.PersistentEntity;
+import org.springframework.data.rest.core.event.AfterLoadEvent;
 import org.springframework.data.rest.core.event.PartTreeQueryBuilderEvent;
+import org.springframework.data.rest.webmvc.support.BackendId;
 import org.springframework.data.rest.webmvc.support.DefaultedPageable;
+import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
@@ -104,6 +110,9 @@ public class RepositorySpecificationController extends AbstractRepositoryControl
 //			@RequestHeader HttpHeaders headers) throws Exception{
 //		return executeSpecification(resourceInformation, parameters, payload, search, paged, pageable, sort, assembler, headers);
 //	}
+	
+	
+	
 	
 	
 	///////////////////////////////////////////////////////////////////////////////////////

@@ -4,6 +4,7 @@ import java.util.Map;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -35,6 +36,7 @@ public class PartTreeQueryBuilder<T> {
 		this.root = root;
 		this.criteriaQuery = criteriaQuery;
 		this.criteriaBuilder = criteriaBuilder;
+		
 		
 		this.whereBuilder = new WhereBuilder<>(this);
 		this.orderBuilder = new OrderBuilder<>(this);
@@ -131,7 +133,7 @@ public class PartTreeQueryBuilder<T> {
 			return predicateBuilder;
 		}
 		public WhereBuilder<T> andEnd() { 
-			this.state = State.AND_START; 
+			this.state = State.AND_END; 
 			return chain(null);
 		}
 		public PredicateBuilder<T> or() { 
@@ -160,14 +162,17 @@ public class PartTreeQueryBuilder<T> {
 					break;
 				case AND_START: 
 					sub = criteria;
+					logger.info("AND_START " +sub.getAlias());
 					break;
 				case AND_END: 
+					logger.info("AND_END "+sub);
 					if(sub != null ) {
 						where = (where == null) ? sub : builder.getCriteriaBuilder().and(where, sub);
 					}
 					sub = null;
 					break;
 				case OR: 
+					logger.info("OR "+sub);
 					if(sub != null) {
 						sub = builder.getCriteriaBuilder().or(sub, criteria);
 					}else {
@@ -309,6 +314,16 @@ public class PartTreeQueryBuilder<T> {
 		public WhereBuilder<T> notIn(String property) {
 			return part(property+"IsNotIn", builder.getQueryParameters().get(property));
 		}
+
+//		public WhereBuilder<T> function(String name, Class<T> type, Expression<?>... args) {
+//			
+//			Expression<T> p = builder.getCriteriaBuilder().function(name, type, args);
+//			
+//			return part(property+"IsNotIn", builder.getQueryParameters().get(property));
+//		}
+//		
+//		return builder.getWhereBuilder().chain(predicate);
+		
 	}
 
 	
