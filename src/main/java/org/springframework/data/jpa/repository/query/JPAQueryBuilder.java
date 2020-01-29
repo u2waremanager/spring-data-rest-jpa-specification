@@ -1,389 +1,246 @@
 package org.springframework.data.jpa.repository.query;
 
-import java.util.Collection;
-import java.util.Map;
-
-import javax.persistence.EntityManager;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.ObjectUtils;
+import org.springframework.util.ReflectionUtils;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.ComparablePath;
+import com.querydsl.core.types.dsl.PathBuilder;
+import com.querydsl.core.types.dsl.PathBuilderFactory;
+import com.querydsl.core.types.dsl.StringPath;
 
+@SuppressWarnings("unchecked")
 public class JPAQueryBuilder<T> {
 
-	protected static Log logger = LogFactory.getLog(JPAQueryBuilder.class);
+	protected Log logger = LogFactory.getLog(getClass());
 	
-	private OrderBuilder<T> orderBuilder;
-	private WhereBuilder<T> whereBuilder;
+	private Class<T> clazz ;
+	private EntityPath<T> entity;
+	private PathBuilder<T> builder;
 	
-	private QueryParameters<T> queryParameters;
+	public JPAQueryBuilder(Class<T> clazz) {
+		this.clazz = clazz;
+		this.entity = new PathBuilderFactory().create(clazz);
+		this.builder = new PathBuilder<>(entity.getType(), entity.getMetadata());
+	}
 	
-	private JPAQuery<T> query;
-	private JPAQueryPath<T> path;
-	private BooleanBuilder where;
+	public PathBuilder<Object> get(String property) {
+		Field field= ReflectionUtils.findField(clazz, property);
+		if(field == null) {
+			throw new RuntimeException(property + " is not field");
+		}
+    	return builder.get(property);
+    }
+    
+	public <A extends Comparable<?>> ComparablePath<A>  getComparable(String property) {
+		Field field= ReflectionUtils.findField(clazz, property);
+		if(field == null) {
+			throw new RuntimeException(property + " is not field");
+		}
+		if(! ClassUtils.isAssignable(Comparable.class, field.getType())) {
+			throw new RuntimeException(property + " is not "+Comparable.class);
+		}
+		return builder.getComparable(property, (Class<A>)field.getType());
+	}
 	
+	public StringPath getString(String property) {
+		Field field= ReflectionUtils.findField(clazz, property);
+		if(field == null) {
+			throw new RuntimeException(property + " is not field");
+		}
+		return builder.getString(property);
+	}
 
-	public static <X> JPAQueryBuilder<X> of(Class<X> domainClass) {
-		return new JPAQueryBuilder<>(domainClass);
+	
+	
+	
+	
+	
+//  public <A, E> ArrayPath<A, E> getArray(String property) {
+//		Field field= ReflectionUtils.findField(clazz, property);
+//		if(field == null) {
+//			throw new RuntimeException(property + " is not field");
+//		}
+//		Class<A> type = (Class<A>)field.getType();
+//		return builder.getArray(property, type);
+//  }
+	
+//	builder.getArray(property, type)
+//	builder.getBoolean(propertyName)
+//	builder.getCollection(property, type)
+//	builder.getComparable(property, type)
+//	builder.getEnum(property, type)
+//	builder.getList(property, type)
+//	builder.getMap(property, key, value)
+//	builder.getNumber(property, type)
+//	builder.getSimple(property, type)
+//	builder.getString(property)
+//	builder.get(property);
+
+	public EntityPath<T> from() {
+		return entity;
 	}
-	public static <X> JPAQueryBuilder<X> of(Class<X> domainClass, EntityManager em) {
-		return new JPAQueryBuilder<>(domainClass, em);
+	public WhereBuilder<T> where() {
+		return new WhereBuilder<T>(this);
 	}
-	public static <X> JPAQueryBuilder<X> of(Class<X> domainClass, JPAQuery<X> query) {
-		return new JPAQueryBuilder<>(domainClass, query);
+	public OrderBuilder<T> orderBy() {
+		return new OrderBuilder<T>(this);
 	}
 	
-	private JPAQueryBuilder(Class<T> domainClass) {
-		this(domainClass, new JPAQuery<>());
-	}
-	private JPAQueryBuilder(Class<T> domainClass, EntityManager em) {
-		this(domainClass, new JPAQuery<>(em));
-	}
+//	@SuppressWarnings({ "unchecked", "rawtypes" })
+//	public JPAQueryBuilder<T> pageable(Pageable pageable) { 
+//		for (org.springframework.data.domain.Sort.Order order : pageable.getSort()) {
+//			query.orderBy(new OrderSpecifier(order.isAscending() ? Order.ASC : Order.DESC, path.get(order.getProperty())));
+//		}
+//
+//		if (pageable.isUnpaged()) {
+//			return this;
+//		}
+//		query.offset(pageable.getOffset());
+//		query.limit(pageable.getPageSize());
+//		return this;
+//	}
+//	
 	
-	private JPAQueryBuilder(Class<T> domainClass, JPAQuery<T> query) {
-		this.path = new JPAQueryPath<>(domainClass);
-		this.where = new BooleanBuilder();
-		this.whereBuilder = new WhereBuilder<>(this, where);
-		this.orderBuilder = new OrderBuilder<>(this);
-		this.query = query;
-		this.query.from(path.get());
-	}
 	
-	private JPAQuery<T> getJPAQuery() {
-		return query;
-	}
-	private JPAQueryPath<T> getJPAQueryPath() {
-		return path;
-	}
-	
-	private WhereBuilder<T> getWhereBuilder() {
-		return whereBuilder;
-	}
-	private OrderBuilder<T> getOrderBuilder() {
-		return orderBuilder;
-	}
-	
-	private QueryParameters<T> getQueryParameters() {
-		return queryParameters;
-	}
-	public void setQueryParameters(QueryParameters<T> queryParameters) {
-		this.queryParameters = queryParameters;
-	}
-	public void setQueryParameters(T queryParameters) {
-		this.queryParameters = new QueryParameters<>(queryParameters);
-	}
-	public void setQueryParameters(Object... queryParameters) {
-		this.queryParameters = new QueryParameters<>(queryParameters);
-	}
-	public void setQueryParameters(Map<String,?> queryParameters) {
-		this.queryParameters = new QueryParameters<>(queryParameters);
-	}
-	
-	/////////////////////////////////////////////////////
-	//
-	//////////////////////////////////////////////////////
-	public JPAQueryBuilder<T> distinct() {
-		this.query.distinct();
-		return this;
-	}
-	public JPAQueryBuilder<T> join(String property) {
-		this.query.leftJoin(path.get(property)).fetchJoin();
-		return this;
-	}
-	public WhereBuilder<T> where() { 
-		return whereBuilder; 
-	}
-	public WhereBuilder<T> where(Pageable pageable) { 
-		pageable(pageable);
-		return whereBuilder; 
-	}
-	
-	public OrderBuilder<T> order() { 
-		return orderBuilder; 
-	}
-	public OrderBuilder<T> order(Pageable pageable) { 
-		pageable(pageable);
-		return orderBuilder; 
-	}
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public JPAQueryBuilder<T> pageable(Pageable pageable) { 
-		for (org.springframework.data.domain.Sort.Order order : pageable.getSort()) {
-			query.orderBy(new OrderSpecifier(order.isAscending() ? Order.ASC : Order.DESC, path.get(order.getProperty())));
+	public static class WhereBuilder<T> {
+		
+		private BooleanBuilder root = new BooleanBuilder();
+		private BooleanBuilder builder ;
+		private String state ;
+		private JPAQueryBuilder<T> jpaQueryPath ;
+		
+		private WhereBuilder(JPAQueryBuilder<T> jpaQueryPath) {
+			this.jpaQueryPath = jpaQueryPath;
+			this.root = new BooleanBuilder();
+		}
+		
+		public Predicate build() {
+			return root;
 		}
 
-		if (pageable.isUnpaged()) {
+		public PredicateBuilder<T> and() {
+			this.state = "and";
+			return new PredicateBuilder<>(jpaQueryPath, this);
+		}
+		public PredicateBuilder<T> or() {
+			this.state = "or";
+			return new PredicateBuilder<>(jpaQueryPath, this);
+		}
+
+		public PredicateBuilder<T> orStart() {
+			if(this.builder != null) throw new RuntimeException("orStart duplicated.");
+			this.state = "or";
+			this.builder = new BooleanBuilder();
+			return new PredicateBuilder<>(jpaQueryPath, this);
+		}
+		public WhereBuilder<T> orEnd() {
+			if(this.builder == null) throw new RuntimeException("orStart is not opend.");
+			this.root.or(this.builder);
+			this.builder = null;
 			return this;
 		}
-		query.offset(pageable.getOffset());
-		query.limit(pageable.getPageSize());
-		return this;
-	}
-	
-	
-	////////////////////////////////////////////
-	//
-	////////////////////////////////////////////
-	public JPAQuery<T> build() { 
-		query.where(where);
-		return query;
-	}
-	public JPAQuery<T> build(EntityManager em) { 
-		query.where(where);
-		return query.clone(em);
-	}
-	
-	
-	////////////////////////////////////////////
-	//
-	////////////////////////////////////////////
-	public static class WhereBuilder<T>{
 		
-		private JPAQueryBuilder<T> builder;
-		private PredicateBuilder<T> predicateBuilder;
-		
-		private State state;
-		private enum State{ AND, AND_START, AND_END, OR, OR_START, OR_END }
-
-		private BooleanBuilder where;
-		private BooleanBuilder sub;
-		
-		public WhereBuilder(JPAQueryBuilder<T> builder, BooleanBuilder where) {
-			this.builder = builder;
-			this.predicateBuilder = new PredicateBuilder<>(builder);
-			this.where = where;
+		public PredicateBuilder<T> andStart() {
+			if(this.builder != null) throw new RuntimeException("andStart duplicated.");
+			this.state = "and";
+			this.builder = new BooleanBuilder();
+			return new PredicateBuilder<>(jpaQueryPath, this);
 		}
-		
-		//////////////////////////////////////////
-		//
-		//////////////////////////////////////////
-		public JPAQueryBuilder<T> pageable(Pageable pageable) { 
-			return builder.pageable(pageable);
-		}
-		
-		public JPAQuery<T> build() { 
-			return builder.build();
-		}
-		public JPAQuery<T> build(EntityManager em) { 
-			return builder.build(em);
-		}
-		
-		public OrderBuilder<T> order() { 
-			return builder.getOrderBuilder(); 
-		}
-		
-		public PredicateBuilder<T> and() { 
-			this.state = State.AND; 
-			return predicateBuilder;
-		}
-		public PredicateBuilder<T> andStart() { 
-			this.state = State.AND_START; 
-			return predicateBuilder;
-		}
-		public WhereBuilder<T> andEnd() { 
-			this.state = State.AND_END; 
-			return chain(null);
-		}
-		public PredicateBuilder<T> or() { 
-			this.state = State.OR; 
-			return predicateBuilder;
-		}
-		public PredicateBuilder<T> orStart() { 
-			this.state = State.OR_START; 
-			return predicateBuilder;
-		}
-		public WhereBuilder<T> orEnd() { 
-			this.state = State.OR_END; 
-			return chain(null);
-		}
-
-		
-		private WhereBuilder<T> chain(Predicate criteria) { 
-			switch (this.state) {
-				case AND:       
-					if(sub != null) sub.and(criteria); else where.and(criteria); 
-					break;
-				case AND_START: 
-					if(sub == null) sub = new BooleanBuilder().and(criteria);
-					break;
-				case AND_END:   
-					if(sub != null) where.and(sub); sub = null;
-					break;
-				case OR:        
-					if(sub != null) sub.or(criteria); else where.or(criteria);
-					break;
-				case OR_START:  
-					if(sub == null) sub = new BooleanBuilder().and(criteria);
-					break;
-				case OR_END:    
-					if(sub != null) where.or(sub); sub = null;
-					break;
-			}
+		public WhereBuilder<T> andEnd() {
+			if(this.builder == null) throw new RuntimeException("andStart is not opend.");
+			this.root.and(this.builder);
+			this.builder = null;
 			return this;
 		}
-	}
-	
-	@SuppressWarnings({"unchecked","rawtypes"})
-	public static class PredicateBuilder<T>{
 		
-		private JPAQueryBuilder<T> builder;
-		
-		public PredicateBuilder(JPAQueryBuilder<T> builder) {
-			this.builder = builder;
-		}
-		
-		public WhereBuilder<T> isNull(String property){
-			return builder.getWhereBuilder().chain(builder.getJPAQueryPath().get(property).isNull());
-		}
-		public WhereBuilder<T> isNotNull(String property){
-			return builder.getWhereBuilder().chain(builder.getJPAQueryPath().get(property).isNotNull());
-		}
-		public WhereBuilder<T> eq(String property, Object value){
-			if(value == null) return builder.getWhereBuilder();
-			return builder.getWhereBuilder().chain(builder.getJPAQueryPath().get(property).eq(value));
-		}
-		public WhereBuilder<T> notEq(String property, Object value){
-			if(value == null) return builder.getWhereBuilder();
-			return builder.getWhereBuilder().chain(builder.getJPAQueryPath().get(property).ne(value));
-		}
-		public WhereBuilder<T> like(String property, Object value){
-			if(value == null) return builder.getWhereBuilder();
-			return builder.getWhereBuilder().chain(builder.getJPAQueryPath().getString(property).toLowerCase().contains(value.toString().toLowerCase()));
-		}
-		public WhereBuilder<T> notLike(String property, Object value){
-			if(value == null) return builder.getWhereBuilder();
-			return builder.getWhereBuilder().chain(builder.getJPAQueryPath().getString(property).notLike(value.toString()));
-		}
-		public <A extends Comparable<?>> WhereBuilder<T> gt(String property, A value) {
-			if(value == null) return builder.getWhereBuilder();
-			return builder.getWhereBuilder().chain(builder.getJPAQueryPath().getComparable(property).gt(value));
-		}
-		public <A extends Comparable<?>> WhereBuilder<T> gte(String property, A value) {
-			if(value == null) return builder.getWhereBuilder();
-			return builder.getWhereBuilder().chain(builder.getJPAQueryPath().getComparable(property).goe(value));
-		}
-		public <A extends Comparable<?>> WhereBuilder<T> lt(String property, A value) {
-			if(value == null) return builder.getWhereBuilder();
-			return builder.getWhereBuilder().chain(builder.getJPAQueryPath().getComparable(property).lt(value));
-		}
-		public <A extends Comparable<?>> WhereBuilder<T> lte(String property, A value) {
-			if(value == null) return builder.getWhereBuilder();
-			return builder.getWhereBuilder().chain(builder.getJPAQueryPath().getComparable(property).loe(value));
-		}
-		public <A extends Comparable<?>> WhereBuilder<T> between(String property, Object value) {
-			if(value == null) return builder.getWhereBuilder();
-			if(ClassUtils.isAssignableValue(Collection.class, value)) {
-				A from = (A)((Collection)value).iterator().next();
-				A to = (A)((Collection)value).iterator().next();
-				return builder.getWhereBuilder().chain(builder.getJPAQueryPath().getComparable(property).between(from, to));
-				
-			}else if(ObjectUtils.isArray(value)){
-				Comparable[] objects = (Comparable[])value;
-				A from = (A)objects[0];
-				A to = (A)objects[0];
-				return builder.getWhereBuilder().chain(builder.getJPAQueryPath().getComparable(property).between(from, to));
+		private WhereBuilder<T> chain(BooleanExpression expression) {
+			if(expression == null) return this;
+			
+			if(this.builder == null) {
+				if("and".equals(state)) {
+					root.and(expression);
+					
+				}else if("or".equals(state)) {
+					root.or(expression);
+				}
 			}else {
-				return builder.getWhereBuilder();
+				if("and".equals(state)) {
+					builder.and(expression);
+					
+				}else if("or".equals(state)) {
+					builder.or(expression);
+				}
+			}
+			return this;
+		}
+		
+		public static class PredicateBuilder<T> {
+			
+			private JPAQueryBuilder<T> jpaQueryPath;
+			private WhereBuilder<T> whereBuilder;
+			
+			private PredicateBuilder(JPAQueryBuilder<T> jpaQueryPath, WhereBuilder<T> whereBuilder) {
+				this.jpaQueryPath = jpaQueryPath;
+				this.whereBuilder = whereBuilder;
+			}
+			
+			public <O> WhereBuilder<T> eq(String name, O value) {
+				if(value == null) return whereBuilder.chain(null);
+				return whereBuilder.chain(jpaQueryPath.get(name).eq(value));
 			}
 		}
-		public WhereBuilder<T> in(String property, Object value) {
-			if(value == null) return builder.getWhereBuilder();
-			if(ClassUtils.isAssignableValue(Collection.class, value)) {
-				return builder.getWhereBuilder().chain(builder.getJPAQueryPath().get(property).in((Collection)value));
-			}else if(ObjectUtils.isArray(value)){
-				return builder.getWhereBuilder().chain(builder.getJPAQueryPath().get(property).in((Object[])value));
-			}else {
-				return builder.getWhereBuilder().chain(builder.getJPAQueryPath().get(property).in(value));
-			}
-		}
-		public WhereBuilder<T> notIn(String property, Object value) {
-			if(value == null) return builder.getWhereBuilder();
-			if(ClassUtils.isAssignableValue(Collection.class, value)) {
-				return builder.getWhereBuilder().chain(builder.getJPAQueryPath().get(property).notIn((Collection)value));
-			}else if(ObjectUtils.isArray(value)){
-				return builder.getWhereBuilder().chain(builder.getJPAQueryPath().get(property).notIn((Object[])value));
-			}else {
-				return builder.getWhereBuilder().chain(builder.getJPAQueryPath().get(property).notIn(value));
-			}
-		}
 		
-		
-		
-		
-		public WhereBuilder<T> eq(String property){
-			return eq(property, builder.getQueryParameters().get(property));
-		}
-		public WhereBuilder<T> notEq(String property){
-			return notEq(property, builder.getQueryParameters().get(property));
-		}
-		public WhereBuilder<T> like(String property){
-			return like(property, builder.getQueryParameters().get(property));
-		}
-		public WhereBuilder<T> notLike(String property){
-			return notLike(property, builder.getQueryParameters().get(property));
-		}
-		public WhereBuilder<T> between(String property) {
-			return between(property, builder.getQueryParameters().get(property));
-		}
-		public <A extends Comparable<?>> WhereBuilder<T> gt(String property) {
-			return gt(property, (A)builder.getQueryParameters().get(property));
-		}
-		public <A extends Comparable<?>> WhereBuilder<T> gte(String property) {
-			return gte(property, (A)builder.getQueryParameters().get(property));
-		}
-		public <A extends Comparable<?>> WhereBuilder<T> lt(String property) {
-			return lt(property, (A)builder.getQueryParameters().get(property));
-		}
-		public <A extends Comparable<?>> WhereBuilder<T> lte(String property) {
-			return lte(property, (A)builder.getQueryParameters().get(property));
-		}
-		public WhereBuilder<T> in(String property) {
-			return in(property, builder.getQueryParameters().get(property));
-		}
-		public WhereBuilder<T> notIn(String property) {
-			return notIn(property, builder.getQueryParameters().get(property));
-		}		
 	}
 	
-	////////////////////////////////////////////
-	//
-	////////////////////////////////////////////
-	public static class OrderBuilder<T>{
 
-		private JPAQueryBuilder<T> builder;
+	
+	
+	@SuppressWarnings("rawtypes")
+	public static class OrderBuilder<T> {
+		private JPAQueryBuilder<T> jpaQueryPath ;
+		private List<OrderSpecifier> orderSpecifiers = new ArrayList<>();
 		
-		private OrderBuilder(JPAQueryBuilder<T> builder) {
-			this.builder = builder;
+		private OrderBuilder(JPAQueryBuilder<T> jpaQueryPath) {
+			this.jpaQueryPath = jpaQueryPath;
 		}
 		
-		@SuppressWarnings({ "unchecked", "rawtypes" })
-		public OrderBuilder<T> asc(String property) {
-			builder.getJPAQuery().orderBy(new OrderSpecifier(Order.ASC, builder.getJPAQueryPath().get(property)));
+		public OrderBuilder<T> order(String property, Order order) {
+			orderSpecifiers.add(new OrderSpecifier(order, jpaQueryPath.getComparable(property)));
 			return this;
 		}
 		
-		@SuppressWarnings({ "unchecked", "rawtypes" })
-		public OrderBuilder<T> desc(String property) {
-			builder.getJPAQuery().orderBy(new OrderSpecifier(Order.DESC, builder.getJPAQueryPath().get(property)));
+		public OrderBuilder<T> order(Sort sort) {
+			for (org.springframework.data.domain.Sort.Order o : sort) {
+				orderSpecifiers.add(new OrderSpecifier(o.isAscending() ? Order.ASC : Order.DESC, jpaQueryPath.getComparable(o.getProperty())));
+			}
 			return this;
 		}
-		
-		public JPAQueryBuilder<T> pageable(Pageable pageable) { 
-			return builder.pageable(pageable);
-		}
-		public JPAQuery<T> build() { 
-			return builder.build();
-		}
-		public JPAQuery<T> build(EntityManager em) { 
-			return builder.build(em);
+
+		public OrderSpecifier[] build() {
+			OrderSpecifier[] r = new OrderSpecifier[orderSpecifiers.size()];
+			orderSpecifiers.toArray(r);
+			return r;
 		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
 }

@@ -13,7 +13,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.data.jpa.repository.query.JPAQueryBuilder;
+import org.springframework.data.jpa.repository.query.JPAQueryLagycyBuilder;
 import org.springframework.data.jpa.repository.query.PartTreeQueryBuilder;
 import org.springframework.data.rest.core.annotation.HandleHibernatePostLoad;
 import org.springframework.data.rest.core.annotation.HandleHibernatePreLoad;
@@ -105,7 +105,7 @@ public class RepositoryRestEventHandlerInvoker implements ApplicationListener<Re
 			Class<?> srcType = src.getClass();
 			if(src instanceof PartTreeQueryBuilder) {
 				srcType = ((PartTreeQueryBuilderEvent)event).getEntityType();
-			}else if(src instanceof JPAQueryBuilder) {
+			}else if(src instanceof JPAQueryLagycyBuilder) {
 				srcType = ((JPAQueryBuilderEvent)event).getEntityType();
 			}
 			

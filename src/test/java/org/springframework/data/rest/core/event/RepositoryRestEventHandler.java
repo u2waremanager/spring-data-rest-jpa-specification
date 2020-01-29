@@ -2,7 +2,7 @@ package org.springframework.data.rest.core.event;
 
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.GenericTypeResolver;
-import org.springframework.data.jpa.repository.query.JPAQueryBuilder;
+import org.springframework.data.jpa.repository.query.JPAQueryLagycyBuilder;
 import org.springframework.data.jpa.repository.query.PartTreeQueryBuilder;
 
 //AbstractRepositoryEventListener
@@ -55,7 +55,7 @@ public abstract class RepositoryRestEventHandler<T> implements ApplicationListen
 			handleHibernatePostLoad((T) event.getSource());
 			
 		}else if (event instanceof JPAQueryBuilderEvent) {
-			handleQueryBuilder((JPAQueryBuilder<T>) event.getSource());
+			handleQueryBuilder((JPAQueryLagycyBuilder<T>) event.getSource());
 		
 		}else if (event instanceof PartTreeQueryBuilderEvent) {
 			handleQueryBuilder((PartTreeQueryBuilder<T>) event.getSource());
@@ -79,7 +79,7 @@ public abstract class RepositoryRestEventHandler<T> implements ApplicationListen
 
 	protected void handleHibernatePostLoad(T entity){}
 	
-	protected void handleQueryBuilder(JPAQueryBuilder<T> builder) {}
+	protected void handleQueryBuilder(JPAQueryLagycyBuilder<T> builder) {}
 	
 	protected void handleQueryBuilder(PartTreeQueryBuilder<T> builder) {}
 	

@@ -2,8 +2,7 @@ package org.springframework.data.rest.webmvc.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.rest.core.event.RepositoryRestEventConfigure;
-import org.springframework.data.rest.core.event.RepositoryRestEventHandlerInvoker;
+import org.springframework.data.rest.core.event.AnnotatedReadEntityEventHandlerInvoker;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
 
 @RepositoryRestController
@@ -11,14 +10,19 @@ import org.springframework.data.rest.webmvc.RepositoryRestController;
 public class RepositoryRestEventConfiguration {
 
 
+//	@Bean 
+//	public RepositoryRestEventConfigure repositoryRestEventConfigure() {
+//		return new RepositoryRestEventConfigure();
+//	}
+//	
+//	@Bean 
+//	public RepositoryRestEventHandlerInvoker repositoryRestEventHandlerInvoker() {
+//		return new RepositoryRestEventHandlerInvoker();
+//	}
+
 	@Bean 
-	public RepositoryRestEventConfigure repositoryRestEventConfigure() {
-		return new RepositoryRestEventConfigure();
-	}
-	
-	@Bean 
-	public RepositoryRestEventHandlerInvoker repositoryRestEventHandlerInvoker() {
-		return new RepositoryRestEventHandlerInvoker();
+	public AnnotatedReadEntityEventHandlerInvoker annotatedReadEntityEventHandlerInvoker() {
+		return new AnnotatedReadEntityEventHandlerInvoker();
 	}
 	
 }

@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.jpa.repository.query.JPAQueryBuilder;
+import org.springframework.data.jpa.repository.query.JPAQueryLagycyBuilder;
 import org.springframework.data.jpa.repository.query.PartTreeQueryBuilder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -97,7 +97,7 @@ public class Application4Tests {
 		logger.info("-------------------------------------------");
 		logger.info("-------------ZZZZZ-------------------------");
 		logger.info("-------------------------------------------");
-		JPAQuery<DomainSample> query = JPAQueryBuilder.of(DomainSample.class, em)
+		JPAQuery<DomainSample> query = JPAQueryLagycyBuilder.of(DomainSample.class, em)
 			.join("one")
 //			.join("many")
 			.where()

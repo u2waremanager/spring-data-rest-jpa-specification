@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.repository.query.JPAQueryPath;
+import org.springframework.data.jpa.repository.query.JPAQueryBuilder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -143,7 +143,7 @@ public class Application1Tests {
 
 		
 		JPAQuery<?> query = new JPAQuery<>();
-		JPAQueryPath path1 = new JPAQueryPath(DomainSample.class);	
+		JPAQueryBuilder path1 = new JPAQueryBuilder(DomainSample.class);	
 //		JPAQueryPath path2 = new JPAQueryPath(DomainSampleOne.class);	
 		//where(path1.getArray("types", Integer.class).in(1))
 		

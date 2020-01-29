@@ -11,7 +11,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.jpa.repository.query.JPAQueryBuilder;
+import org.springframework.data.jpa.repository.query.JPAQueryLagycyBuilder;
 import org.springframework.data.jpa.repository.query.PartTreeQueryBuilder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -89,15 +89,15 @@ public class Application2Tests {
 		
 		
 		logger.info("----222---------------------------------------");
-		JPAQueryBuilder.of(DomainSampleMany.class, em).build().fetch();
+		JPAQueryLagycyBuilder.of(DomainSampleMany.class, em).build().fetch();
 		logger.info("-------------------------------------------");
-		JPAQueryBuilder.of(DomainSampleMany.class, em).where().build().fetch();
+		JPAQueryLagycyBuilder.of(DomainSampleMany.class, em).where().build().fetch();
 		logger.info("-------------------------------------------");
-		JPAQueryBuilder.of(DomainSampleMany.class, em).where().and().eq("name", "a").build().fetch();
+		JPAQueryLagycyBuilder.of(DomainSampleMany.class, em).where().and().eq("name", "a").build().fetch();
 		logger.info("-------------------------------------------");
-		JPAQueryBuilder.of(DomainSampleMany.class, em).order().build().fetch();
+		JPAQueryLagycyBuilder.of(DomainSampleMany.class, em).order().build().fetch();
 		logger.info("-------------------------------------------");
-		JPAQueryBuilder.of(DomainSampleMany.class, em).order().desc("name").build().fetch();
+		JPAQueryLagycyBuilder.of(DomainSampleMany.class, em).order().desc("name").build().fetch();
 	}
 }
 
