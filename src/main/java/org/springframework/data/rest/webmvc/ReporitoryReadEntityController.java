@@ -1,18 +1,39 @@
 package org.springframework.data.rest.webmvc;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.querydsl.binding.QuerydslPredicate;
+import org.springframework.data.rest.webmvc.support.DefaultedPageable;
+import org.springframework.hateoas.Resources;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+@RepositoryRestController
 public class ReporitoryReadEntityController {
 
 	
-//	public ResponseEntity 
-//	
-//	
-//	@ResponseBody
-//	@RequestMapping(value = BASE_MAPPING, method = RequestMethod.GET)
-//	public Resources<?> getCollectionResource(@QuerydslPredicate RootResourceInformation resourceInformation,
-//			DefaultedPageable pageable, Sort sort, PersistentEntityResourceAssembler assembler)
-//			throws ResourceNotFoundException, HttpRequestMethodNotSupportedException {
-//
-//	}
+	protected Log logger = LogFactory.getLog(getClass());
+
+	
+	
+	@ResponseBody
+	@RequestMapping(value = "/{repository}", method = RequestMethod.GET, headers = "u2ware=u2ware")
+	public Resources<?> getCollectionResource(@QuerydslPredicate RootResourceInformation resourceInformation,
+			PersistentEntityResource payload, DefaultedPageable pageable, Sort sort, PersistentEntityResourceAssembler assembler)
+			throws ResourceNotFoundException, HttpRequestMethodNotSupportedException {
+
+		logger.info("11111111111111111111111111111111111111111");
+		logger.info("11111111111111111111111111111111111111111");
+		logger.info("11111111111111111111111111111111111111111");
+		logger.info("11111111111111111111111111111111111111111");
+		logger.info("11111111111111111111111111111111111111111");
+		
+		
+		return null;
+	}
 //	
 //	@ResponseBody
 //	@RequestMapping(value = BASE_MAPPING + "/{search}", method = RequestMethod.GET)

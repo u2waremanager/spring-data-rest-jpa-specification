@@ -105,6 +105,8 @@ public class ApplicationTests {
 		
 		
 		logger.info("8------------------------");
-		//fooRepository.findAll(new PartTreeSpecification<Foo>("findByName", "22"));
+
+		
+		$.GET("/foos").H("u2ware", "u2ware").is2xx();
 	}
 }

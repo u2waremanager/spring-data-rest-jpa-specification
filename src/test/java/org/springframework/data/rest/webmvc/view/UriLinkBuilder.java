@@ -16,7 +16,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
-@RepositoryRestController
+//@RepositoryRestController
 public class UriLinkBuilder implements InitializingBean{
 
 	private @Autowired RepositoryRestConfiguration config;

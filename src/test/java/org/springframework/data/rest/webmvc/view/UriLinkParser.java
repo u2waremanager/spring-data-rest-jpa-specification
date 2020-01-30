@@ -16,7 +16,7 @@ import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-@RepositoryRestController
+//@RepositoryRestController
 public class UriLinkParser implements InitializingBean{
 
 	private @Autowired PersistentEntities entities;

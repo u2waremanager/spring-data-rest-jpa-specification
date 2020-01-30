@@ -90,11 +90,11 @@ public class JPAQueryLagycyBuilder<T> {
 	/////////////////////////////////////////////////////
 	//
 	//////////////////////////////////////////////////////
-	public JPAQueryBuilder<T> distinct() {
+	public JPAQueryLagycyBuilder<T> distinct() {
 		this.query.distinct();
 		return this;
 	}
-	public JPAQueryBuilder<T> join(String property) {
+	public JPAQueryLagycyBuilder<T> join(String property) {
 		this.query.leftJoin(path.get(property)).fetchJoin();
 		return this;
 	}
@@ -147,7 +147,7 @@ public class JPAQueryLagycyBuilder<T> {
 	////////////////////////////////////////////
 	public static class WhereBuilder<T>{
 		
-		private JPAQueryBuilder<T> builder;
+		private JPAQueryLagycyBuilder<T> builder;
 		private PredicateBuilder<T> predicateBuilder;
 		
 		private State state;
@@ -156,7 +156,7 @@ public class JPAQueryLagycyBuilder<T> {
 		private BooleanBuilder where;
 		private BooleanBuilder sub;
 		
-		public WhereBuilder(JPAQueryBuilder<T> builder, BooleanBuilder where) {
+		public WhereBuilder(JPAQueryLagycyBuilder<T> builder, BooleanBuilder where) {
 			this.builder = builder;
 			this.predicateBuilder = new PredicateBuilder<>(builder);
 			this.where = where;
@@ -165,7 +165,7 @@ public class JPAQueryLagycyBuilder<T> {
 		//////////////////////////////////////////
 		//
 		//////////////////////////////////////////
-		public JPAQueryBuilder<T> pageable(Pageable pageable) { 
+		public JPAQueryLagycyBuilder<T> pageable(Pageable pageable) { 
 			return builder.pageable(pageable);
 		}
 		
