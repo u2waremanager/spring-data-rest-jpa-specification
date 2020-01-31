@@ -222,7 +222,7 @@ public class AbstractRepositoryController {
 		return result;
 	}
 
-	private List<Link> getCollectionResourceLinks(RootResourceInformation resourceInformation,
+	protected List<Link> getCollectionResourceLinks(RootResourceInformation resourceInformation,
 			DefaultedPageable pageable) {
 
 		ResourceMetadata metadata = resourceInformation.getResourceMetadata();

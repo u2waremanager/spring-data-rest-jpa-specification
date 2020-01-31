@@ -19,7 +19,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 
 public class JPAQueryLagycyBuilder<T> {
 
-	protected static Log logger = LogFactory.getLog(JPAQueryBuilder.class);
+	protected static Log logger = LogFactory.getLog(JPAQueryBuilderFactory.class);
 	
 	private OrderBuilder<T> orderBuilder;
 	private WhereBuilder<T> whereBuilder;
@@ -27,7 +27,7 @@ public class JPAQueryLagycyBuilder<T> {
 	private QueryParameters<T> queryParameters;
 	
 	private JPAQuery<T> query;
-	private JPAQueryBuilder<T> path;
+	private JPAQueryBuilderFactory<T> path;
 	private BooleanBuilder where;
 	
 
@@ -49,7 +49,7 @@ public class JPAQueryLagycyBuilder<T> {
 	}
 	
 	private JPAQueryLagycyBuilder(Class<T> domainClass, JPAQuery<T> query) {
-		this.path = new JPAQueryBuilder<>(domainClass);
+		this.path = new JPAQueryBuilderFactory<>(domainClass);
 		this.where = new BooleanBuilder();
 		this.whereBuilder = new WhereBuilder<>(this, where);
 		this.orderBuilder = new OrderBuilder<>(this);
@@ -60,7 +60,7 @@ public class JPAQueryLagycyBuilder<T> {
 	private JPAQuery<T> getJPAQuery() {
 		return query;
 	}
-	private JPAQueryBuilder<T> getJPAQueryPath() {
+	private JPAQueryBuilderFactory<T> getJPAQueryPath() {
 		return path;
 	}
 	
@@ -115,7 +115,7 @@ public class JPAQueryLagycyBuilder<T> {
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public JPAQueryBuilder<T> pageable(Pageable pageable) { 
+	public JPAQueryBuilderFactory<T> pageable(Pageable pageable) { 
 		for (org.springframework.data.domain.Sort.Order order : pageable.getSort()) {
 			query.orderBy(new OrderSpecifier(order.isAscending() ? Order.ASC : Order.DESC, path.get(order.getProperty())));
 		}
@@ -234,9 +234,9 @@ public class JPAQueryLagycyBuilder<T> {
 	@SuppressWarnings({"unchecked","rawtypes"})
 	public static class PredicateBuilder<T>{
 		
-		private JPAQueryBuilder<T> builder;
+		private JPAQueryBuilderFactory<T> builder;
 		
-		public PredicateBuilder(JPAQueryBuilder<T> builder) {
+		public PredicateBuilder(JPAQueryBuilderFactory<T> builder) {
 			this.builder = builder;
 		}
 		
@@ -358,9 +358,9 @@ public class JPAQueryLagycyBuilder<T> {
 	////////////////////////////////////////////
 	public static class OrderBuilder<T>{
 
-		private JPAQueryBuilder<T> builder;
+		private JPAQueryBuilderFactory<T> builder;
 		
-		private OrderBuilder(JPAQueryBuilder<T> builder) {
+		private OrderBuilder(JPAQueryBuilderFactory<T> builder) {
 			this.builder = builder;
 		}
 		
@@ -376,7 +376,7 @@ public class JPAQueryLagycyBuilder<T> {
 			return this;
 		}
 		
-		public JPAQueryBuilder<T> pageable(Pageable pageable) { 
+		public JPAQueryBuilderFactory<T> pageable(Pageable pageable) { 
 			return builder.pageable(pageable);
 		}
 		public JPAQuery<T> build() { 
