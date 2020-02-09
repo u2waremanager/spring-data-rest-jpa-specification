@@ -37,6 +37,8 @@ public @Data class Foo {
 		this.age = age;
 	}
 	
+	
+	
 	private @Transient @JsonProperty(access = Access.WRITE_ONLY) URL url;
 	private @Transient @JsonProperty(access = Access.WRITE_ONLY) @DateTimeFormat(pattern = "yyyy-MM-dd") Date dateTime;
 }
