@@ -11,6 +11,9 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
 import lombok.Data;
 
 @Entity
@@ -28,10 +31,10 @@ public @Data class Foo {
 	
 	private Integer age;
 
-	@Transient
+	@Transient @JsonProperty(access = Access.WRITE_ONLY)
 	private String _name;
 
-	@Transient
+	@Transient @JsonProperty(access = Access.WRITE_ONLY)
 	private Integer _age;
 	
 	public Foo() {
@@ -40,9 +43,9 @@ public @Data class Foo {
 	public Foo(UUID id) {
 		this.id = id;
 	}
-	public Foo(String name, Integer age, String sub) {
+	public Foo(String name, Integer age, String title) {
 		this.name = name;
 		this.age = age;
-		this.title = sub;
+		this.title = title;
 	}
 }

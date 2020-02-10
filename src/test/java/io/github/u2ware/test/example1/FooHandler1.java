@@ -24,7 +24,7 @@ public class FooHandler1 extends AbstractRepositoryReadEventListener<Foo>{
 		@SuppressWarnings("unchecked")
 		JPAQuery<Foo> q = (JPAQuery<Foo>)query;
 		
-		JPAQueryBuilder.of(q).from(Foo.class).where().and().eq("name", foo.get_name()).build();		
+		JPAQueryBuilder.of(q).from(Foo.class).where().and().eq("name", foo.get_name());//.build();		
 	}
 	
 	

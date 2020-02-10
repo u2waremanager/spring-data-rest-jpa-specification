@@ -11,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.query.PartTreeSpecification;
 import org.springframework.data.jpa.repository.query.SpecificationBuffer;
 import org.springframework.data.jpa.repository.support.Querydsl;
 import org.springframework.data.mapping.PersistentEntity;
@@ -30,6 +31,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -94,6 +96,7 @@ public class ReporitoryReadEntityController extends AbstractRepositoryController
 	@ResponseBody
 	@RequestMapping(value = "/{repository}", method = RequestMethod.GET, headers = "read=specification")
 	public <T> Resources<?> getReadCollectionResource1(@QuerydslPredicate RootResourceInformation resourceInformation,
+			@RequestHeader(name = "partTree", required = false) String partTree,
 			@RequestParam(name = "unpaged", required = false) boolean unpaged,
 			PersistentEntityResource payload, DefaultedPageable pageable, Sort sort, PersistentEntityResourceAssembler assembler)
 			throws ResourceNotFoundException, HttpRequestMethodNotSupportedException {
@@ -116,10 +119,12 @@ public class ReporitoryReadEntityController extends AbstractRepositoryController
 		JpaSpecificationExecutor executor = getRepositoryFor(resourceInformation, JpaSpecificationExecutor.class);
 		logger.info("executor: " + executor);		
 		
-//		Specification specification = Specification.where((root, query, builder) -> {return null;});		
-		
-		Specification specification = new SpecificationBuffer();
-		
+		Specification specification = null;
+		if(StringUtils.hasText(partTree)) {
+			specification = new PartTreeSpecification(partTree, payload.getContent());
+		}else {
+			specification = new SpecificationBuffer();
+		}
 		//....................
 		publisher.publishEvent(new BeforeReadEvent(payload.getContent(), specification));
 		//...................

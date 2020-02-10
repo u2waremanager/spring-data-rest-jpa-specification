@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.repository.query.PartTreePredicate;
 import org.springframework.data.jpa.repository.query.PartTreeSpecification;
 import org.springframework.data.jpa.repository.query.PredicateBuilder;
+import org.springframework.data.jpa.repository.query.SpecificationBuffer;
 import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.PartTree;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -31,7 +32,7 @@ import io.github.u2ware.test.ApplicationMockMvc;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class ApplicationTests {
+public class Application1Tests {
 
 	protected Log logger = LogFactory.getLog(getClass());
 
@@ -58,7 +59,21 @@ public class ApplicationTests {
 		repository.save(new Foo("f", 3, "2"));		
 	}
 
-//	@Test
+	
+	
+	@Test
+	public void specificationBufferTests() throws Exception{
+	
+		SpecificationBuffer<Foo> spec = new SpecificationBuffer<>();
+		spec.and((r, q, b) -> {return PredicateBuilder.of(r,q,b).where().and().eq("name", "a").build();});		
+		spec.or((r, q, b) -> {return PredicateBuilder.of(r,q,b).where().and().eq("age", 1).build();});		
+		List<Foo> foos = repository.findAll(spec);
+		
+		Assert.assertEquals(2, foos.size());
+	}
+	
+	
+	@Test
 	public void criteriaBuilderTests() throws Exception{
 
 		List<Foo> foos1 = repository.findAll((root, query, builder)->{
@@ -78,7 +93,7 @@ public class ApplicationTests {
 			
 			Predicate p1 = builder.equal(title, "1");
 			Predicate p2 = builder.equal(name, "a");
-			Predicate p3 = builder.equal(age, "2");
+			Predicate p3 = builder.equal(age, 1);
 
 //			Predicate r1 = builder.and( p1, builder.or(  p2, p3 ) ); //->2
 //			Predicate r2 = builder.or( p1, builder.and( p2, p3 ) ) ; //->3
@@ -94,7 +109,7 @@ public class ApplicationTests {
 	}
 	
 	
-//	@Test
+	@Test
 	public void partTreePredicateBuilderTest() throws Exception{
 		
 		repository.findAll((root, query, builder)->{
@@ -139,7 +154,7 @@ public class ApplicationTests {
 		});
 	}
 	
-//	@Test
+	@Test
 	public void partTreeSpecificationTests() throws Exception{
 		
 		//////////////////////////////////////////////////////////////////////////
@@ -175,9 +190,7 @@ public class ApplicationTests {
 		///////////////////////////////////////////////////
 		//
 		////////////////////////////////////////////////////
-		logger.info("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 		repository.findAll((root, query, builder)->{
-			
 			return PredicateBuilder.of(root, query, builder)
 					.where()
 //						.and().eq("name", "1")

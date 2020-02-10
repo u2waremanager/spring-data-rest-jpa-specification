@@ -8,9 +8,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.query.PredicateBuilder;
-import org.springframework.data.jpa.repository.query.SpecificationBuffer;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -56,17 +53,8 @@ public class ApplicationTests {
 	@Test
 	public void contextLoads() throws Exception {
 
-		
-		SpecificationBuffer<Foo> spec = new SpecificationBuffer<>();
-		spec.and((r, q, b) -> {return PredicateBuilder.of(r,q,b).where().and().eq("name", "aaa").build();});		
-		spec.or((r, q, b) -> {return PredicateBuilder.of(r,q,b).where().and().eq("age", 1).build();});		
-		fooRepository.findAll(spec);
-
-		
-		
 		$.GET("/foos").H("read", "specification").C("_name", "aa").is2xx();
-		
+		$.GET("/foos").H("read", "specification").H("partTree", "findByNameAndAge").C("age", "1").is2xx();
 		$.GET("/foos").H("read", "querydsl").C("_name", "bb").is2xx();
-	
 	}
 }

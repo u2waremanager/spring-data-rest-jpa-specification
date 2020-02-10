@@ -83,51 +83,6 @@ public class ApplicationTests {
 		});
 		
 		
-//		JPAQuery<Foo> query = new JPAQuery<>(em);
-//		JPAQueryType<Foo> t = new JPAQueryType<>(Foo.class);
-//		
-//		query.from(
-//			t.getRoot()
-//			
-////		).where(
-////			t.get("name").eq("1")
-////		).where(
-////			t.get("age").eq(1)
-//
-//		).where(
-//			new BooleanBuilder().and(t.get("age").eq(1)).or(t.get("age").eq(2))
-//
-//			
-//		).orderBy(
-//			new OrderSpecifier<>(Order.DESC, t.getComparable("age"))
-//		).orderBy(
-//			new OrderSpecifier<>(Order.ASC, t.getComparable("name"))
-//		).fetch();
-//		
-//		
-		
-//		JPAQueryBuilder<Foo> builder = JPAQueryBuilder.of(em);
-//		builder
-		
-//		JPAQuery<Foo> query2 = new JPAQuery<>(em);
-//		JPAQueryBuilder.of(query2)
-//			.from(Foo.class)
-//			.where()
-//				.and().eq("name", "1")
-//				.andStart()
-//					.eq("name", "1")
-//					.or().eq("age", 1)
-//				.andEnd()
-//				.andStart()
-//					.eq("name", "1")
-//					.or().eq("age", 1)
-//				.andEnd()
-//				.or().eq("age", 1)
-//			.orderBy()
-//				.desc("name")
-//				.asc("age")
-//			.build()
-//			.fetch();
 		
 		
 		
