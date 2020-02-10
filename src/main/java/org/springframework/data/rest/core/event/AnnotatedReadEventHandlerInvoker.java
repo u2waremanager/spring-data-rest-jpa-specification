@@ -23,11 +23,11 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.ReflectionUtils;
 
 //AnnotatedEventHandlerInvoker
-public class AnnotatedReadEntityEventHandlerInvoker implements ApplicationListener<ReadEntityEvent>, BeanPostProcessor {
+public class AnnotatedReadEventHandlerInvoker implements ApplicationListener<RepositoryEvent>, BeanPostProcessor {
 
-	private static final Logger LOG = LoggerFactory.getLogger(AnnotatedReadEntityEventHandlerInvoker.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AnnotatedReadEventHandlerInvoker.class);
 	private static final String PARAMETER_MISSING = "Invalid event handler method %s! At least a single argument is required to determine the domain type for which you are interested in events.";
-	private final MultiValueMap<Class<? extends ReadEntityEvent>, EventHandlerMethod> handlerMethods = new LinkedMultiValueMap<Class<? extends ReadEntityEvent>, EventHandlerMethod>();
+	private final MultiValueMap<Class<? extends RepositoryEvent>, EventHandlerMethod> handlerMethods = new LinkedMultiValueMap<Class<? extends RepositoryEvent>, EventHandlerMethod>();
 	
 
 	@Override
@@ -55,8 +55,8 @@ public class AnnotatedReadEntityEventHandlerInvoker implements ApplicationListen
 	}
 
 	@Override
-	public void onApplicationEvent(ReadEntityEvent event) {
-		Class<? extends ReadEntityEvent> eventType = event.getClass();
+	public void onApplicationEvent(RepositoryEvent event) {
+		Class<? extends RepositoryEvent> eventType = event.getClass();
 
 		if (!handlerMethods.containsKey(eventType)) {
 			return;
@@ -73,8 +73,8 @@ public class AnnotatedReadEntityEventHandlerInvoker implements ApplicationListen
 			List<Object> parameters = new ArrayList<Object>();
 			parameters.add(src);
 
-			if (event instanceof BeforeReadEvent) {
-				parameters.add(((BeforeReadEvent) event).getQuery());
+			if (event instanceof LinkedEntityEvent) {
+				parameters.add(((LinkedEntityEvent) event).getLinked());
 			}
 
 			if (LOG.isDebugEnabled()) {
@@ -85,7 +85,7 @@ public class AnnotatedReadEntityEventHandlerInvoker implements ApplicationListen
 		}
 	}
 	
-	private <T extends Annotation> void inspect(Object handler, Method method, Class<T> annotationType, Class<? extends ReadEntityEvent> eventType) {
+	private <T extends Annotation> void inspect(Object handler, Method method, Class<T> annotationType, Class<? extends RepositoryEvent> eventType) {
 		T annotation = AnnotationUtils.findAnnotation(method, annotationType);
 
 		if (annotation == null) {

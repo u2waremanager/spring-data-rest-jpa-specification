@@ -1,9 +1,5 @@
 package io.github.u2ware.test.example7;
 
-import static org.springframework.data.jpa.repository.query.JPAQueryBuilderFactory.from;
-import static org.springframework.data.jpa.repository.query.JPAQueryBuilderFactory.orderBy;
-import static org.springframework.data.jpa.repository.query.JPAQueryBuilderFactory.where;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -15,13 +11,13 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.jpa.repository.query.JPAQueryBuilder;
+import org.springframework.data.jpa.repository.query.PredicateBuilder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.querydsl.jpa.impl.JPAQuery;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 //import static io.github.u2ware.test.ApplicationMockMvc.ApplicationResultActions.sizeMatch;
 import io.github.u2ware.test.ApplicationMockMvc;
@@ -35,6 +31,7 @@ public class ApplicationTests {
 	
 	protected @Value("${spring.data.rest.base-path:}") String springDataRestBasePath;
 	protected @Autowired WebApplicationContext context;
+	protected @Autowired ObjectMapper objectMapper;
 	protected ApplicationMockMvc $;
 	
 	@Before
@@ -49,62 +46,149 @@ public class ApplicationTests {
 	@Test
 	public void contextLoads() throws Exception {
 		
-		logger.info("1------------------------");
-		$.POST("/foos").C("name", "name1").is2xx();
-		$.POST("/foos").C("name", "name2").is2xx();
-		
-		logger.info("2------------------------");
-		$.GET("/foos/1")
-		.H("u2ware", "u2ware")
-		.is2xx();
-		
-		
-		logger.info("2------------------------");
-		
-		$.GET("/foos")
-			.H("u2ware", "u2ware")
-//			.P("unpaged", "true")
-			.P("page", "1")
-			.P("size", "1")
-			.P("sort", "name")
-			.C("name", "name")
-			.C("id", "1")
-			.C("url", "http://google.com")
-			.C("dateTime", "2019-01-01")
-			.is2xx();
-		
-//		logger.info("3------------------------");
-		JPAQuery<Foo> query = new JPAQuery<>(em);
-		JPAQueryBuilder<Foo> b = new JPAQueryBuilder<>(Foo.class);
-		
-		query
-			.from(
-				b.from()
-					.build()
-			).where(
-				b.where()
-					.andStart()
-						.eq("name", "aaa")
-						.or().eq("age", 1)
-					.andEnd()
-					.andStart()
-						.eq("name", "aaa")
-						.or().eq("age", 1)
-					.andEnd()
-					.and().eq("name", "aaa")
-					.build()
-			).orderBy(
-				b.orderBy()
-					.asc("age")
-					.desc("name")
-					.build()
-			).fetch();
+//
+//		
+//		fooRepository.findAll((root, query, builder)->{
+//			PartTree partTree = new PartTree("findByNameAndAge", Foo.class);
+//			
+//			Part part = new Part("name", Foo.class);
+//			
+//			Foo foo = new Foo();
+//			foo.setAge(1);
+//			//foo.setName("aaa");
+//			
+////			return new PredicateBuilder<>(root,query,builder).build(partTree, foo);
+//			return new PartTreePredicate<>(root,query,builder).build(part, "aaa");
+//		});
+//
+//		
+		fooRepository.findAll((root, query, builder)->{
 			
+			return PredicateBuilder.of(root, query, builder)
+					.where()
+//					.and().eq("age", 1)
+						.andStart()
+							.eq("age", 1)
+							.or().eq("name", "aaa")
+						.andEnd()
+						.andStart()
+							.eq("age", 1)
+							.or().eq("name", "aaa")
+						.andEnd()
+					.orderBy()
+						.asc("name")
+						.desc("age")
+					.build();
+			
+		});
+		
+		
+//		JPAQuery<Foo> query = new JPAQuery<>(em);
+//		JPAQueryType<Foo> t = new JPAQueryType<>(Foo.class);
+//		
+//		query.from(
+//			t.getRoot()
+//			
+////		).where(
+////			t.get("name").eq("1")
+////		).where(
+////			t.get("age").eq(1)
+//
+//		).where(
+//			new BooleanBuilder().and(t.get("age").eq(1)).or(t.get("age").eq(2))
+//
+//			
+//		).orderBy(
+//			new OrderSpecifier<>(Order.DESC, t.getComparable("age"))
+//		).orderBy(
+//			new OrderSpecifier<>(Order.ASC, t.getComparable("name"))
+//		).fetch();
+//		
+//		
+		
+//		JPAQueryBuilder<Foo> builder = JPAQueryBuilder.of(em);
+//		builder
+		
+//		JPAQuery<Foo> query2 = new JPAQuery<>(em);
+//		JPAQueryBuilder.of(query2)
+//			.from(Foo.class)
+//			.where()
+//				.and().eq("name", "1")
+//				.andStart()
+//					.eq("name", "1")
+//					.or().eq("age", 1)
+//				.andEnd()
+//				.andStart()
+//					.eq("name", "1")
+//					.or().eq("age", 1)
+//				.andEnd()
+//				.or().eq("age", 1)
+//			.orderBy()
+//				.desc("name")
+//				.asc("age")
+//			.build()
+//			.fetch();
 		
 		
 		
 		
 		
+//		logger.info("1------------------------");
+//		$.POST("/foos").C("name", "name1").is2xx();
+//		$.POST("/foos").C("name", "name2").is2xx();
+//		
+//		logger.info("2------------------------");
+//		$.GET("/foos/1")
+//		.H("u2ware", "u2ware")
+//		.is2xx();
+//		
+//		
+//		logger.info("2------------------------");
+//		
+//		$.GET("/foos")
+//			.H("u2ware", "u2ware")
+////			.P("unpaged", "true")
+//			.P("page", "1")
+//			.P("size", "1")
+//			.P("sort", "name")
+//			.C("name", "name")
+//			.C("id", "1")
+//			.C("url", "http://google.com")
+//			.C("dateTime", "2019-01-01")
+//			.is2xx();
+//		
+////		logger.info("3------------------------");
+//		JPAQuery<Foo> query = new JPAQuery<>(em);
+//		JPAQueryBuilder<Foo> b = new JPAQueryBuilder<>(Foo.class);
+//		
+//		query
+//			.from(
+//				b.from()
+//					.build()
+//			).where(
+//				b.where()
+//					.andStart()
+//						.eq("name", "aaa")
+//						.or().eq("age", 1)
+//					.andEnd()
+//					.andStart()
+//						.eq("name", "aaa")
+//						.or().eq("age", 1)
+//					.andEnd()
+//					.and().eq("name", "aaa")
+//					.build()
+//			).orderBy(
+//				b.orderBy()
+//					.asc("age")
+//					.desc("name")
+//					.build()
+//			).fetch();
+//			
+//		
+//		
+//		
+//		
+//		
 //		JPAQueryBuilder<Foo> path = new JPAQueryBuilder<>(Foo.class);
 //
 //		BooleanExpression w0 = path.get("name").eq("aa").and(path.get("age").eq(1));

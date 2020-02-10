@@ -14,9 +14,9 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.jpa.repository.query.PartTreeQueryBuilder;
-import org.springframework.data.jpa.repository.query.PartTreeQueryBuilderSupport;
+import org.springframework.data.jpa.repository.query.PartTreePredicate;
 import org.springframework.data.jpa.repository.query.PartTreeSpecification;
+import org.springframework.data.jpa.repository.query.PredicateBuilder;
 import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.PartTree;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -71,9 +71,9 @@ public class ApplicationTests {
 //			f.equal(x, y);
 //			
 			
-			Expression<?> title = PartTreeQueryBuilderSupport.toExpressionRecursively(root, "title");
-			Expression<?> name = PartTreeQueryBuilderSupport.toExpressionRecursively(root, "name");
-			Expression<?> age = PartTreeQueryBuilderSupport.toExpressionRecursively(root, "age");
+			Expression<?> title = PartTreePredicate.toExpressionRecursively(root, "title");
+			Expression<?> name = PartTreePredicate.toExpressionRecursively(root, "name");
+			Expression<?> age = PartTreePredicate.toExpressionRecursively(root, "age");
 			
 			
 			Predicate p1 = builder.equal(title, "1");
@@ -99,43 +99,43 @@ public class ApplicationTests {
 		
 		repository.findAll((root, query, builder)->{
 			Part part = new Part("NameNot", Foo.class);
-			return new PartTreeQueryBuilderSupport<>(root, query, builder).build(part, "b");
+			return new PartTreePredicate<>(root, query, builder).build(part, "b");
 		});
 		repository.findAll((root, query, builder)->{
 			Part part = new Part("nameIsLike", Foo.class);
-			return new PartTreeQueryBuilderSupport<>(root, query, builder).build(part, new String[] {"avvv","bvvv"});
+			return new PartTreePredicate<>(root, query, builder).build(part, new String[] {"avvv","bvvv"});
 		});
 		repository.findAll((root, query, builder)->{
 			Part part = new Part("nameIsContainingIgnoreCase", Foo.class);
-			return new PartTreeQueryBuilderSupport<>(root, query, builder).build(part, "d");
+			return new PartTreePredicate<>(root, query, builder).build(part, "d");
 		});
 		repository.findAll((root, query, builder)->{
 			Part part = new Part("age", Foo.class);
-			return new PartTreeQueryBuilderSupport<>(root, query, builder).build(part, "123");
+			return new PartTreePredicate<>(root, query, builder).build(part, "123");
 		});
 		
 		repository.findAll((root, query, builder)->{
 			Part part = new Part("ageGreaterThan", Foo.class);
-			return new PartTreeQueryBuilderSupport<>(root, query, builder).build(part, "a");
+			return new PartTreePredicate<>(root, query, builder).build(part, "a");
 		});
 		
 		repository.findAll((root, query, builder)->{
 			Part partTree = new Part("ageIn", Foo.class);
-			return new PartTreeQueryBuilderSupport<>(root, query, builder).build(partTree, new String[] {"2","3"});
+			return new PartTreePredicate<>(root, query, builder).build(partTree, new String[] {"2","3"});
 		});
 		repository.findAll((root, query, builder)->{
 			Part part = new Part("ageBetween", Foo.class);
-			return new PartTreeQueryBuilderSupport<>(root, query, builder).build(part, new String[] {"2","3"});
+			return new PartTreePredicate<>(root, query, builder).build(part, new String[] {"2","3"});
 		});
 		
 		Foo foo = new Foo("a1", 1, "b1");
 		repository.findAll((root, query, builder)->{
 			PartTree partTree = new PartTree("findByNameIgnoreCase", root.getJavaType());
-			return new PartTreeQueryBuilderSupport<>(root, query, builder).build(partTree, foo);
+			return new PartTreePredicate<>(root, query, builder).build(partTree, foo);
 		});
 		repository.findAll((root, query, builder)->{
 			PartTree partTree = new PartTree("ageIn", Foo.class);
-			return new PartTreeQueryBuilderSupport<>(root, query, builder).build(partTree, foo);
+			return new PartTreePredicate<>(root, query, builder).build(partTree, foo);
 		});
 	}
 	
@@ -178,7 +178,7 @@ public class ApplicationTests {
 		logger.info("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 		repository.findAll((root, query, builder)->{
 			
-			return PartTreeQueryBuilder.of(root, query, builder)
+			return PredicateBuilder.of(root, query, builder)
 					.where()
 //						.and().eq("name", "1")
 						.andStart()
@@ -197,7 +197,7 @@ public class ApplicationTests {
 //							.eq("age", 2)
 //						.andEnd()
 //						.and().eq("title", null)
-					.order()
+					.orderBy()
 						.asc("name")
 						.desc("age")
 					.build();

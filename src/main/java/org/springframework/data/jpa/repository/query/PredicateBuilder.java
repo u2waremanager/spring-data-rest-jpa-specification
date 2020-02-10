@@ -1,38 +1,38 @@
 package org.springframework.data.jpa.repository.query;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.BeanWrapper;
 import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.PartTree;
 import org.springframework.util.MultiValueMap;
 
-public class PartTreeQueryBuilder<T> {
+public class PredicateBuilder<T> {
 
-	protected static Log logger = LogFactory.getLog(PartTreeQueryBuilder.class);
+	protected static Log logger = LogFactory.getLog(PredicateBuilder.class);
 	
 	private OrderBuilder<T> orderBuilder;
 	private WhereBuilder<T> whereBuilder;
-	
-	private QueryParameters<T> queryParameters;
 	
 	private Root<T> root;
 	private CriteriaQuery<?> criteriaQuery;
 	private CriteriaBuilder criteriaBuilder;
 	
 	
-	public static <X> PartTreeQueryBuilder<X> of(Root<X> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
-		return new PartTreeQueryBuilder<>(root, criteriaQuery, criteriaBuilder);
+	public static <X> PredicateBuilder<X> of(Root<X> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+		return new PredicateBuilder<>(root, criteriaQuery, criteriaBuilder);
 	}
 	
-	private PartTreeQueryBuilder(Root<T> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+	private PredicateBuilder(Root<T> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
 		this.root = root;
 		this.criteriaQuery = criteriaQuery;
 		this.criteriaBuilder = criteriaBuilder;
@@ -61,21 +61,6 @@ public class PartTreeQueryBuilder<T> {
 		return orderBuilder;
 	}
 	
-	public QueryParameters<T> getQueryParameters() {
-		return queryParameters;
-	}
-	public void setQueryParameters(QueryParameters<T> queryParameters) {
-		this.queryParameters = queryParameters;
-	}
-	public void setQueryParameters(T queryParameters) {
-		this.queryParameters = new QueryParameters<>(queryParameters);
-	}
-	public void setQueryParameters(Object... queryParameters) {
-		this.queryParameters = new QueryParameters<>(queryParameters);
-	}
-	public void setQueryParameters(Map<String,?> queryParameters) {
-		this.queryParameters = new QueryParameters<>(queryParameters);
-	}
 
 	
 	/////////////////////////////////////////////////////
@@ -84,7 +69,7 @@ public class PartTreeQueryBuilder<T> {
 	public WhereBuilder<T> where() { 
 		return whereBuilder; 
 	}
-	public OrderBuilder<T> order() { 
+	public OrderBuilder<T> orderBy() { 
 		return orderBuilder; 
 	}
 
@@ -97,8 +82,8 @@ public class PartTreeQueryBuilder<T> {
 	////////////////////////////////////////////
 	public static class WhereBuilder<T>{
 		
-		private PartTreeQueryBuilder<T> builder;
-		private PredicateBuilder<T> predicateBuilder;
+		private PredicateBuilder<T> builder;
+		private PartTreeBuilder<T> partTreeBuilder;
 		
 		private enum State{ AND, AND_START, AND_END, OR, OR_START, OR_END }
 		private State state;
@@ -107,9 +92,9 @@ public class PartTreeQueryBuilder<T> {
 		private Predicate where;
 		private Predicate sub;
 		
-		public WhereBuilder(PartTreeQueryBuilder<T> builder) {
+		public WhereBuilder(PredicateBuilder<T> builder) {
 			this.builder = builder;
-			this.predicateBuilder = new PredicateBuilder<>(builder);
+			this.partTreeBuilder = new PartTreeBuilder<>(builder);
 		}
 
 		//////////////////////////////////////////
@@ -120,29 +105,29 @@ public class PartTreeQueryBuilder<T> {
 		}
 
 		
-		public OrderBuilder<T> order() { 
+		public OrderBuilder<T> orderBy() { 
 			return builder.getOrderBuilder(); 
 		}
 		
-		public PredicateBuilder<T> and() { 
+		public PartTreeBuilder<T> and() { 
 			this.state = State.AND; 
-			return predicateBuilder;
+			return partTreeBuilder;
 		}
-		public PredicateBuilder<T> andStart() { 
+		public PartTreeBuilder<T> andStart() { 
 			this.state = State.AND_START; 
-			return predicateBuilder;
+			return partTreeBuilder;
 		}
 		public WhereBuilder<T> andEnd() { 
 			this.state = State.AND_END; 
 			return chain(null);
 		}
-		public PredicateBuilder<T> or() { 
+		public PartTreeBuilder<T> or() { 
 			this.state = State.OR; 
-			return predicateBuilder;
+			return partTreeBuilder;
 		}
-		public PredicateBuilder<T> orStart() { 
+		public PartTreeBuilder<T> orStart() { 
 			this.state = State.OR_START; 
-			return predicateBuilder;
+			return partTreeBuilder;
 		}
 		public WhereBuilder<T> orEnd() { 
 			this.state = State.OR_END; 
@@ -193,30 +178,27 @@ public class PartTreeQueryBuilder<T> {
 		}
 	}
 	
-	public static class PredicateBuilder<T>{
+	public static class PartTreeBuilder<T>{
 		
-		private PartTreeQueryBuilder<T> builder;
+		private PredicateBuilder<T> builder;
 		
-		public PredicateBuilder(PartTreeQueryBuilder<T> builder) {
+		public PartTreeBuilder(PredicateBuilder<T> builder) {
 			this.builder = builder;
 		}
 		
-		public WhereBuilder<T> partTree(String source){
-			return partTree(source, builder.getQueryParameters());
-		}
 		public WhereBuilder<T> partTree(String source, T params){
-			return partTree(source, new QueryParameters<T>(params));
+			return partTree(source, BeanWrapperFactory.getInstance(params));
 		}
 		public WhereBuilder<T> partTree(String source, Object... params){
-			return partTree(source, new QueryParameters<T>(params));
+			return partTree(source, BeanWrapperFactory.getInstance(params));
 		}
 		public WhereBuilder<T> partTree(String source, MultiValueMap<String,Object> params){
-			return partTree(source, new QueryParameters<T>(params));
+			return partTree(source, BeanWrapperFactory.getInstance(params));
 		}
-		public WhereBuilder<T> partTree(String source, QueryParameters<T> params){
+		private WhereBuilder<T> partTree(String source, BeanWrapper params){
 			try {
 				PartTree partTree = new PartTree(source, builder.getRoot().getJavaType());
-				Predicate predicate = new PartTreeQueryBuilderSupport<>(builder.getRoot(), builder.getCriteriaQuery(), builder.getCriteriaBuilder())
+				Predicate predicate = new PartTreePredicate<>(builder.getRoot(), builder.getCriteriaQuery(), builder.getCriteriaBuilder())
 						.build(partTree, params);
 				return builder.getWhereBuilder().chain(predicate);
 			}catch(Exception e) {
@@ -225,11 +207,11 @@ public class PartTreeQueryBuilder<T> {
 			}
 		}
 
-		public WhereBuilder<T> part(String source, Object value){
+		private WhereBuilder<T> part(String source, Object value){
 			if(value == null) return builder.getWhereBuilder();
 			try {
 				Part part = new Part(source, builder.getRoot().getJavaType());
-				Predicate predicate = new PartTreeQueryBuilderSupport<T>(builder.getRoot(), builder.getCriteriaQuery(), builder.getCriteriaBuilder())
+				Predicate predicate = new PartTreePredicate<T>(builder.getRoot(), builder.getCriteriaQuery(), builder.getCriteriaBuilder())
 						.build(part, value);
 				return builder.getWhereBuilder().chain(predicate);
 			}catch(Exception e) {
@@ -281,49 +263,6 @@ public class PartTreeQueryBuilder<T> {
 		///////////////////////////////////////////////////////////////
 		//
 		///////////////////////////////////////////////////////////////
-		public WhereBuilder<T> eq(String property){
-			return part(property, builder.getQueryParameters().get(property));
-		}
-		public WhereBuilder<T> notEq(String property){
-			return part(property+"Not", builder.getQueryParameters().get(property));
-		}
-		public WhereBuilder<T> like(String property){
-			return part(property+"ContainingIgnoreCase", builder.getQueryParameters().get(property));
-		}
-		public WhereBuilder<T> notLike(String property){
-			return part(property+"NotContainingIgnoreCase", builder.getQueryParameters().get(property));
-		}
-		public WhereBuilder<T> between(String property) {
-			return part(property+"IsBetween", builder.getQueryParameters().get(property));
-		}
-		public WhereBuilder<T> gt(String property) {
-			return part(property+"IsGreaterThan", builder.getQueryParameters().get(property));
-		}
-		public WhereBuilder<T> gte(String property) {
-			return part(property+"IsGreaterThanEqual", builder.getQueryParameters().get(property));
-		}
-		public WhereBuilder<T> lt(String property) {
-			return part(property+"IsLessThan", builder.getQueryParameters().get(property));
-		}
-		public WhereBuilder<T> lte(String property) {
-			return part(property+"IsLessThanEqual", builder.getQueryParameters().get(property));
-		}
-		public WhereBuilder<T> in(String property) {
-			return part(property+"IsIn", builder.getQueryParameters().get(property));
-		}
-		public WhereBuilder<T> notIn(String property) {
-			return part(property+"IsNotIn", builder.getQueryParameters().get(property));
-		}
-
-//		public WhereBuilder<T> function(String name, Class<T> type, Expression<?>... args) {
-//			
-//			Expression<T> p = builder.getCriteriaBuilder().function(name, type, args);
-//			
-//			return part(property+"IsNotIn", builder.getQueryParameters().get(property));
-//		}
-//		
-//		return builder.getWhereBuilder().chain(predicate);
-		
 	}
 
 	
@@ -332,25 +271,27 @@ public class PartTreeQueryBuilder<T> {
 	////////////////////////////////////////////
 	public static class OrderBuilder<T>{
 		
-		private PartTreeQueryBuilder<T> builder;
+		private PredicateBuilder<T> builder;
+		private List<Order> orders;
 		
-		public OrderBuilder(PartTreeQueryBuilder<T> builder){
+		public OrderBuilder(PredicateBuilder<T> builder){
 			this.builder = builder;
+			this.orders = new ArrayList<>();
 		}
 		
 		public OrderBuilder<T> asc(String property) {
-			builder.getCriteriaQuery().orderBy(builder.getCriteriaBuilder().asc(PartTreeQueryBuilderSupport.getTypedPath(builder.getRoot(), property)));
+			orders.add(builder.getCriteriaBuilder().asc(PartTreePredicate.getTypedPath(builder.getRoot(), property)));
 			return this;
 		}
 		public OrderBuilder<T> desc(String property) {
-			builder.getCriteriaQuery().orderBy(builder.getCriteriaBuilder().desc(PartTreeQueryBuilderSupport.getTypedPath(builder.getRoot(), property)));
+			orders.add(builder.getCriteriaBuilder().desc(PartTreePredicate.getTypedPath(builder.getRoot(), property)));
 			return this;
 		}
 		
 		public Predicate build() {
+			builder.getCriteriaQuery().orderBy(orders);
 			return builder.build();
 		}
 		
 	}
-	
 }

@@ -9,6 +9,9 @@ import javax.persistence.PersistenceContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.query.SpecificationBuffer;
 import org.springframework.data.jpa.repository.support.Querydsl;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
@@ -45,9 +48,10 @@ public class ReporitoryReadEntityController extends AbstractRepositoryController
 	protected Log logger = LogFactory.getLog(getClass());
 
 	private @PersistenceContext EntityManager entityManager;
+
 	
-	@RequestMapping(value = "/{repository}/{id}", method = RequestMethod.GET, headers = "u2ware=u2ware")
-	public ResponseEntity<Resource<?>> getItemResource(RootResourceInformation resourceInformation,
+	@RequestMapping(value = "/{repository}/{id}", method = RequestMethod.GET, headers = "read=specification")
+	public ResponseEntity<Resource<?>> getItemResource1(RootResourceInformation resourceInformation,
 			@BackendId Serializable id, 
 			final PersistentEntityResourceAssembler assembler, 
 			@RequestHeader HttpHeaders headers)
@@ -66,9 +70,88 @@ public class ReporitoryReadEntityController extends AbstractRepositoryController
 	}
 	
 	
+	
+	@RequestMapping(value = "/{repository}/{id}", method = RequestMethod.GET, headers = "read=querydsl")
+	public ResponseEntity<Resource<?>> getItemResource2(RootResourceInformation resourceInformation,
+			@BackendId Serializable id, 
+			final PersistentEntityResourceAssembler assembler, 
+			@RequestHeader HttpHeaders headers)
+			throws HttpRequestMethodNotSupportedException {
+
+		return super.getItemResource(resourceInformation, id).map(it -> {
+
+			publisher.publishEvent(new AfterReadEvent(it));
+			
+			PersistentEntity<?, ?> entity = resourceInformation.getPersistentEntity();
+
+			return getResourceStatus().getStatusAndHeaders(headers, it, entity).toResponseEntity(//
+					() -> assembler.toFullResource(it));
+
+		}).orElseGet(() -> new ResponseEntity<Resource<?>>(HttpStatus.NOT_FOUND));
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@ResponseBody
-	@RequestMapping(value = "/{repository}", method = RequestMethod.GET, headers = "u2ware=u2ware")
-	public <T> Resources<?> getReadCollectionResource(@QuerydslPredicate RootResourceInformation resourceInformation,
+	@RequestMapping(value = "/{repository}", method = RequestMethod.GET, headers = "read=specification")
+	public <T> Resources<?> getReadCollectionResource1(@QuerydslPredicate RootResourceInformation resourceInformation,
+			@RequestParam(name = "unpaged", required = false) boolean unpaged,
+			PersistentEntityResource payload, DefaultedPageable pageable, Sort sort, PersistentEntityResourceAssembler assembler)
+			throws ResourceNotFoundException, HttpRequestMethodNotSupportedException {
+
+		
+		resourceInformation.verifySupportedMethod(HttpMethod.GET, ResourceType.COLLECTION);
+
+		RepositoryInvoker invoker = resourceInformation.getInvoker();
+
+		if (null == invoker) {
+			throw new ResourceNotFoundException();
+		}
+
+		//////////////////////////////////////////////////////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////////////////////////////////////////////////////
+		Class<?> domainType = resourceInformation.getDomainType();
+		logger.info("domain: " + domainType.getName());
+
+		JpaSpecificationExecutor executor = getRepositoryFor(resourceInformation, JpaSpecificationExecutor.class);
+		logger.info("executor: " + executor);		
+		
+//		Specification specification = Specification.where((root, query, builder) -> {return null;});		
+		
+		Specification specification = new SpecificationBuffer();
+		
+		//....................
+		publisher.publishEvent(new BeforeReadEvent(payload.getContent(), specification));
+		//...................
+		
+		//////////////////////////////////////////////////////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////////////////////////////////////////////////////
+		
+		Iterable<?> results = null;
+		if(unpaged) {
+			results = executor.findAll(specification, sort) ;
+		}else {
+			results = executor.findAll(specification, pageable.getPageable()) ;
+		}
+		
+		//////////////////////////////////////////////////////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////////////////////////////////////////////////////
+		ResourceMetadata metadata = resourceInformation.getResourceMetadata();
+		Optional<Link> baseLink = Optional.of(entityLinks.linkToPagedResource(resourceInformation.getDomainType(),
+				pageable.isDefault() ? null : pageable.getPageable()));
+
+		Resources<?> result = toResources(results, assembler, metadata.getDomainType(), baseLink);
+		result.add(getCollectionResourceLinks(resourceInformation, pageable));
+		return result;
+	}
+	
+	
+	
+	@ResponseBody
+	@RequestMapping(value = "/{repository}", method = RequestMethod.GET, headers = "read=querydsl")
+	public <T> Resources<?> getReadCollectionResource2(@QuerydslPredicate RootResourceInformation resourceInformation,
 			@RequestParam(name = "unpaged", required = false) boolean unpaged,
 			PersistentEntityResource payload, DefaultedPageable pageable, Sort sort, PersistentEntityResourceAssembler assembler)
 			throws ResourceNotFoundException, HttpRequestMethodNotSupportedException {
@@ -90,11 +173,6 @@ public class ReporitoryReadEntityController extends AbstractRepositoryController
 		Querydsl querydsl = new Querydsl(entityManager, pathBuilder); 
 		JPQLQuery<?> query = querydsl.createQuery();
 
-		
-		
-		
-
-		
 		
 		//....................
 		publisher.publishEvent(new BeforeReadEvent(payload.getContent(), query));

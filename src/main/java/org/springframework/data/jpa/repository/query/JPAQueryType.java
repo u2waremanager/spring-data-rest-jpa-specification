@@ -6,8 +6,6 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
 import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Order;
-import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.ComparablePath;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.core.types.dsl.PathBuilderFactory;
@@ -30,12 +28,6 @@ public class JPAQueryType<T> {
 		return pathBuilder;
 	}
 
-	public OrderSpecifier<?> order(String property) {
-		return new OrderSpecifier<>(Order.ASC, getComparable(property));
-	}
-	public OrderSpecifier<?> order(String property, Order order) {
-		return new OrderSpecifier<>(order, getComparable(property));
-	}
 	
 	public PathBuilder<Object> get(String property) {
 		Field field= ReflectionUtils.findField(entityType, property);
@@ -89,8 +81,12 @@ public class JPAQueryType<T> {
 //	builder.getString(property)
 //	builder.get(property);
 	
-	
-	
-	
-	
+//	
+//	public BooleanExpression eq(String property, Object right) {
+//		return get(property).eq(right);
+//	}
+//
+//	public BooleanExpression goe(String property, Comparable<?> right) {
+//		return getComparable(property).goe(right);
+//	}
 }

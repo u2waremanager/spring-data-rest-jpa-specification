@@ -2,6 +2,7 @@ package io.github.u2ware.test.example7;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.rest.core.annotation.HandleAfterCreate;
 import org.springframework.data.rest.core.annotation.HandleAfterDelete;
 import org.springframework.data.rest.core.annotation.HandleAfterRead;
@@ -32,8 +33,8 @@ public class FooHandler {
 		
 		JPAQuery<Foo> query = (JPAQuery)obj;
 		
-		
-		
+//		Specification s;
+//		s.and(other);
 		
 		
 		logger.info("handleBeforeRead: "+query.getClass());

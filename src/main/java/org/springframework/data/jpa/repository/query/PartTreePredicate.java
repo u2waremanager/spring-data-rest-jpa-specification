@@ -9,8 +9,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -21,8 +19,7 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.BeanWrapperImpl;
-import org.springframework.beans.BeansException;
+import org.springframework.beans.BeanWrapper;
 import org.springframework.data.mapping.PropertyPath;
 import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.Part.IgnoreCaseType;
@@ -38,7 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class PartTreeQueryBuilderSupport<X> {
+public class PartTreePredicate<X> {
 
 	protected Log logger = LogFactory.getLog(getClass());
 
@@ -53,7 +50,7 @@ public class PartTreeQueryBuilderSupport<X> {
 	//private final CriteriaQuery<?> query;
 	private final CriteriaBuilder builder;
 	
-	public PartTreeQueryBuilderSupport(Root<X> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+	public PartTreePredicate(Root<X> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 		
 		Assert.notNull(root, "root is requried");
 		Assert.notNull(query, "query is requried");
@@ -63,22 +60,23 @@ public class PartTreeQueryBuilderSupport<X> {
 		//this.query = query;
 		this.builder = builder;
 	}
-
-//	public Class<?> getEntityType() {
-//		return root.getJavaType();
-//	}	
+	
 	
 	public Predicate build(PartTree partTree, X params){
-		return toPredicate(partTree, new QueryParameters<>(params));
+		return toPredicate(partTree, BeanWrapperFactory.getInstance(params));
 	}
 	public Predicate build(PartTree partTree, Object... params){
-		return toPredicate(partTree, new QueryParameters<>(params));
+		return toPredicate(partTree, BeanWrapperFactory.getInstance(params));
 	}
 	public Predicate build(PartTree partTree, MultiValueMap<String,Object> params){
-		return toPredicate(partTree, new QueryParameters<>(params));
+		return toPredicate(partTree,  BeanWrapperFactory.getInstance(params));
 	}
+	public Predicate build(PartTree partTree, BeanWrapper parameter){
+		return toPredicate(partTree,  parameter);
+	}
+	
 
-	private Predicate toPredicate(PartTree tree, QueryParameters<?> parameter) {
+	private Predicate toPredicate(PartTree tree, BeanWrapper parameter) {
 
 		Predicate base = null;
 
@@ -102,7 +100,7 @@ public class PartTreeQueryBuilderSupport<X> {
 		return base;
 	}
 	
-	private Predicate and(Part part, Predicate base, QueryParameters<?> parameter) {
+	private Predicate and(Part part, Predicate base, BeanWrapper parameter) {
 		Predicate criteria = create(part, parameter);
 		return criteria != null ? ( (base != null) ? builder.and(base, criteria) : criteria ): base;
 	}
@@ -111,8 +109,8 @@ public class PartTreeQueryBuilderSupport<X> {
 		return builder.or(base, predicate);
 	}
 
-	private Predicate create(Part part, QueryParameters<?> parameter) {
-		return build(part, parameter.get(part.getProperty().getSegment()));
+	private Predicate create(Part part, BeanWrapper parameter) {
+		return build(part, parameter.getPropertyValue(part.getProperty().getSegment()));
 	}
 	
 
@@ -356,35 +354,4 @@ public class PartTreeQueryBuilderSupport<X> {
 	//////////////////////////////////////////////////////////////////////
 	//
 	//////////////////////////////////////////////////////////////////////
-	public static class BeanWrapperMultiValue extends BeanWrapperImpl {
-		
-		private Map<String, ?> source;
-		
-		public BeanWrapperMultiValue(Map<String, ?> source) {
-			this.source = source;
-		}
-		
-		@Override
-		public Object getPropertyValue(String propertyName) throws BeansException {
-			return source.get(propertyName);
-		}
-	}
-	
-	public static class BeanWrapperObjectArray extends BeanWrapperImpl {
-		
-		private Object[] source;
-		private AtomicInteger index;
-		
-		public BeanWrapperObjectArray(Object... source ) {
-			this.source = source;
-			this.index = new AtomicInteger(0);
-		}
-		
-		@Override
-		public Object getPropertyValue(String propertyName) throws BeansException {
-			return source[index.getAndAdd(1)];
-		}
-	}
-
-	
 }
