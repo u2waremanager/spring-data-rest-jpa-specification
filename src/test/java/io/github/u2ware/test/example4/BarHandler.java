@@ -1,7 +1,8 @@
-package io.github.u2ware.test.example22;
+package io.github.u2ware.test.example4;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.data.rest.core.annotation.HandleAfterRead;
 import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
 import org.springframework.stereotype.Component;
@@ -19,5 +20,9 @@ public class BarHandler {
 		logger.info("handleBeforeCreate "+entity);
 	}
 	
+	@HandleAfterRead
+	protected void handleAfterRead(Bar entity) {
+		logger.info("handleAfterRead "+entity);
+	}
 	
 }

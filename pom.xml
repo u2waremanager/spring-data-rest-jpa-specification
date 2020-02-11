@@ -130,7 +130,7 @@
 					</execution>
 				</executions>
 			</plugin>
-
+<!-- 
 
     <plugin>
       <groupId>com.mysema.maven</groupId>
@@ -149,7 +149,7 @@
       </executions>
     </plugin>
 
-
+ -->
 
 			<!-- github-deploy-maven-plugin maven.test.skip=true -->
 			<plugin>

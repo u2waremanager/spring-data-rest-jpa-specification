@@ -1,4 +1,4 @@
-package io.github.u2ware.test.example22;
+package io.github.u2ware.test.example4;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
