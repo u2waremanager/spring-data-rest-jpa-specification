@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.repository.support.JPAQueryBuilder;
-import org.springframework.data.jpa.repository.support.JPAQueryType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -21,6 +20,8 @@ import org.springframework.web.context.WebApplicationContext;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.PathBuilder;
+import com.querydsl.core.types.dsl.PathBuilderFactory;
 import com.querydsl.jpa.impl.JPAQuery;
 
 //import static io.github.u2ware.test.ApplicationMockMvc.ApplicationResultActions.sizeMatch;
@@ -66,11 +67,10 @@ public class Application2Tests {
 	public void jpaQueryTypeTest() {
 		
 		JPAQuery<Foo> query = new JPAQuery<>(em);
-		JPAQueryType<Foo> t = new JPAQueryType<>(Foo.class);
+		PathBuilder<Foo> t = new PathBuilderFactory().create(Foo.class);
 		
 		query.from(
-			t.getRoot()
-			
+			t
 //		).where(
 //			t.get("name").eq("1")
 //		).where(
@@ -80,18 +80,16 @@ public class Application2Tests {
 			new BooleanBuilder().and(t.get("age").eq(1)).or(t.get("age").eq(2))
 			
 		).orderBy(
-			new OrderSpecifier<>(Order.DESC, t.getComparable("age"))
+			new OrderSpecifier<>(Order.DESC, t.getComparable("age", Integer.class))
 		).orderBy(
-			new OrderSpecifier<>(Order.ASC, t.getComparable("name"))
+			new OrderSpecifier<>(Order.ASC, t.getComparable("name", String.class))
 		).fetch();
 	}
 	
-	@Test
+	//@Test
 	public void jpaQueryBuilderTest() {
 		
-		JPAQueryBuilder<Foo> builder = JPAQueryBuilder.of(em);
-		builder
-			.from(Foo.class)
+		JPAQueryBuilder.of(Foo.class, em)
 			.where()
 				.and().eq("name", "1")
 				.andStart()

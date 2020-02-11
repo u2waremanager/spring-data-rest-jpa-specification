@@ -1,34 +1,27 @@
 package io.github.u2ware.test.example5;
 
-import java.util.Optional;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.assertj.core.util.Sets;
-import org.hibernate.dialect.HSQLDialect;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.repository.query.JPAQueryBuilderFactory;
+import org.springframework.data.jpa.repository.support.JPAQueryBuilder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Predicate;
-import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.core.types.dsl.PathBuilderFactory;
 import com.querydsl.jpa.impl.JPAQuery;
-import com.querydsl.sql.HSQLDBTemplates;
 
 //import static io.github.u2ware.test.ApplicationMockMvc.ApplicationResultActions.sizeMatch;
 import io.github.u2ware.test.ApplicationMockMvc;
@@ -63,9 +56,9 @@ public class Application1Tests {
 		DomainSampleOne o2 = new DomainSampleOne();
 		DomainSampleOne o3 = new DomainSampleOne();
 		
-		DomainSampleMany m1 = new DomainSampleMany();
-		DomainSampleMany m2 = new DomainSampleMany();
-		DomainSampleMany m3 = new DomainSampleMany();
+//		DomainSampleMany m1 = new DomainSampleMany();
+//		DomainSampleMany m2 = new DomainSampleMany();
+//		DomainSampleMany m3 = new DomainSampleMany();
 		
 		DomainSample e1 = new DomainSample();
 		DomainSample e2 = new DomainSample();
@@ -85,34 +78,127 @@ public class Application1Tests {
 //		e2.setTypes(new Integer[] {2, 3});
 //		e3.setTypes(new Integer[] {3, 4});
 
-		e1.setTypes(Sets.newLinkedHashSet(DomainType.AA.name(), DomainType.BB.name()));
-		e2.setTypes(Sets.newLinkedHashSet(DomainType.BB.name(), DomainType.CC.name()));
-		e3.setTypes(Sets.newLinkedHashSet(DomainType.CC.name(), DomainType.DD.name()));
+//		e1.setTypes(Sets.newLinkedHashSet(DomainType.AA.name(), DomainType.BB.name()));
+//		e2.setTypes(Sets.newLinkedHashSet(DomainType.BB.name(), DomainType.CC.name()));
+//		e3.setTypes(Sets.newLinkedHashSet(DomainType.CC.name(), DomainType.DD.name()));
 		
 		
 		domainSampleOneRepository.save(o1);		
 		domainSampleOneRepository.save(o2);		
 		domainSampleOneRepository.save(o3);		
-		domainSampleManyRepository.save(m1);		
-		domainSampleManyRepository.save(m2);		
-		domainSampleManyRepository.save(m3);		
+//		domainSampleManyRepository.save(m1);		
+//		domainSampleManyRepository.save(m2);		
+//		domainSampleManyRepository.save(m3);		
 		domainSampleRepository.save(e1);
 		domainSampleRepository.save(e2);
 		domainSampleRepository.save(e3);
 		
-		logger.info("-------------------------------------------");
-		logger.info("------------READ---------------------------");
-		logger.info("-------------------------------------------");
 		
-		Optional<DomainSample> r1 = domainSampleRepository.findById(e1.getId());
-		logger.info(r1.get());
 		
-		logger.info("-------------------------------------------");
-		logger.info("-------------FIND--------------------------");
-		logger.info("-------------------------------------------");
-		domainSampleRepository.findAll(PageRequest.of(0, 10)).forEach(d->{
-			logger.info(d);
+		
+		PathBuilder<DomainSample> t = new PathBuilderFactory().create(DomainSample.class);
+		//JPAQuery<DomainSample> query = ;
+		
+		new JPAQuery<DomainSample>(em)
+			.from(
+				t)
+			.leftJoin(
+				t.get("one")).fetchJoin()
+			.where(
+				t.getComparable("age", Integer.class).goe(e2.getAge())
+				.and(
+					t.getComparable("one.age", Integer.class).goe(e2.getAge())
+				)
+			).orderBy(
+				new OrderSpecifier<>(Order.DESC, t.getComparable("age", Integer.class))
+			).orderBy(
+				new OrderSpecifier<>(Order.ASC, t.getComparable("one.name", String.class))
+			).fetch()
+		
+		.forEach(i->{
+			logger.info(i);
 		});
+		
+		
+//		new JPAQueryBuilder<DomainSample>(new JPAQuery<DomainSample>(em))
+		new JPAQueryBuilder<DomainSample>(em)
+//		JPAQueryBuilder.of(new JPAQuery<DomainSample>(em))
+//		JPAQueryBuilder.of(em)
+			.from(
+				DomainSample.class)
+			.leftJoin(
+				"one")
+			.where()
+				.and().goe("age", e2.getAge())
+				.and().goe("one.age", e2.getAge())
+			.orderBy()
+				.desc("age")
+				.asc("one.name")
+			.build()
+			.fetch()
+		.forEach(i->{
+			logger.info(i);
+		});
+
+		
+		
+		
+		
+		
+		
+		
+		
+//		JPAQueryType<DomainSample> t1 = new JPAQueryType<>(DomainSample.class);
+//		JPAQueryType<DomainSampleOne> t2 = new JPAQueryType<>(DomainSampleOne.class);
+//
+//		PathBuilder<DomainSample> t = new PathBuilderFactory().create(DomainSample.class);
+//		
+////		ComparablePath<Comparable> a = t.getComparable("age", Comparable.class);
+////		logger.info(a);
+//		
+//		
+//		JPAQueryBuilder.of(DomainSample.class, em)
+//			.leftJoin("one")
+//			.where()
+//				.and().eq("age", 1)
+//				.and().eq("one.age", 2)
+////				.and(t.get("one").getComparable("age", Integer.class).goe(e1.getAge()))
+//			.build()
+//			.fetch()
+//			
+//		.forEach(i->{
+//			logger.info(i);
+//		});
+		
+		
+		
+//		logger.info(g.getMetadata());
+//		logger.info(g.getMetadata().getProjection());
+//		logger.info(g.getType().newInstance().getClass());
+		
+//		ResolvableType resolvableType = ResolvableType.forInstance(g);//.as(JPAQuery.class);
+//		System.out.println(resolvableType.getGeneric(0));//User
+//		System.out.println(resolvableType.getGeneric(1));//Long
+		//Class<?> type =  ((ParameterizedType) g.getClass().getGenericSuperclass()))).getActualTypeArguments()[0];
+		
+		
+		
+		//g.fetch()
+		
+		
+//		logger.info("-------------------------------------------");
+//		logger.info("------------READ---------------------------");
+//		logger.info("-------------------------------------------");
+//		
+//		Optional<DomainSample> r1 = domainSampleRepository.findById(e1.getId());
+//		logger.info(r1.get());
+//		
+//		logger.info("-------------------------------------------");
+//		logger.info("-------------FIND--------------------------");
+//		logger.info("-------------------------------------------");
+//		domainSampleRepository.findAll(PageRequest.of(0, 10)).forEach(d->{
+//			logger.info(d);
+//		});
 		
 		
 		
@@ -142,17 +228,17 @@ public class Application1Tests {
 		logger.info("-------------------------------------------");
 
 		
-		JPAQuery<?> query = new JPAQuery<>();
-		JPAQueryBuilderFactory path1 = new JPAQueryBuilderFactory(DomainSample.class);	
+//		JPAQuery<?> query = new JPAQuery<>();
+//		JPAQueryBuilderFactory path1 = new JPAQueryBuilderFactory(DomainSample.class);	
 //		JPAQueryPath path2 = new JPAQueryPath(DomainSampleOne.class);	
 		//where(path1.getArray("types", Integer.class).in(1))
-		
-		EntityPath<DomainSample> e = new PathBuilderFactory().create(DomainSample.class);
-		PathBuilder<DomainSample> b = new PathBuilder<>(e.getType(), e.getMetadata());
-
-		query.from(path1.get()).clone(em).fetch().forEach(a->{
-			logger.info("/1/ "+a);
-		});
+//		
+//		EntityPath<DomainSample> e = new PathBuilderFactory().create(DomainSample.class);
+//		PathBuilder<DomainSample> b = new PathBuilder<>(e.getType(), e.getMetadata());
+//
+//		query.from(path1.get()).clone(em).fetch().forEach(a->{
+//			logger.info("/1/ "+a);
+//		});
 		
 //		Predicate p1 = path1.getArray("types").in(new Integer[] {1,2});
 //		Predicate p2 = path1.getArray("types").in(new Integer[] {new Integer[] {1,2}});
@@ -161,17 +247,17 @@ public class Application1Tests {
 		
 //		Predicate p1 = path1.get("types").in(new String[][] {new String[] {DomainType.AA.name(), DomainType.BB.name()}});
 //		Predicate p1 = path1.get("types").in(new String[] {DomainType.AA.name(), DomainType.BB.name()});
-
-		logger.info("---------------------------------------------");
-		logger.info("------------1111-----------------------------");
-		logger.info("---------------------------------------------");
-		em.createNativeQuery("select * from domain_sample where REGEXP_MATCHES( types_data , '.*BB.*')", DomainSample.class).getResultList().forEach(a->{
-			logger.info("/3/ "+a);
-		});
-		
-		logger.info("---------------------------------------------");
-		logger.info("-------------2222----------------------------");
-		logger.info("---------------------------------------------");
+//
+//		logger.info("---------------------------------------------");
+//		logger.info("------------1111-----------------------------");
+//		logger.info("---------------------------------------------");
+//		em.createNativeQuery("select * from domain_sample where REGEXP_MATCHES( types_data , '.*BB.*')", DomainSample.class).getResultList().forEach(a->{
+//			logger.info("/3/ "+a);
+//		});
+//		
+//		logger.info("---------------------------------------------");
+//		logger.info("-------------2222----------------------------");
+//		logger.info("---------------------------------------------");
 //		Predicate p2 = b.getString("typesData").contains("BB");
 //		Predicate p3 = b.getString("typesData").contains("CC");
 
