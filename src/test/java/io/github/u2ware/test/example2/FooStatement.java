@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import lombok.Data;
 
 @Component
-public @Data class FooStatement {//implements PrepareStatementContext{
+public @Data class FooStatement {
 
 	private @Autowired FooStatement1 fooStatement1;
 	private @Autowired FooStatement2 fooStatement2;
