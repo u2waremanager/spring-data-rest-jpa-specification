@@ -30,6 +30,7 @@ public class BarHandler {
 	}
 
 	@HandleBeforeRead
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected void handleBeforeRead(Bar entity, Object query) {
 		logger.info("handleBeforeRead "+entity);
 		logger.info("handleBeforeRead "+query);

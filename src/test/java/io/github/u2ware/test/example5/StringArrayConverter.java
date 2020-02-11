@@ -1,4 +1,4 @@
-package org.springframework.data.jpa.repository.config;
+package io.github.u2ware.test.example5;
 
 import javax.persistence.AttributeConverter;
 
