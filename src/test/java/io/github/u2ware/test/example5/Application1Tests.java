@@ -11,14 +11,11 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.jpa.repository.support.JPAQueryBuilder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.querydsl.core.types.Order;
-import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.core.types.dsl.PathBuilderFactory;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -97,48 +94,63 @@ public class Application1Tests {
 		
 		
 		PathBuilder<DomainSample> t = new PathBuilderFactory().create(DomainSample.class);
-		//JPAQuery<DomainSample> query = ;
+
 		
-		new JPAQuery<DomainSample>(em)
-			.from(
-				t)
-			.leftJoin(
-				t.get("one")).fetchJoin()
-			.where(
-				t.getComparable("age", Integer.class).goe(e2.getAge())
-				.and(
-					t.getComparable("one.age", Integer.class).goe(e2.getAge())
-				)
-			).orderBy(
-				new OrderSpecifier<>(Order.DESC, t.getComparable("age", Integer.class))
-			).orderBy(
-				new OrderSpecifier<>(Order.ASC, t.getComparable("one.name", String.class))
-			).fetch()
+		JPAQuery<DomainSample> query = new JPAQuery<>(em);
+//		query.select(t);
+		query.from(t);
 		
-		.forEach(i->{
-			logger.info(i);
-		});
+		logger.info(query.getType());
+		logger.info(query.getMetadata());
+		logger.info(query.getMetadata().getProjection());
+		
+//		query.from(t).fetch().forEach(i->{
+//			logger.info(i);
+//		});
+
+		
+		
+		
+//		new JPAQuery<DomainSample>(em)
+//			.from(
+//				t)
+//			.leftJoin(
+//				t.get("one")).fetchJoin()
+//			.where(
+//				t.getComparable("age", Integer.class).goe(e2.getAge())
+//				.and(
+//					t.getComparable("one.age", Integer.class).goe(e2.getAge())
+//				)
+//			).orderBy(
+//				new OrderSpecifier<>(Order.DESC, t.getComparable("age", Integer.class))
+//			).orderBy(
+//				new OrderSpecifier<>(Order.ASC, t.getComparable("one.name", String.class))
+//			).fetch()
+//		
+//		.forEach(i->{
+//			logger.info(i);
+//		});
 		
 		
 //		new JPAQueryBuilder<DomainSample>(new JPAQuery<DomainSample>(em))
-		new JPAQueryBuilder<DomainSample>(em)
+//		new JPAQueryBuilder<DomainSample>(em)
 //		JPAQueryBuilder.of(new JPAQuery<DomainSample>(em))
 //		JPAQueryBuilder.of(em)
-			.from(
-				DomainSample.class)
-			.leftJoin(
-				"one")
-			.where()
-				.and().goe("age", e2.getAge())
-				.and().goe("one.age", e2.getAge())
-			.orderBy()
-				.desc("age")
-				.asc("one.name")
-			.build()
-			.fetch()
-		.forEach(i->{
-			logger.info(i);
-		});
+//			.from(
+//				DomainSample.class)
+//			.leftJoin(
+//				"one")
+//			.where()
+//				.and().goe("age", e2.getAge())
+//				.and().goe("one.age", e2.getAge())
+//			.orderBy()
+//				.desc("age")
+//				.asc("one.name")
+//			.build()
+//			.fetch()
+//		.forEach(i->{
+//			logger.info(i);
+//		});
 
 		
 		

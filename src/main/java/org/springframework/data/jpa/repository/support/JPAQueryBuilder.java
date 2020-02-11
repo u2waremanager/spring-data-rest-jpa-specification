@@ -3,7 +3,6 @@ package org.springframework.data.jpa.repository.support;
 import javax.persistence.EntityManager;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;

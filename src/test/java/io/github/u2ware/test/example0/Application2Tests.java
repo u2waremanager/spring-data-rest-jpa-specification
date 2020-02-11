@@ -5,6 +5,7 @@ import javax.persistence.PersistenceContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +27,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 
 //import static io.github.u2ware.test.ApplicationMockMvc.ApplicationResultActions.sizeMatch;
 import io.github.u2ware.test.ApplicationMockMvc;
+import io.github.u2ware.test.example5.DomainSample;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -59,11 +61,30 @@ public class Application2Tests {
 	@Test
 	public void queryDslTest() {
 		
-//		QFoo customer = QFoo.customer;
+		PathBuilder<Foo> t = new PathBuilderFactory().create(Foo.class);
+
+		
+		JPAQuery<Foo> query1 = new JPAQuery<>(em);
+		query1.select(t);
+		
+		logger.info(query1.getType());
+		logger.info(query1.getMetadata().getProjection());
+		Assert.assertEquals(Foo.class, query1.getType());
+		Assert.assertEquals("foo", query1.getMetadata().getProjection().toString());
+		
+		
+		JPAQuery<Foo> query2 = new JPAQuery<>(em);
+		query2.from(t);
+		
+		logger.info(query2.getType());
+		logger.info(query2.getMetadata().getProjection());
+		Assert.assertEquals(Void.class, query2.getType());
+		Assert.assertNull(query2.getMetadata().getProjection());
+		
 	}
 
 	
-	@Test
+//	@Test
 	public void jpaQueryTypeTest() {
 		
 		JPAQuery<Foo> query = new JPAQuery<>(em);
@@ -89,7 +110,8 @@ public class Application2Tests {
 	//@Test
 	public void jpaQueryBuilderTest() {
 		
-		JPAQueryBuilder.of(Foo.class, em)
+		JPAQueryBuilder.of(em)
+			.from(Foo.class)
 			.where()
 				.and().eq("name", "1")
 				.andStart()
