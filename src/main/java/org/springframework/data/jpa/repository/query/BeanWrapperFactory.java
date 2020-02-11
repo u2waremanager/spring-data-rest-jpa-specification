@@ -8,25 +8,25 @@ import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.util.MultiValueMap;
 
-public class BeanWrapperFactory {
+class BeanWrapperFactory {
 
 	private BeanWrapperFactory() {}
 	
-	public static <T> BeanWrapper getInstance(T params){
+	static <T> BeanWrapper getInstance(T params){
 		return new BeanWrapperImpl(params);
 	}
-	public static BeanWrapper getInstance(Object... params){
+	static BeanWrapper getInstance(Object... params){
 		return new BeanWrapperObjectArray(params);
 	}
-	public static BeanWrapper getInstance(MultiValueMap<String,Object> params){
+	static BeanWrapper getInstance(MultiValueMap<String,Object> params){
 		return new BeanWrapperMultiValue(params);
 	}
 
-	public static class BeanWrapperMultiValue extends BeanWrapperImpl {
+	static class BeanWrapperMultiValue extends BeanWrapperImpl {
 		
 		private Map<String, ?> source;
 		
-		public BeanWrapperMultiValue(Map<String, ?> source) {
+		protected BeanWrapperMultiValue(Map<String, ?> source) {
 			this.source = source;
 		}
 		
@@ -36,12 +36,12 @@ public class BeanWrapperFactory {
 		}
 	}
 	
-	public static class BeanWrapperObjectArray extends BeanWrapperImpl {
+	static class BeanWrapperObjectArray extends BeanWrapperImpl {
 		
 		private Object[] source;
 		private AtomicInteger index;
 		
-		public BeanWrapperObjectArray(Object... source ) {
+		BeanWrapperObjectArray(Object... source ) {
 			this.source = source;
 			this.index = new AtomicInteger(0);
 		}

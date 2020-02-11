@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class PartTreePredicate<X> {
+public class PartTreeResolver<X> {
 
 	protected Log logger = LogFactory.getLog(getClass());
 
@@ -51,7 +51,7 @@ public class PartTreePredicate<X> {
 	//private final CriteriaQuery<?> query;
 	private final CriteriaBuilder builder;
 	
-	public PartTreePredicate(Root<X> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+	public PartTreeResolver(Root<X> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 		
 		Assert.notNull(root, "root is requried");
 		Assert.notNull(query, "query is requried");
@@ -63,16 +63,16 @@ public class PartTreePredicate<X> {
 	}
 	
 	
-	public Predicate build(PartTree partTree, X params){
+	public Predicate resolve(PartTree partTree, X params){
 		return toPredicate(partTree, BeanWrapperFactory.getInstance(params));
 	}
-	public Predicate build(PartTree partTree, Object... params){
+	public Predicate resolve(PartTree partTree, Object... params){
 		return toPredicate(partTree, BeanWrapperFactory.getInstance(params));
 	}
-	public Predicate build(PartTree partTree, MultiValueMap<String,Object> params){
+	public Predicate resolve(PartTree partTree, MultiValueMap<String,Object> params){
 		return toPredicate(partTree,  BeanWrapperFactory.getInstance(params));
 	}
-	public Predicate build(PartTree partTree, BeanWrapper parameter){
+	public Predicate resolve(PartTree partTree, BeanWrapper parameter){
 		return toPredicate(partTree,  parameter);
 	}
 	
@@ -111,11 +111,11 @@ public class PartTreePredicate<X> {
 	}
 
 	private Predicate create(Part part, BeanWrapper parameter) {
-		return build(part, parameter.getPropertyValue(part.getProperty().getSegment()));
+		return resolve(part, parameter.getPropertyValue(part.getProperty().getSegment()));
 	}
 	
 
-	public Predicate build(Part part, Object parameter) {
+	public Predicate resolve(Part part, Object parameter) {
 		try {
 			Predicate p = toPredicate(part, parameter);
 			logger.info(part);
