@@ -18,16 +18,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 
 //@JsonComponent
-public class UriToEntityDeserializer<T> extends JsonDeserializer<T> implements ContextualDeserializer{
+public class UriLinkDeserializer<T> extends JsonDeserializer<T> implements ContextualDeserializer{
 
 	protected Log logger = LogFactory.getLog(getClass());
 	
 	private ObjectMapper objectMapper = new ObjectMapper();
 	private Class<?> rawClass;
 	
-	public UriToEntityDeserializer() {
+	public UriLinkDeserializer() {
 	}
-	public UriToEntityDeserializer(Class<?> rawClass) {
+	public UriLinkDeserializer(Class<?> rawClass) {
 		this.rawClass = rawClass;
 	}
 
@@ -35,7 +35,7 @@ public class UriToEntityDeserializer<T> extends JsonDeserializer<T> implements C
 	public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property) throws JsonMappingException {
 		JavaType type = ctxt.getContextualType();
 		this.rawClass = type.getRawClass();
-		return new UriToEntityDeserializer<>(type.getRawClass());
+		return new UriLinkDeserializer<>(type.getRawClass());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -59,7 +59,7 @@ public class UriToEntityDeserializer<T> extends JsonDeserializer<T> implements C
 			logger.debug("text: "+text);
 			
 			try {
-				T object = (T) UriToEntityParser.resolveEntity(text, rawClass);
+				T object = (T) UriLinkParser.resolveEntity(text, rawClass);
 //				logger.debug("object: "+ object);
 				return object;
 			} catch (Exception e) {

@@ -16,7 +16,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 //@RepositoryRestController
-public class UriToEntityParser implements InitializingBean{
+public class UriLinkParser implements InitializingBean{
 
 	private @Autowired PersistentEntities entities;
 	private @Autowired RepositoryInvokerFactory invokerFactory;
@@ -24,7 +24,7 @@ public class UriToEntityParser implements InitializingBean{
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		UriToEntityParser.uriToEntityConverter = new UriToEntityConverter(entities, invokerFactory, repositories);
+		UriLinkParser.uriToEntityConverter = new UriToEntityConverter(entities, invokerFactory, repositories);
 	}
 	
 	//////////////////////////////////////////////////////////////////////

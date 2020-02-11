@@ -10,7 +10,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Entity
-@Table(name="example2_foo")
+@Table(name="example4_foo")
 public @Data @EqualsAndHashCode(callSuper=false) class FooView {
 
 	@Id 

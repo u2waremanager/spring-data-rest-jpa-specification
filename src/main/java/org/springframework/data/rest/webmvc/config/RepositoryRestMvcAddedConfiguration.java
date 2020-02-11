@@ -5,7 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.HibernateConfiguration;
 import org.springframework.data.rest.core.event.AnnotatedReadEventHandlerInvoker;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
-import org.springframework.data.rest.webmvc.support.UriToEntityParser;
+import org.springframework.data.rest.webmvc.support.UriLinkBuilder;
+import org.springframework.data.rest.webmvc.support.UriLinkParser;
 
 @RepositoryRestController
 @Configuration
@@ -24,8 +25,12 @@ public class RepositoryRestMvcAddedConfiguration {
 	
 	
 	@Bean 
-	public UriToEntityParser uriLinkParser() {
-		return new UriToEntityParser();
+	public UriLinkParser uriLinkParser() {
+		return new UriLinkParser();
+	}
+	@Bean 
+	public UriLinkBuilder uriLinkBuilder() {
+		return new UriLinkBuilder();
 	}
 	
 }

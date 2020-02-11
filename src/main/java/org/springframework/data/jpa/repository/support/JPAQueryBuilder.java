@@ -46,6 +46,19 @@ public class JPAQueryBuilder<T> {
 			this.type = type;
 		}
 		
+		public FromBuilder<T> leftJoin(String... property) {		
+			for(String p : property) {
+				this.query.leftJoin(type.get(p)).fetchJoin();
+			}
+			return this;
+		}
+		public FromBuilder<T> rightJoin(String... property) {		
+			for(String p : property) {
+				this.query.rightJoin(type.get(p)).fetchJoin();
+			}
+			return this;
+		}
+		
 		public WhereBuilder<T> where() {			
 			return new WhereBuilder<>(query, type);
 		}

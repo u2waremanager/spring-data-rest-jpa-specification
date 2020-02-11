@@ -12,7 +12,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
 
-@Table(name="example2_foo")
+@Table(name="example4_foo")
 @Entity
 public @Data class Foo {
 
