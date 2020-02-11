@@ -2,7 +2,7 @@ package io.github.u2ware.test.example1;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.data.jpa.repository.query.JPAQueryBuilder;
+import org.springframework.data.jpa.repository.support.JPAQueryBuilder;
 import org.springframework.data.rest.core.event.AbstractRepositoryReadEventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;

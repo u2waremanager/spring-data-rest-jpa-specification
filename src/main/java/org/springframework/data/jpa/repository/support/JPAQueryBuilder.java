@@ -1,4 +1,4 @@
-package org.springframework.data.jpa.repository.query;
+package org.springframework.data.jpa.repository.support;
 
 import javax.persistence.EntityManager;
 

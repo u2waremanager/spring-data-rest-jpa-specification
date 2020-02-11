@@ -11,8 +11,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.jpa.repository.query.JPAQueryBuilder;
-import org.springframework.data.jpa.repository.query.JPAQueryType;
+import org.springframework.data.jpa.repository.support.JPAQueryBuilder;
+import org.springframework.data.jpa.repository.support.JPAQueryType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -55,7 +55,12 @@ public class Application2Tests {
 	private @Autowired FooRepository repository; 
 	private @PersistenceContext EntityManager em;
 	
-	
+	@Test
+	public void queryDslTest() {
+		
+//		QFoo customer = QFoo.customer;
+	}
+
 	
 	@Test
 	public void jpaQueryTypeTest() {

@@ -5,6 +5,6 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-public interface BarRepository extends PagingAndSortingRepository<Bar, UUID>, JpaSpecificationExecutor<Bar> {
+public interface BarRepository extends PagingAndSortingRepository<Bar, UUID> , JpaSpecificationExecutor<Bar>{
 
 }
