@@ -32,6 +32,6 @@ public class PartTreeSpecification<T> implements Specification<T>{
 	@Override
 	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 		PartTree partTree = new PartTree(source, root.getJavaType());
-		return new PartTreePredicateBuilder<>(root, query, builder).build(partTree, params);
+		return new PartTreePredicate<>(root, query, builder).build(partTree, params);
 	}
 }

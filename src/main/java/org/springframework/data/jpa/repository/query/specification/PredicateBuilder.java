@@ -198,7 +198,7 @@ public class PredicateBuilder<T> {
 		private WhereBuilder<T> partTree(String source, BeanWrapper params){
 			try {
 				PartTree partTree = new PartTree(source, builder.getRoot().getJavaType());
-				Predicate predicate = new PartTreePredicateBuilder<>(builder.getRoot(), builder.getCriteriaQuery(), builder.getCriteriaBuilder()).build(partTree, params);
+				Predicate predicate = new PartTreePredicate<>(builder.getRoot(), builder.getCriteriaQuery(), builder.getCriteriaBuilder()).build(partTree, params);
 				return builder.getWhereBuilder().chain(predicate);
 			}catch(Exception e) {
 				logger.info(source+" -> "+e.getMessage());
@@ -210,7 +210,7 @@ public class PredicateBuilder<T> {
 			if(value == null) return builder.getWhereBuilder();
 			try {
 				Part part = new Part(source, builder.getRoot().getJavaType());
-				Predicate predicate = new PartTreePredicateBuilder<T>(builder.getRoot(), builder.getCriteriaQuery(), builder.getCriteriaBuilder()).build(part, value);
+				Predicate predicate = new PartTreePredicate<T>(builder.getRoot(), builder.getCriteriaQuery(), builder.getCriteriaBuilder()).build(part, value);
 				return builder.getWhereBuilder().chain(predicate);
 			}catch(Exception e) {
 				logger.info(source+" -> "+e.getMessage());
@@ -278,11 +278,11 @@ public class PredicateBuilder<T> {
 		}
 		
 		public OrderBuilder<T> asc(String property) {
-			orders.add(builder.getCriteriaBuilder().asc(PartTreePredicateBuilder.getTypedPath(builder.getRoot(), property)));
+			orders.add(builder.getCriteriaBuilder().asc(PartTreePredicate.getTypedPath(builder.getRoot(), property)));
 			return this;
 		}
 		public OrderBuilder<T> desc(String property) {
-			orders.add(builder.getCriteriaBuilder().desc(PartTreePredicateBuilder.getTypedPath(builder.getRoot(), property)));
+			orders.add(builder.getCriteriaBuilder().desc(PartTreePredicate.getTypedPath(builder.getRoot(), property)));
 			return this;
 		}
 		

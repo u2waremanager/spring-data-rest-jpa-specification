@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class PartTreePredicateBuilder<X> {
+public class PartTreePredicate<X> {
 
 	protected Log logger = LogFactory.getLog(getClass());
 
@@ -46,7 +46,7 @@ public class PartTreePredicateBuilder<X> {
 	//private final CriteriaQuery<?> query;
 	private final CriteriaBuilder builder;
 	
-	public PartTreePredicateBuilder(Root<X> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+	public PartTreePredicate(Root<X> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 		
 		Assert.notNull(root, "root is requried");
 		Assert.notNull(query, "query is requried");
