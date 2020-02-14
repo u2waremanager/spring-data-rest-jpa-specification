@@ -1,4 +1,4 @@
-package org.springframework.data.jpa.repository.query;
+package org.springframework.data.jpa.repository.query.specification;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -32,6 +32,6 @@ public class PartTreeSpecification<T> implements Specification<T>{
 	@Override
 	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 		PartTree partTree = new PartTree(source, root.getJavaType());
-		return new PartTreeResolver<>(root, query, builder).resolve(partTree, params);
+		return new PartTreePredicateBuilder<>(root, query, builder).build(partTree, params);
 	}
 }

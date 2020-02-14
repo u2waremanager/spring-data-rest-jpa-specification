@@ -12,22 +12,22 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.jpa.repository.support.JPAQueryBuilder;
+import org.springframework.data.jpa.repository.query.querydsl.JPAQueryBuilder;
+import org.springframework.data.jpa.repository.query.querydsl.PredicateBuilder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.core.types.dsl.PathBuilderFactory;
 import com.querydsl.jpa.impl.JPAQuery;
 
 //import static io.github.u2ware.test.ApplicationMockMvc.ApplicationResultActions.sizeMatch;
 import io.github.u2ware.test.ApplicationMockMvc;
-import io.github.u2ware.test.example5.DomainSample;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -81,6 +81,7 @@ public class Application2Tests {
 		Assert.assertEquals(Void.class, query2.getType());
 		Assert.assertNull(query2.getMetadata().getProjection());
 		
+
 	}
 
 	
@@ -92,13 +93,14 @@ public class Application2Tests {
 		
 		query.from(
 			t
-//		).where(
-//			t.get("name").eq("1")
-//		).where(
-//			t.get("age").eq(1)
-
 		).where(
-			new BooleanBuilder().and(t.get("age").eq(1)).or(t.get("age").eq(2))
+			t.get("name").eq("a").and(
+				t.get("age").eq(2).or(
+					t.get("name").eq("a").and(
+						t.get("age").eq(2)
+					)
+				)
+			)
 			
 		).orderBy(
 			new OrderSpecifier<>(Order.DESC, t.getComparable("age", Integer.class))
@@ -107,29 +109,70 @@ public class Application2Tests {
 		).fetch();
 	}
 	
-	//@Test
-	public void jpaQueryBuilderTest() {
+		
+	
+
+
+	@Test
+	public void jqpQuery4() {
+
+		PathBuilder<Foo> foo = new PathBuilderFactory().create(Foo.class);
+		Predicate p1 = PredicateBuilder.of()
+				.where(Foo.class)
+				.and(foo.get("name").eq("a"))
+				.andStart()
+					.andStart()
+						.and(foo.get("age").eq(1))
+						.or(foo.get("name").eq("b"))
+					.andEnd()
+					.andStart()
+						.and(foo.get("age").eq(2))
+						.or(foo.get("name").eq("c"))
+					.andEnd()
+				.andEnd()
+				.and(foo.get("name").eq("c"))
+				.build();
+	
+
+		Predicate p2 = PredicateBuilder.of()
+				.where(Foo.class)
+				.and().eq("name", "a")
+				.andStart()
+					.andStart()
+						.and().eq("age",1)
+						.or().eq("name","b")
+					.andEnd()
+					.andStart()
+						.and().eq("age",2)
+						.or().eq("name", "c")
+					.andEnd()
+				.andEnd()
+				.and().eq("name", "c")
+				.build();
+		
 		
 		JPAQueryBuilder.of(em)
 			.from(Foo.class)
 			.where()
-				.and().eq("name", "1")
+			.and().eq("name", "a")
+			.andStart()
 				.andStart()
-					.eq("name", "1")
-					.or().eq("age", 1)
+					.and().eq("age",1)
+					.or().eq("name","b")
 				.andEnd()
 				.andStart()
-					.eq("name", "1")
-					.or().eq("age", 1)
+					.and().eq("age",2)
+					.or().eq("name", "c")
 				.andEnd()
-				.or().eq("age", 1)
-			.orderBy()
-				.desc("name")
-				.asc("age")
-			.build()
-			.fetch();
+			.andEnd()
+			.and().eq("name", "c").orderBy()
+			.build().fetch().forEach(i->{
+				logger.info(i);
+			});;
+	
+	
 	}
-	
-	
+
+
 	
 }

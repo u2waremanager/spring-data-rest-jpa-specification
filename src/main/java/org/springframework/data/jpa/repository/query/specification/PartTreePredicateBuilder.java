@@ -1,4 +1,4 @@
-package org.springframework.data.jpa.repository.query;
+package org.springframework.data.jpa.repository.query.specification;
 
 import static org.springframework.data.repository.query.parser.Part.Type.IS_NOT_EMPTY;
 import static org.springframework.data.repository.query.parser.Part.Type.NOT_CONTAINING;
@@ -20,7 +20,7 @@ import javax.persistence.criteria.Root;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanWrapper;
-import org.springframework.data.jpa.repository.query.QueryUtils;
+import org.springframework.data.jpa.repository.query.SpecificationUtils;
 import org.springframework.data.mapping.PropertyPath;
 import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.Part.IgnoreCaseType;
@@ -36,13 +36,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class PartTreeResolver<X> {
+public class PartTreePredicateBuilder<X> {
 
 	protected Log logger = LogFactory.getLog(getClass());
 
 	public static Expression<?> toExpressionRecursively(Root<?> root, String property){
 		PropertyPath path = PropertyPath.from(property, root.getJavaType());
-		return QueryUtils.toExpressionRecursively(root, path);
+		return SpecificationUtils.toExpressionRecursively(root, path);
 	}
 	
 	
@@ -51,7 +51,7 @@ public class PartTreeResolver<X> {
 	//private final CriteriaQuery<?> query;
 	private final CriteriaBuilder builder;
 	
-	public PartTreeResolver(Root<X> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+	public PartTreePredicateBuilder(Root<X> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 		
 		Assert.notNull(root, "root is requried");
 		Assert.notNull(query, "query is requried");
@@ -63,16 +63,16 @@ public class PartTreeResolver<X> {
 	}
 	
 	
-	public Predicate resolve(PartTree partTree, X params){
+	public Predicate build(PartTree partTree, X params){
 		return toPredicate(partTree, BeanWrapperFactory.getInstance(params));
 	}
-	public Predicate resolve(PartTree partTree, Object... params){
+	public Predicate build(PartTree partTree, Object... params){
 		return toPredicate(partTree, BeanWrapperFactory.getInstance(params));
 	}
-	public Predicate resolve(PartTree partTree, MultiValueMap<String,Object> params){
+	public Predicate build(PartTree partTree, MultiValueMap<String,Object> params){
 		return toPredicate(partTree,  BeanWrapperFactory.getInstance(params));
 	}
-	public Predicate resolve(PartTree partTree, BeanWrapper parameter){
+	public Predicate build(PartTree partTree, BeanWrapper parameter){
 		return toPredicate(partTree,  parameter);
 	}
 	
@@ -111,11 +111,11 @@ public class PartTreeResolver<X> {
 	}
 
 	private Predicate create(Part part, BeanWrapper parameter) {
-		return resolve(part, parameter.getPropertyValue(part.getProperty().getSegment()));
+		return build(part, parameter.getPropertyValue(part.getProperty().getSegment()));
 	}
 	
 
-	public Predicate resolve(Part part, Object parameter) {
+	public Predicate build(Part part, Object parameter) {
 		try {
 			Predicate p = toPredicate(part, parameter);
 			logger.info(part);
@@ -317,7 +317,7 @@ public class PartTreeResolver<X> {
 	}
 	
 	private static <T> Expression<T> getTypedPath(Root<?> root, Part part) {
-		return QueryUtils.toExpressionRecursively(root, part.getProperty());
+		return SpecificationUtils.toExpressionRecursively(root, part.getProperty());
 	}
 	public static <T> Expression<T> getTypedPath(Root<?> root, String property) {
 		return getTypedPath(root, new Part(property, root.getJavaType()));

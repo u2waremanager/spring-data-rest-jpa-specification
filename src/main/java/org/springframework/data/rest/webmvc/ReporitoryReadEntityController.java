@@ -11,8 +11,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.query.PartTreeSpecification;
-import org.springframework.data.jpa.repository.query.SpecificationBuffer;
+import org.springframework.data.jpa.repository.query.SpecificationUtils;
+import org.springframework.data.jpa.repository.query.specification.PartTreeSpecification;
 import org.springframework.data.jpa.repository.support.Querydsl;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
@@ -123,11 +123,11 @@ public class ReporitoryReadEntityController extends AbstractRepositoryController
 		if(StringUtils.hasText(partTree)) {
 			specification = new PartTreeSpecification(partTree, payload.getContent());
 		}else {
-			specification = new SpecificationBuffer();
+			specification = SpecificationUtils.createSpecificationBuffer();
+			//....................
+			publisher.publishEvent(new BeforeReadEvent(payload.getContent(), specification));
+			//...................
 		}
-		//....................
-		publisher.publishEvent(new BeforeReadEvent(payload.getContent(), specification));
-		//...................
 		
 		//////////////////////////////////////////////////////////////////////////////////////////////
 		//

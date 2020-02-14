@@ -1,4 +1,4 @@
-package org.springframework.data.jpa.repository.query;
+package org.springframework.data.jpa.repository.query.specification;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;

@@ -7,7 +7,7 @@ import javax.persistence.criteria.Predicate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.query.PredicateBuilder;
+import org.springframework.data.jpa.repository.query.specification.PredicateBuilder;
 import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
 import org.springframework.data.rest.core.annotation.HandleBeforeRead;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;

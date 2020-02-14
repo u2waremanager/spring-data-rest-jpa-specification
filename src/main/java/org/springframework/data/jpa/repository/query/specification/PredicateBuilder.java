@@ -1,4 +1,4 @@
-package org.springframework.data.jpa.repository.query;
+package org.springframework.data.jpa.repository.query.specification;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -198,8 +198,7 @@ public class PredicateBuilder<T> {
 		private WhereBuilder<T> partTree(String source, BeanWrapper params){
 			try {
 				PartTree partTree = new PartTree(source, builder.getRoot().getJavaType());
-				Predicate predicate = new PartTreeResolver<>(builder.getRoot(), builder.getCriteriaQuery(), builder.getCriteriaBuilder())
-						.resolve(partTree, params);
+				Predicate predicate = new PartTreePredicateBuilder<>(builder.getRoot(), builder.getCriteriaQuery(), builder.getCriteriaBuilder()).build(partTree, params);
 				return builder.getWhereBuilder().chain(predicate);
 			}catch(Exception e) {
 				logger.info(source+" -> "+e.getMessage());
@@ -211,8 +210,7 @@ public class PredicateBuilder<T> {
 			if(value == null) return builder.getWhereBuilder();
 			try {
 				Part part = new Part(source, builder.getRoot().getJavaType());
-				Predicate predicate = new PartTreeResolver<T>(builder.getRoot(), builder.getCriteriaQuery(), builder.getCriteriaBuilder())
-						.resolve(part, value);
+				Predicate predicate = new PartTreePredicateBuilder<T>(builder.getRoot(), builder.getCriteriaQuery(), builder.getCriteriaBuilder()).build(part, value);
 				return builder.getWhereBuilder().chain(predicate);
 			}catch(Exception e) {
 				logger.info(source+" -> "+e.getMessage());
@@ -280,11 +278,11 @@ public class PredicateBuilder<T> {
 		}
 		
 		public OrderBuilder<T> asc(String property) {
-			orders.add(builder.getCriteriaBuilder().asc(PartTreeResolver.getTypedPath(builder.getRoot(), property)));
+			orders.add(builder.getCriteriaBuilder().asc(PartTreePredicateBuilder.getTypedPath(builder.getRoot(), property)));
 			return this;
 		}
 		public OrderBuilder<T> desc(String property) {
-			orders.add(builder.getCriteriaBuilder().desc(PartTreeResolver.getTypedPath(builder.getRoot(), property)));
+			orders.add(builder.getCriteriaBuilder().desc(PartTreePredicateBuilder.getTypedPath(builder.getRoot(), property)));
 			return this;
 		}
 		
