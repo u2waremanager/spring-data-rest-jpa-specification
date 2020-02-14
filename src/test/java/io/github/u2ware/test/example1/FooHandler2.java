@@ -7,7 +7,7 @@ import javax.persistence.criteria.Predicate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.query.specification.SpecificationBuilder;
+import org.springframework.data.jpa.repository.query.specification.PredicateBuilder;
 import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
 import org.springframework.data.rest.core.annotation.HandleBeforeRead;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
@@ -38,7 +38,7 @@ public class FooHandler2 {
 		
 		Specification<Foo> spec = (Specification)query;
 		spec.and((r,c,b)->{
-			return SpecificationBuilder.of(r,c,b).where().and().eq("name", foo.get_name()).build();
+			return PredicateBuilder.of(r,c,b).where().and().eq("name", foo.get_name()).build();
 		});
 	}
 

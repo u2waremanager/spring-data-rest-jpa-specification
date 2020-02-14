@@ -15,10 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.query.SpecificationUtils;
-import org.springframework.data.jpa.repository.query.querydsl.PredicateBuilder;
+import org.springframework.data.jpa.repository.query.ExpressionRecursivelyUtils;
 import org.springframework.data.jpa.repository.query.specification.PartTreePredicateBuilder;
 import org.springframework.data.jpa.repository.query.specification.PartTreeSpecification;
+import org.springframework.data.jpa.repository.query.specification.PredicateBuilder;
 import org.springframework.data.jpa.repository.query.specification.SpecificationBuilder;
 import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.PartTree;
@@ -61,20 +61,6 @@ public class Application1Tests {
 		repository.save(new Foo("f", 3, "2"));		
 	}
 
-	
-	
-	@Test
-	public void specificationBufferTests() throws Exception{
-	
-		Specification<Foo> spec = SpecificationUtils.createSpecificationBuffer();
-		spec.and((r, q, b) -> {return SpecificationBuilder.of(r,q,b).where().and().eq("name", "a").build();});		
-		spec.or((r, q, b) -> {return SpecificationBuilder.of(r,q,b).where().and().eq("age", 1).build();});		
-		List<Foo> foos = repository.findAll(spec);
-		
-		Assert.assertEquals(2, foos.size());
-	}
-	
-	
 	@Test
 	public void criteriaBuilderTests() throws Exception{
 
@@ -86,11 +72,10 @@ public class Application1Tests {
 			
 //			CriteriaBuilderImpl f;
 //			f.equal(x, y);
-//			
 			
-			Expression<?> title = PartTreePredicateBuilder.toExpressionRecursively(root, "title");
-			Expression<?> name = PartTreePredicateBuilder.toExpressionRecursively(root, "name");
-			Expression<?> age = PartTreePredicateBuilder.toExpressionRecursively(root, "age");
+			Expression<?> title = ExpressionRecursivelyUtils.toExpressionRecursively(root, "title");
+			Expression<?> name = ExpressionRecursivelyUtils.toExpressionRecursively(root, "name");
+			Expression<?> age = ExpressionRecursivelyUtils.toExpressionRecursively(root, "age");
 			
 			
 			Predicate p1 = builder.equal(title, "1");
@@ -103,12 +88,15 @@ public class Application1Tests {
 			Predicate r3 = builder.and(  p2, p3 );
 			r3 = builder.and( p1, r3 ); //->2
 			return r3;
-			
 //			return age.in(new String[] {"1", "2"});
 		});
 		logger.info(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(foos1));
 
 	}
+	
+	
+	
+	
 	
 	
 	@Test
@@ -193,7 +181,7 @@ public class Application1Tests {
 		//
 		////////////////////////////////////////////////////
 		repository.findAll((root, query, builder)->{
-			return SpecificationBuilder.of(root, query, builder)
+			return PredicateBuilder.of(root, query, builder)
 					.where()
 //						.and().eq("name", "1")
 						.andStart()
@@ -222,18 +210,18 @@ public class Application1Tests {
 	
 	
 	@Test
-	public void predicateBuilderTest2() throws Exception {
+	public void specificationBuilderTests() throws Exception{
+	
+		Specification<Foo> spec = new SpecificationBuilder<>();
+		spec.and((r, q, b) -> {return PredicateBuilder.of(r,q,b).where().and().eq("name", "a").build();});		
+		spec.or((r, q, b) -> {return PredicateBuilder.of(r,q,b).where().and().eq("age", 1).build();});		
+		List<Foo> foos = repository.findAll(spec);
 		
-		com.querydsl.core.types.Predicate p = null;
-		com.querydsl.core.types.Predicate pp = PredicateBuilder.of(p).where(Foo.class).build();
-		
-		Specification s = null;
-		Specification ss = s.and((r,q,b)->{
-			return SpecificationBuilder.of(r, q, b).build();
-		});
-
-		//Specification sss = SpecificationBuilder.of(s).build();
+		Assert.assertEquals(2, foos.size());
 	}
+	
+	
+	
 	
 	
 }

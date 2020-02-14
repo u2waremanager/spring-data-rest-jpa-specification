@@ -93,11 +93,11 @@ public class JPAQueryBuilder<T> {
 		}
 	
 		public JPAQuery<T> build(){
-			return query.where(super.getRoot());
+			return query.where(super.getBase());
 		}
 		
 		public OrderBuilder<T> orderBy(){
-			query.where(super.getRoot());
+			query.where(super.getBase());
 			return new OrderBuilder<>(query, path);
 		}
 	}

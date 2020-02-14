@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
@@ -45,21 +46,21 @@ public class Application2Tests {
 		MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
 		this.$ = new ApplicationMockMvc(mvc, springDataRestBasePath);
 
-		if(repository.count() > 0) return;
+		if(fooRepository.count() > 0) return;
 		
-		repository.save(new Foo("a", 1, "1"));		
-		repository.save(new Foo("b", 2, "1"));		
-		repository.save(new Foo("c", 2, "1"));		
-		repository.save(new Foo("d", 1, "2"));		
-		repository.save(new Foo("e", 2, "2"));		
-		repository.save(new Foo("f", 3, "2"));		
+		fooRepository.save(new Foo("a", 1, "1"));		
+		fooRepository.save(new Foo("b", 2, "1"));		
+		fooRepository.save(new Foo("c", 2, "1"));		
+		fooRepository.save(new Foo("d", 1, "2"));		
+		fooRepository.save(new Foo("e", 2, "2"));		
+		fooRepository.save(new Foo("f", 3, "2"));		
 	}
 
-	private @Autowired FooRepository repository; 
+	private @Autowired FooRepository fooRepository; 
 	private @PersistenceContext EntityManager em;
 	
-	@Test
-	public void queryDslTest() {
+//	@Test
+	public void queryDslTest1() {
 		
 		PathBuilder<Foo> t = new PathBuilderFactory().create(Foo.class);
 
@@ -86,7 +87,7 @@ public class Application2Tests {
 
 	
 //	@Test
-	public void jpaQueryTypeTest() {
+	public void queryDslTest2() {
 		
 		JPAQuery<Foo> query = new JPAQuery<>(em);
 		PathBuilder<Foo> t = new PathBuilderFactory().create(Foo.class);
@@ -113,12 +114,28 @@ public class Application2Tests {
 	
 
 
-	@Test
-	public void jqpQuery4() {
-
+	//@Test
+	public void jqpQuery1() {
 		PathBuilder<Foo> foo = new PathBuilderFactory().create(Foo.class);
-		Predicate p1 = PredicateBuilder.of()
-				.where(Foo.class)
+		
+		BooleanBuilder p = new BooleanBuilder();
+		p.and(foo.get("age").eq(1));
+
+		BooleanBuilder p2 = new BooleanBuilder();
+		p2.and(foo.get("name").eq("a"));
+		p.and(p2);
+		
+		p.and(PredicateBuilder.of(Foo.class).where().and(foo.get("name").eq("b")).build());
+		fooRepository.findAll(p);
+	}
+	
+//	@Test
+	public void jqpQuery2() {
+		
+		PathBuilder<Foo> foo = new PathBuilderFactory().create(Foo.class);
+	
+		Predicate p = PredicateBuilder.of()
+				.where()
 				.and(foo.get("name").eq("a"))
 				.andStart()
 					.andStart()
@@ -132,47 +149,60 @@ public class Application2Tests {
 				.andEnd()
 				.and(foo.get("name").eq("c"))
 				.build();
-	
-
-		Predicate p2 = PredicateBuilder.of()
-				.where(Foo.class)
-				.and().eq("name", "a")
-				.andStart()
-					.andStart()
-						.and().eq("age",1)
-						.or().eq("name","b")
-					.andEnd()
-					.andStart()
-						.and().eq("age",2)
-						.or().eq("name", "c")
-					.andEnd()
-				.andEnd()
-				.and().eq("name", "c")
-				.build();
+		fooRepository.findAll(p);
+	}
 		
+	@Test
+	public void jqpQuery3() {
 		
-		JPAQueryBuilder.of(em)
-			.from(Foo.class)
+		Predicate p = PredicateBuilder.of(Foo.class)
 			.where()
 			.and().eq("name", "a")
 			.andStart()
 				.andStart()
-					.and().eq("age",1)
-					.or().eq("name","b")
+					.and().eq("age",null)
+					.or().eq("name",null)
 				.andEnd()
 				.andStart()
-					.and().eq("age",2)
+					.and().eq("age", 2)
 					.or().eq("name", "c")
 				.andEnd()
 			.andEnd()
-			.and().eq("name", "c").orderBy()
-			.build().fetch().forEach(i->{
-				logger.info(i);
-			});;
-	
-	
-	}
+			.and().eq("name", "c")
+		.build();
+		
+		fooRepository.findAll(p);
 
+	}
+	
+//	@Test
+	public void jqpQuery4() {
+
+		JPAQueryBuilder.of(em)
+				.from(Foo.class)
+				.where()
+					.and().eq("name", "a")
+					.andStart()
+						.andStart()
+							.and().eq("age",1)
+							.or().eq("name","b")
+						.andEnd()
+						.andStart()
+							.and().eq("age",2)
+							.or().eq("name", "c")
+						.andEnd()
+					.andEnd()
+					.and().eq("name", "c")
+				.orderBy()
+				.build()
+			.fetch()
+		.forEach(i->{
+			logger.info(i);
+		});;	
+
+	}
+	
+	
 
 	
 }

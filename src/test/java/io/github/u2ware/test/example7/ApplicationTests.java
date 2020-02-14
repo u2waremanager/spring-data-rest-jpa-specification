@@ -11,7 +11,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.jpa.repository.query.specification.SpecificationBuilder;
+import org.springframework.data.jpa.repository.query.specification.PredicateBuilder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -64,7 +64,7 @@ public class ApplicationTests {
 //		
 		fooRepository.findAll((root, query, builder)->{
 			
-			return SpecificationBuilder.of(root, query, builder)
+			return PredicateBuilder.of(root, query, builder)
 					.where()
 //					.and().eq("age", 1)
 						.andStart()

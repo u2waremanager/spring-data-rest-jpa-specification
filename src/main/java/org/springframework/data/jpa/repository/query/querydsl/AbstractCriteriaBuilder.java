@@ -1,5 +1,7 @@
 package org.springframework.data.jpa.repository.query.querydsl;
 
+import org.springframework.util.StringUtils;
+
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.PathBuilder;
@@ -7,40 +9,40 @@ import com.querydsl.core.types.dsl.PathBuilder;
 @SuppressWarnings({"unchecked","rawtypes"})
 abstract class AbstractCriteriaBuilder<X,Y> {
 
-	private BooleanBuilder root;
+	private BooleanBuilder base;
 	private PathBuilder<?> path;
 
-	protected AbstractCriteriaBuilder(BooleanBuilder root, PathBuilder<?> path){
-		this.root = root;
+	protected AbstractCriteriaBuilder(BooleanBuilder base, PathBuilder<?> path){
+		this.base = base;
 		this.path = path;
 	}
 	
 	public X and(Predicate right) {
-		root.and(right); return (X)this;
+		base.and(right); return (X)this;
 	}
 	
 	public X or(Predicate right) {
-		root.and(right); return (X)this;
+		base.and(right); return (X)this;
 	}
 
 	public AndBuilder<X> and() {
-		return new AndBuilder(this, root, path) {};
+		return new AndBuilder(this, base, path) {};
 	}
 
 	public OrBuilder<X> or() {
-		return new OrBuilder(this, root, path) {};
+		return new OrBuilder(this, base, path) {};
 	}
 	
 	public AndStartBuilder<X> andStart() {
-		return new AndStartBuilder(this, root, path) {};
+		return new AndStartBuilder(this, base, path) {};
 	}
 
 	public OrStartBuilder<X> orStart() {
-		return new OrStartBuilder(this, root, path) {};
+		return new OrStartBuilder(this, base, path) {};
 	}
 
-	protected Predicate getRoot(){
-		return root;
+	protected Predicate getBase(){
+		return base;
 	}
 
 	public abstract Y build();
@@ -150,7 +152,7 @@ abstract class AbstractCriteriaBuilder<X,Y> {
 		}
 		
 		protected Z add(Predicate right) {
-			base.and(right);
+			if(right != null) base.and(right);
 			return builder;
 		}
 	}
@@ -167,7 +169,7 @@ abstract class AbstractCriteriaBuilder<X,Y> {
 		}
 		
 		protected Z add(Predicate right) {
-			base.or(right);
+			if(right != null) base.or(right);
 			return builder;
 		}
 	}
@@ -184,12 +186,15 @@ abstract class AbstractCriteriaBuilder<X,Y> {
 		protected abstract Z add(Predicate right);
 		
 		public Z eq(String property, Comparable<?> right) {
+			if(StringUtils.isEmpty(right)) return add(null);
 			return add(path.get(property).eq(right));
 		}
 		public Z goe(String property, Comparable<?> right) {
+			if(StringUtils.isEmpty(right)) return add(null);
 			return add(path.getComparable(property, Comparable.class).goe(right));
 		}
 		public Z like(String property, String right) {
+			if(StringUtils.isEmpty(right)) return add(null);
 			return add(path.getString(property).like(right));
 		}
 	}

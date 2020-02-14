@@ -1,4 +1,4 @@
-package io.github.u2ware.test.example1;
+package io.github.u2ware.test.example0;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -8,17 +8,20 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.jpa.repository.query.specification.SpecificationBuilder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import io.github.u2ware.test.ApplicationMockMvc;
+import com.querydsl.core.BooleanBuilder;
 
+//import static io.github.u2ware.test.ApplicationMockMvc.ApplicationResultActions.sizeMatch;
+import io.github.u2ware.test.ApplicationMockMvc;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class ApplicationTests {
+public class Application3Tests {
 
 	protected Log logger = LogFactory.getLog(getClass());
 
@@ -28,33 +31,37 @@ public class ApplicationTests {
 	protected ApplicationMockMvc $;
 	
 	private @Autowired FooRepository fooRepository; 
-	private @Autowired BarRepository barRepository; 
-//	private @Autowired BazRepository bazRepository; 
 	
 	
 	@Before
 	public void before() throws Exception {
-		
 		MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
 		this.$ = new ApplicationMockMvc(mvc, springDataRestBasePath);
+
+		if(fooRepository.count() > 0) return;
 		
-		fooRepository.save(new Foo("a", 1));
-		fooRepository.save(new Foo("a", 2));
-		fooRepository.save(new Foo("b", 1));
-		fooRepository.save(new Foo("b", 2));
-		
-		barRepository.save(new Bar("a", 1));		
-		barRepository.save(new Bar("a", 2));		
-		barRepository.save(new Bar("b", 1));		
-		barRepository.save(new Bar("b", 2));		
+		fooRepository.save(new Foo("a", 1, "1"));		
+		fooRepository.save(new Foo("b", 2, "1"));		
+		fooRepository.save(new Foo("c", 2, "1"));		
+		fooRepository.save(new Foo("d", 1, "2"));		
+		fooRepository.save(new Foo("e", 2, "2"));		
+		fooRepository.save(new Foo("f", 3, "2"));		
 	}
-	
-	
+
 	@Test
 	public void contextLoads() throws Exception {
-
-		$.GET("/foos/query").C("_name", "aa").is2xx();
-//		$.GET("/foos/read").H("partTree", "findByNameAndAge").C("age", "1").is2xx();
-//		$.GET("/foos/read").H("read", "querydsl").C("_name", "bb").is2xx();
+		
+		BooleanBuilder p = new BooleanBuilder();
+		p.and(org.springframework.data.jpa.repository.query.querydsl.PredicateBuilder.of(Foo.class).where().and().eq("name", "a").build());
+		fooRepository.findAll(p);
+		
+		
+		SpecificationBuilder<Foo> s = new SpecificationBuilder<>();
+		s.and((r,q,b)->{
+			return org.springframework.data.jpa.repository.query.specification.PredicateBuilder.of(r, q, b).where().and().eq("name", "a").build();
+		});
+		fooRepository.findAll(s);
 	}
+	
+	
 }

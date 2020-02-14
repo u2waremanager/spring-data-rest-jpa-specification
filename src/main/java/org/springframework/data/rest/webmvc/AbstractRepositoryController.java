@@ -112,6 +112,16 @@ public class AbstractRepositoryController {
 		}
 		return this.resourceStatus;
 	}
+
+	protected <R> R getRepositoryFor(RootResourceInformation information) {
+		return repositories.getRepositoryFor(information.getDomainType()).map(repository -> {
+			if (repository == null) {
+				throw new ResourceNotFoundException("repository is not Found: "+information);
+			}
+			return (R)repository;
+		}).orElseThrow(() -> new ResourceNotFoundException("repository is not Found: "+information));
+	}
+	
 	
 	protected <R> R getRepositoryFor(RootResourceInformation information, Class<R> returnType) {
 		return repositories.getRepositoryFor(information.getDomainType()).map(repository -> {

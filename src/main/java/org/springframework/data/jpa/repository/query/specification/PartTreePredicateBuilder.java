@@ -20,7 +20,7 @@ import javax.persistence.criteria.Root;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanWrapper;
-import org.springframework.data.jpa.repository.query.SpecificationUtils;
+import org.springframework.data.jpa.repository.query.ExpressionRecursivelyUtils;
 import org.springframework.data.mapping.PropertyPath;
 import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.Part.IgnoreCaseType;
@@ -40,11 +40,6 @@ public class PartTreePredicateBuilder<X> {
 
 	protected Log logger = LogFactory.getLog(getClass());
 
-	public static Expression<?> toExpressionRecursively(Root<?> root, String property){
-		PropertyPath path = PropertyPath.from(property, root.getJavaType());
-		return SpecificationUtils.toExpressionRecursively(root, path);
-	}
-	
 	
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	private final Root<X> root;
@@ -317,7 +312,7 @@ public class PartTreePredicateBuilder<X> {
 	}
 	
 	private static <T> Expression<T> getTypedPath(Root<?> root, Part part) {
-		return SpecificationUtils.toExpressionRecursively(root, part.getProperty());
+		return ExpressionRecursivelyUtils.toExpressionRecursively(root, part.getProperty());
 	}
 	public static <T> Expression<T> getTypedPath(Root<?> root, String property) {
 		return getTypedPath(root, new Part(property, root.getJavaType()));
