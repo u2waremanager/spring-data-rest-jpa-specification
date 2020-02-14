@@ -16,9 +16,9 @@ import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.PartTree;
 import org.springframework.util.MultiValueMap;
 
-public class PredicateBuilder<T> {
+public class SpecificationBuilder<T> {
 
-	protected static Log logger = LogFactory.getLog(PredicateBuilder.class);
+	protected static Log logger = LogFactory.getLog(SpecificationBuilder.class);
 	
 	private OrderBuilder<T> orderBuilder;
 	private WhereBuilder<T> whereBuilder;
@@ -28,11 +28,11 @@ public class PredicateBuilder<T> {
 	private CriteriaBuilder criteriaBuilder;
 	
 	
-	public static <X> PredicateBuilder<X> of(Root<X> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
-		return new PredicateBuilder<>(root, criteriaQuery, criteriaBuilder);
+	public static <X> SpecificationBuilder<X> of(Root<X> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+		return new SpecificationBuilder<>(root, criteriaQuery, criteriaBuilder);
 	}
 	
-	private PredicateBuilder(Root<T> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+	private SpecificationBuilder(Root<T> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
 		this.root = root;
 		this.criteriaQuery = criteriaQuery;
 		this.criteriaBuilder = criteriaBuilder;
@@ -82,7 +82,7 @@ public class PredicateBuilder<T> {
 	////////////////////////////////////////////
 	public static class WhereBuilder<T>{
 		
-		private PredicateBuilder<T> builder;
+		private SpecificationBuilder<T> builder;
 		private PartTreeBuilder<T> partTreeBuilder;
 		
 		private enum State{ AND, AND_START, AND_END, OR, OR_START, OR_END }
@@ -92,7 +92,7 @@ public class PredicateBuilder<T> {
 		private Predicate where;
 		private Predicate sub;
 		
-		public WhereBuilder(PredicateBuilder<T> builder) {
+		public WhereBuilder(SpecificationBuilder<T> builder) {
 			this.builder = builder;
 			this.partTreeBuilder = new PartTreeBuilder<>(builder);
 		}
@@ -180,9 +180,9 @@ public class PredicateBuilder<T> {
 	
 	public static class PartTreeBuilder<T>{
 		
-		private PredicateBuilder<T> builder;
+		private SpecificationBuilder<T> builder;
 		
-		public PartTreeBuilder(PredicateBuilder<T> builder) {
+		public PartTreeBuilder(SpecificationBuilder<T> builder) {
 			this.builder = builder;
 		}
 		
@@ -269,10 +269,10 @@ public class PredicateBuilder<T> {
 	////////////////////////////////////////////
 	public static class OrderBuilder<T>{
 		
-		private PredicateBuilder<T> builder;
+		private SpecificationBuilder<T> builder;
 		private List<Order> orders;
 		
-		public OrderBuilder(PredicateBuilder<T> builder){
+		public OrderBuilder(SpecificationBuilder<T> builder){
 			this.builder = builder;
 			this.orders = new ArrayList<>();
 		}

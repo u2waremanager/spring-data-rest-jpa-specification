@@ -16,9 +16,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.query.SpecificationUtils;
-import org.springframework.data.jpa.repository.query.specification.PredicateBuilder;
+import org.springframework.data.jpa.repository.query.querydsl.PredicateBuilder;
 import org.springframework.data.jpa.repository.query.specification.PartTreePredicateBuilder;
 import org.springframework.data.jpa.repository.query.specification.PartTreeSpecification;
+import org.springframework.data.jpa.repository.query.specification.SpecificationBuilder;
 import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.PartTree;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -66,8 +67,8 @@ public class Application1Tests {
 	public void specificationBufferTests() throws Exception{
 	
 		Specification<Foo> spec = SpecificationUtils.createSpecificationBuffer();
-		spec.and((r, q, b) -> {return PredicateBuilder.of(r,q,b).where().and().eq("name", "a").build();});		
-		spec.or((r, q, b) -> {return PredicateBuilder.of(r,q,b).where().and().eq("age", 1).build();});		
+		spec.and((r, q, b) -> {return SpecificationBuilder.of(r,q,b).where().and().eq("name", "a").build();});		
+		spec.or((r, q, b) -> {return SpecificationBuilder.of(r,q,b).where().and().eq("age", 1).build();});		
 		List<Foo> foos = repository.findAll(spec);
 		
 		Assert.assertEquals(2, foos.size());
@@ -192,7 +193,7 @@ public class Application1Tests {
 		//
 		////////////////////////////////////////////////////
 		repository.findAll((root, query, builder)->{
-			return PredicateBuilder.of(root, query, builder)
+			return SpecificationBuilder.of(root, query, builder)
 					.where()
 //						.and().eq("name", "1")
 						.andStart()
@@ -224,11 +225,11 @@ public class Application1Tests {
 	public void predicateBuilderTest2() throws Exception {
 		
 		com.querydsl.core.types.Predicate p = null;
-		com.querydsl.core.types.Predicate pp = org.springframework.data.jpa.repository.query.querydsl.PredicateBuilder.of(p).where(Foo.class).build();
+		com.querydsl.core.types.Predicate pp = PredicateBuilder.of(p).where(Foo.class).build();
 		
 		Specification s = null;
 		Specification ss = s.and((r,q,b)->{
-			return org.springframework.data.jpa.repository.query.specification.PredicateBuilder.of(r, q, b).build();
+			return SpecificationBuilder.of(r, q, b).build();
 		});
 
 		//Specification sss = SpecificationBuilder.of(s).build();
