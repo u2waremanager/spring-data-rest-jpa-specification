@@ -2,7 +2,7 @@ package org.springframework.data.rest.webmvc.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.HibernateConfiguration;
+import org.springframework.data.jpa.repository.config.HibernateAddtionalConfiguration;
 import org.springframework.data.jpa.repository.query.querydsl.ExtendedEntityPathResolver;
 import org.springframework.data.querydsl.EntityPathResolver;
 import org.springframework.data.rest.core.event.AnnotatedReadEventHandlerInvoker;
@@ -12,18 +12,11 @@ import org.springframework.data.rest.webmvc.support.UriLinkParser;
 
 @RepositoryRestController
 @Configuration
-public class RepositoryRestMvcAddedConfiguration {
-
-
-	@Bean 
-	public EntityPathResolver extendedEntityPathResolver() {
-		return new ExtendedEntityPathResolver();
-	}
-	
+public class RepositoryRestMvcAddtionalConfiguration {
 	
 	@Bean 
-	public HibernateConfiguration hibernateConfiguration() {
-		return new HibernateConfiguration();
+	public HibernateAddtionalConfiguration hibernateAddtionalConfiguration() {
+		return new HibernateAddtionalConfiguration();
 	}
 
 	@Bean 
@@ -31,6 +24,10 @@ public class RepositoryRestMvcAddedConfiguration {
 		return new AnnotatedReadEventHandlerInvoker();
 	}
 	
+	@Bean 
+	public EntityPathResolver extendedEntityPathResolver() {
+		return new ExtendedEntityPathResolver();
+	}
 	
 	@Bean 
 	public UriLinkParser uriLinkParser() {

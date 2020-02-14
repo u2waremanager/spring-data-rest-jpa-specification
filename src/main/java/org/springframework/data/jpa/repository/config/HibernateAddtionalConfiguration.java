@@ -23,7 +23,7 @@ import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.util.StringValueResolver;
 
-public class HibernateConfiguration extends EmptyInterceptor implements ApplicationEventPublisherAware, EmbeddedValueResolverAware, 
+public class HibernateAddtionalConfiguration extends EmptyInterceptor implements ApplicationEventPublisherAware, EmbeddedValueResolverAware, 
 PostLoadEventListener, PreLoadEventListener {
 
 	private static final long serialVersionUID = 2787103521260283735L;
@@ -31,13 +31,11 @@ PostLoadEventListener, PreLoadEventListener {
 	protected Log logger = LogFactory.getLog(getClass());
 
 	private @PersistenceUnit EntityManagerFactory emf;
-	//private @Autowired(required = false) PrepareStatementContext hibernatePrepareStatement;
 
 	private StringValueResolver resolver;
 	private ApplicationEventPublisher publisher;
-	private boolean enableHandleLoad = true;
+	private boolean enableHandleLoad = false;
 
-	
 	@Override
 	public void setEmbeddedValueResolver(StringValueResolver resolver) {
 		this.resolver = resolver;
@@ -71,23 +69,17 @@ PostLoadEventListener, PreLoadEventListener {
 	@Override
 	public void onPostLoad(PostLoadEvent event) {
 		if (!isEnableHandleLoad()) return;
-		//publisher.publishEvent(new HibernatePostLoadEvent(event.getEntity()));
+		publisher.publishEvent(new HibernatePostLoadEvent(event.getEntity()));
 	}
 	@Override
 	public void onPreLoad(PreLoadEvent event) {
 		if (!isEnableHandleLoad()) return;
-		//publisher.publishEvent(new HibernatePreLoadEvent(event.getEntity()));
+		publisher.publishEvent(new HibernatePreLoadEvent(event.getEntity()));
 	}
 
 	@Override
 	public String onPrepareStatement(String sql) {
 		return resolver.resolveStringValue(sql);
-		
-//		super.onPrepareStatement(sql)
-		
-//		if(hibernatePrepareStatement == null) return sql;
-//		Object rootObject = hibernatePrepareStatement;
-		
 	}
 	
 	
