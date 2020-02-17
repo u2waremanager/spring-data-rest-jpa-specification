@@ -9,7 +9,7 @@ import com.querydsl.core.types.dsl.PathBuilder;
 @SuppressWarnings({"unchecked","rawtypes"})
 public abstract class AbstractWhereBuilder<X> {
 
-	private BaseBuilder builder;
+	protected BaseBuilder builder;
 
 	protected AbstractWhereBuilder(BaseBuilder builder){
 		this.builder = builder;
@@ -39,9 +39,9 @@ public abstract class AbstractWhereBuilder<X> {
 		return new OrStartBuilder(this, builder) {};
 	}
 	
-	protected BaseBuilder getBuilder() {
-		return builder;
-	}
+//	protected BaseBuilder getBuilder() {
+//		return builder;
+//	}
 	
 	////////////////////////////////////////////////////////////
 	//
@@ -82,8 +82,7 @@ public abstract class AbstractWhereBuilder<X> {
 		}
 		
 		public W andEnd() {
-			builder.and(sub.getBase());
-			return where;
+			builder.and(sub.getBase()); return where;
 		}
 	}
 
@@ -125,63 +124,57 @@ public abstract class AbstractWhereBuilder<X> {
 		}
 		
 		public Z orEnd() {
-			builder.or(sub.getBase());
-			return where;
+			builder.or(sub.getBase()); return where;
 		}
 	}
 
 	
 	public abstract static class AndBuilder<W> extends OperationBuilder<W>{
 		
-		private W where;
-		
 		private AndBuilder(W where, BaseBuilder builder) {
-			super(builder);
-			this.where = where;
+			super(where, builder);
 		}
 		
 		protected W add(Predicate right) {
-			builder.and(right);
-			return where;
+			builder.and(right); return where;
 		}
 	}
 	
 	public abstract static class OrBuilder<W> extends OperationBuilder<W>{
 	
-		private W where;
-		
 		private OrBuilder(W where, BaseBuilder builder) {
-			super(builder);
+			super(where, builder);
 			this.where = where;
 		}
 		
 		protected W add(Predicate right) {
-			builder.or(right);
-			return where;
+			builder.or(right); return where;
 		}
 	}
 	
 	
 	private abstract static class OperationBuilder<W>{
 		
+		protected W where;
 		protected BaseBuilder builder;
 		
-		private OperationBuilder(BaseBuilder builder) {
+		private OperationBuilder(W where, BaseBuilder builder) {
+			this.where = where;
 			this.builder = builder;
 		}
 		
 		protected abstract W add(Predicate right);
 		
 		public W eq(String property, Comparable<?> right) {
-			if(StringUtils.isEmpty(right)) return add(null);
+			if(StringUtils.isEmpty(right)) return where;
 			return add(builder.getPath().get(property).eq(right));
 		}
 		public W goe(String property, Comparable<?> right) {
-			if(StringUtils.isEmpty(right)) return add(null);
+			if(StringUtils.isEmpty(right)) return where;
 			return add(builder.getPath().getComparable(property, Comparable.class).goe(right));
 		}
 		public W like(String property, String right) {
-			if(StringUtils.isEmpty(right)) return add(null);
+			if(StringUtils.isEmpty(right)) return where;
 			return add(builder.getPath().getString(property).like(right));
 		}
 	}

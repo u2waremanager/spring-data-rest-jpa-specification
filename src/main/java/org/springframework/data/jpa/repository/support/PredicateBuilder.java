@@ -39,7 +39,7 @@ public class PredicateBuilder {
 		}
 		
 		public Predicate build(){
-			return getBuilder().getBase();
+			return builder.getBase();
 		}
 	}
 }

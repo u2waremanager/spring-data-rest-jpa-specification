@@ -136,8 +136,7 @@ public class PredicateQueryBuilder<T> {
 			
 			
 			public W andEnd() {
-				builder.and(sub.getBase());
-				return where;
+				builder.and(sub.getBase()); return where;
 			}
 			
 		}
@@ -177,8 +176,7 @@ public class PredicateQueryBuilder<T> {
 			}
 			
 			public W orEnd() {
-				builder.or(sub.getBase());
-				return where;
+				builder.or(sub.getBase()); return where;
 			}
 		}
 		
@@ -186,55 +184,50 @@ public class PredicateQueryBuilder<T> {
 		
 		public abstract static class AndBuilder<W,T> extends OperationBuilder<W,T>{
 
-			private W where;
-			
 			private AndBuilder(W where, BaseBuilder<T> builder) {
-				super(builder);
-				this.where = where;
+				super(where, builder);
 			}
 
 			@Override
 			protected W add(Predicate right) {
-				builder.and(right);
-				return where;
+				builder.and(right); return where;
 			}
 		}
 		
 		public abstract static class OrBuilder<W,T> extends OperationBuilder<W,T>{
 
-			private W where;
-			
 			private OrBuilder(W where, BaseBuilder<T> builder) {
-				super(builder);
-				this.where = where;
+				super(where, builder);
 			}
 
 			@Override
 			protected W add(Predicate right) {
-				builder.or(right);
-				return where;
+				builder.or(right); return where;
 			}
 		}
 		
 		private abstract static class OperationBuilder<W,T>{
 			
-			protected abstract W add(Predicate right);
 			
+			protected W where;
 			protected BaseBuilder<T> builder;
 			
-			protected OperationBuilder(BaseBuilder<T> builder) {
+			protected OperationBuilder(W where, BaseBuilder<T> builder) {
+				this.where = where;
 				this.builder = builder;
 			}
-			
+
+			protected abstract W add(Predicate right);
+
 			private W part(String source, Object value){
-				if(value == null) return add(null);
+				if(value == null) return where;
 				try {
 					Part part = new Part(source, builder.getRoot().getJavaType());
 					Predicate predicate = new PartTreePredicate<T>(builder.getRoot(), builder.getQuery(), builder.getBuilder()).build(part, value);
 					return add(predicate);
 				}catch(Exception e) {
 //					logger.info(source+" -> "+e.getMessage());
-					return add(null);
+					return where;
 				}
 			}
 			public W isNull(String property){
