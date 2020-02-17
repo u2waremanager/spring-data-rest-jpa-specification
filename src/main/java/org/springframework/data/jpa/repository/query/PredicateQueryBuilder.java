@@ -17,6 +17,46 @@ public class PredicateQueryBuilder<T> {
 		return new PredicateQueryBuilder<>(root, criteriaQuery, criteriaBuilder);
 	}
 	
+	public static class BaseBuilder<T>{
+		
+		private Root<T> root;
+		private CriteriaQuery<?> query;
+		private CriteriaBuilder builder;
+		private Predicate predicate;
+
+		public BaseBuilder(BaseBuilder<T> builder) {
+			this(builder.getRoot(), builder.getQuery(), builder.getBuilder());
+		}
+		
+		public BaseBuilder(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+			this.root = root;
+			this.query = query;
+			this.builder = builder;
+		}
+		public BaseBuilder<T> and(Predicate right) {
+			predicate = (predicate == null) ? right : builder.and(predicate, right);
+			return this;
+		}
+		public BaseBuilder<T> or(Predicate right) {
+			predicate = (predicate == null) ? right : builder.or(predicate, right);
+			return this;
+		}
+		
+		public Root<T> getRoot() {
+			return root;
+		}
+		public CriteriaQuery<?> getQuery() {
+			return query;
+		}
+		public CriteriaBuilder getBuilder() {
+			return builder;
+		}
+		public Predicate getBase() {
+			return predicate;
+		}
+	}
+	
+	
 	private BaseBuilder<T> builder;
 	
 	private PredicateQueryBuilder(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
@@ -39,7 +79,7 @@ public class PredicateQueryBuilder<T> {
 		private BaseBuilder<T> builder;
 		private List<Order> orders;
 		
-		protected OrderBuilder(BaseBuilder<T> builder) {
+		private OrderBuilder(BaseBuilder<T> builder) {
 			this.builder = builder;
 			this.orders = new ArrayList<>();
 		}
@@ -66,7 +106,7 @@ public class PredicateQueryBuilder<T> {
 
 		private BaseBuilder<T> builder;
 		
-		protected WhereBuilder(BaseBuilder<T> builder) {
+		private WhereBuilder(BaseBuilder<T> builder) {
 			this.builder = builder;
 		}
 
@@ -206,7 +246,7 @@ public class PredicateQueryBuilder<T> {
 			}
 		}
 		
-		private abstract static class OperationBuilder<W,T>{
+		public abstract static class OperationBuilder<W,T>{
 			
 			
 			protected W where;
@@ -275,43 +315,5 @@ public class PredicateQueryBuilder<T> {
 	
 	
 	
-	private static class BaseBuilder<T>{
-		
-		private Root<T> root;
-		private CriteriaQuery<?> query;
-		private CriteriaBuilder builder;
-		private Predicate predicate;
-
-		private BaseBuilder(BaseBuilder<T> builder) {
-			this(builder.getRoot(), builder.getQuery(), builder.getBuilder());
-		}
-		
-		private BaseBuilder(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-			this.root = root;
-			this.query = query;
-			this.builder = builder;
-		}
-		private BaseBuilder<T> and(Predicate right) {
-			predicate = (predicate == null) ? right : builder.and(predicate, right);
-			return this;
-		}
-		private BaseBuilder<T> or(Predicate right) {
-			predicate = (predicate == null) ? right : builder.or(predicate, right);
-			return this;
-		}
-		
-		private Root<T> getRoot() {
-			return root;
-		}
-		private CriteriaQuery<?> getQuery() {
-			return query;
-		}
-		private CriteriaBuilder getBuilder() {
-			return builder;
-		}
-		private Predicate getBase() {
-			return predicate;
-		}
-	}
 	
 }

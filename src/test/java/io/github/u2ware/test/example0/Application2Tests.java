@@ -116,7 +116,7 @@ public class Application2Tests {
 
 
 	//@Test
-	public void jqpQuery1() {
+	public void predicateQuery1() {
 		PathBuilder<Foo> foo = new PathBuilderFactory().create(Foo.class);
 		
 		BooleanBuilder p = new BooleanBuilder();
@@ -131,7 +131,7 @@ public class Application2Tests {
 	}
 	
 //	@Test
-	public void jqpQuery2() {
+	public void predicateQuery2() {
 		
 		PathBuilder<Foo> foo = new PathBuilderFactory().create(Foo.class);
 	
@@ -154,7 +154,7 @@ public class Application2Tests {
 	}
 		
 //	@Test
-	public void jqpQuery3() {
+	public void predicateQuery3() {
 		
 		Predicate p = PredicateBuilder.of(Foo.class)
 			.where()
@@ -177,7 +177,7 @@ public class Application2Tests {
 	}
 	
 	@Test
-	public void jqpQuery4() {
+	public void jqpQuery() {
 		
 		PathBuilder<Foo> foo = new PathBuilderFactory().create(Foo.class);
 		

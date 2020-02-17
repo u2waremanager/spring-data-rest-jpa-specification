@@ -9,6 +9,39 @@ import com.querydsl.core.types.dsl.PathBuilder;
 @SuppressWarnings({"unchecked","rawtypes"})
 public abstract class AbstractWhereBuilder<X> {
 
+	public static class BaseBuilder {
+		
+		private PathBuilder<?> path;
+		private BooleanBuilder predicate;
+		
+		public BaseBuilder(BaseBuilder builder) {
+			this(builder.getPath());
+		}
+		public BaseBuilder(PathBuilder<?> path) {
+			this.path = path;
+			this.predicate = new BooleanBuilder();
+		}
+
+		public BaseBuilder and(Predicate right) {
+			predicate.and(right);
+			return this;
+		}
+		public BaseBuilder or(Predicate right) {
+			predicate.or(right);
+			return this;
+		}
+		
+		public PathBuilder<?> getPath() {
+			return path;
+		}
+
+		public BooleanBuilder getBase() {
+			return predicate;
+		}
+	}
+	
+	
+	
 	protected BaseBuilder builder;
 
 	protected AbstractWhereBuilder(BaseBuilder builder){
@@ -181,36 +214,6 @@ public abstract class AbstractWhereBuilder<X> {
 	
 	
 	
-	public static class BaseBuilder {
-		
-		private PathBuilder<?> path;
-		private BooleanBuilder predicate;
-		
-		public BaseBuilder(BaseBuilder builder) {
-			this(builder.getPath());
-		}
-		public BaseBuilder(PathBuilder<?> path) {
-			this.path = path;
-			this.predicate = new BooleanBuilder();
-		}
-
-		public BaseBuilder and(Predicate right) {
-			predicate.and(right);
-			return this;
-		}
-		public BaseBuilder or(Predicate right) {
-			predicate.or(right);
-			return this;
-		}
-		
-		public PathBuilder<?> getPath() {
-			return path;
-		}
-
-		public BooleanBuilder getBase() {
-			return predicate;
-		}
-	}
 	
 	
 }
