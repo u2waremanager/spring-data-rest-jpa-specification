@@ -176,7 +176,7 @@ public class Application1Tests {
 		
 	}
 	
-//	@Test
+	@Test
 	public void predicateBuilderTest() throws Exception {
 		
 		///////////////////////////////////////////////////
@@ -214,14 +214,30 @@ public class Application1Tests {
 //							.or(p3)
 //						.andEnd()
 						
-						.orStart()
-							.and().eq("name", "a")
-							.or().eq("age", 2)
-						.orEnd()
-						.orStart()
-							.and().eq("name", "a")
-							.or().eq("age", 2)
-						.orEnd()
+//						.orStart()
+//							.and().eq("name", "a")
+//							.or().eq("age", 2)
+//						.orEnd()
+//						.orStart()
+//							.and().eq("name", "a")
+//							.or().eq("age", 2)
+//						.orEnd()
+						
+						
+						.and().eq("name", "a")
+						.andStart()
+							.andStart()
+								.and().eq("age",1)
+								.or().eq("name","b")
+							.andEnd()
+							.andStart()
+								.and().eq("age", 2)
+								.or().eq("name", "c")
+							.andEnd()
+						.andEnd()
+						.and().eq("name", "d")
+						
+						
 
 					.orderBy()
 						.asc("name")
@@ -232,7 +248,7 @@ public class Application1Tests {
 	}
 	
 	
-	@Test
+//	@Test
 	public void specificationBuilderTests() throws Exception{
 	
 		Specification<Foo> spec = new SpecificationBuilder<>();

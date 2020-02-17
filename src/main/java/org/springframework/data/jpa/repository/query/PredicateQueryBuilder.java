@@ -17,10 +17,10 @@ public class PredicateQueryBuilder<T> {
 		return new PredicateQueryBuilder<>(root, criteriaQuery, criteriaBuilder);
 	}
 	
-	private PredicateBuilder<T> builder;
+	private BaseBuilder<T> builder;
 	
 	private PredicateQueryBuilder(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-		this.builder = new PredicateBuilder<>(root, query, builder);
+		this.builder = new BaseBuilder<>(root, query, builder);
 	}
 	
 	public WhereBuilder<T> where() {			
@@ -31,215 +31,15 @@ public class PredicateQueryBuilder<T> {
 	}
 
 	public Predicate build() {			
-		return builder.getPredicate();
+		return builder.getBase();
 	}
 
-	
-	public static class WhereBuilder<T>{
-
-		private PredicateBuilder<T> builder;
-		
-		protected WhereBuilder(PredicateBuilder<T> builder) {
-			this.builder = builder;
-		}
-
-		public WhereBuilder<T> and(Predicate right) {
-			builder.and(right);
-			return this;
-		}
-		public AndBuilder<T, WhereBuilder<T>> and() { 
-			return new AndBuilder<T, WhereBuilder<T>>(this, builder) {};
-		}
-		public AndStartBuilder<T> andStart() { 
-			return new AndStartBuilder<>(this, new PredicateBuilder<T>(builder));
-		}
-
-		public WhereBuilder<T> or(Predicate right) {
-			builder.or(right);
-			return this;
-		}
-		public OrBuilder<T, WhereBuilder<T>> or() { 
-			return new OrBuilder<T, WhereBuilder<T>>(this, builder) {};
-		}
-		public OrStartBuilder<T> orStart() { 
-			return new OrStartBuilder<>(this, new PredicateBuilder<T>(builder));
-		}
-	
-		public OrderBuilder<T> orderBy(){
-			return new OrderBuilder<>(builder);
-		}
-		
-		public Predicate build() {
-			return builder.getPredicate();
-		}
-		
-		public static class AndStartBuilder<T> {
-
-			private WhereBuilder<T> where;
-			private PredicateBuilder<T> builder;
-			
-			private AndStartBuilder(WhereBuilder<T> where, PredicateBuilder<T> builder) {
-				this.where = where;
-				this.builder = builder;
-			}
-			
-			public AndStartBuilder<T> and(Predicate right) {
-				builder.and(right);
-				return this;
-			}
-			public AndBuilder<T, AndStartBuilder<T>> and() { 
-				return new AndBuilder<T,AndStartBuilder<T>>(this, builder) {};
-			}
-			public AndStartBuilder<T> or(Predicate right) {
-				builder.or(right);
-				return this;
-			}
-			public OrBuilder<T, AndStartBuilder<T>> or() { 
-				return new OrBuilder<T,AndStartBuilder<T>>(this, builder) {};
-			}
-			
-			public WhereBuilder<T> andEnd() {
-				return where.and(builder.getPredicate());
-			}
-		}
-		
-		
-		public static class OrStartBuilder<T> {
-
-			private WhereBuilder<T> where;
-			private PredicateBuilder<T> builder;
-			
-			private OrStartBuilder(WhereBuilder<T> where, PredicateBuilder<T> builder) {
-				this.where = where;
-				this.builder = builder;
-			}
-			
-			public OrStartBuilder<T> and(Predicate right) {
-				builder.and(right);
-				return this;
-			}
-			public AndBuilder<T, OrStartBuilder<T>> and() { 
-				return new AndBuilder<T,OrStartBuilder<T>>(this, builder) {};
-			}
-			public OrStartBuilder<T> or(Predicate right) {
-				builder.or(right);
-				return this;
-			}
-			public OrBuilder<T, OrStartBuilder<T>> or() { 
-				return new OrBuilder<T,OrStartBuilder<T>>(this, builder) {};
-			}
-			
-			public WhereBuilder<T> orEnd() {
-				return where.or(builder.getPredicate());
-			}
-		}
-		
-		
-		
-		public abstract static class AndBuilder<T,Z> extends OperationBuilder<T,Z>{
-
-			private Z where;
-			
-			private AndBuilder(Z where, PredicateBuilder<T> builder) {
-				super(builder);
-				this.where = where;
-			}
-
-			@Override
-			protected Z add(Predicate right) {
-				builder.and(right);
-				return where;
-			}
-		}
-		
-		public abstract static class OrBuilder<T,Z> extends OperationBuilder<T,Z>{
-
-			private Z where;
-			
-			private OrBuilder(Z where, PredicateBuilder<T> builder) {
-				super(builder);
-				this.where = where;
-			}
-
-			@Override
-			protected Z add(Predicate right) {
-				builder.or(right);
-				return where;
-			}
-		}
-		
-		private abstract static class OperationBuilder<T, Z>{
-			
-			protected abstract Z add(Predicate right);
-			
-			protected PredicateBuilder<T> builder;
-			
-			protected OperationBuilder(PredicateBuilder<T> builder) {
-				this.builder = builder;
-			}
-			
-			private Z part(String source, Object value){
-				if(value == null) return add(null);
-				try {
-					Part part = new Part(source, builder.getRoot().getJavaType());
-					Predicate predicate = new PartTreePredicate<T>(builder.getRoot(), builder.getQuery(), builder.getBuilder()).build(part, value);
-					return add(predicate);
-				}catch(Exception e) {
-//					logger.info(source+" -> "+e.getMessage());
-					return add(null);
-				}
-			}
-			public Z isNull(String property){
-				return part(property+"IsNull", true);
-			}
-			public Z isNotNull(String property){
-				return part(property+"IsNotNull", false);
-			}
-			public Z eq(String property, Object value){
-				return part(property, value);
-			}
-			public Z notEq(String property, Object value){
-				return part(property+"Not", value);
-			}
-			public Z like(String property, Object value){
-				return part(property+"ContainingIgnoreCase", value);
-			}
-			public Z notLike(String property, Object value){
-				return part(property+"NotContainingIgnoreCase", value);
-			}
-			public Z between(String property, Object value) {
-				return part(property+"IsBetween", value);
-			}
-			public Z gt(String property, Object value) {
-				return part(property+"IsGreaterThan", value);
-			}
-			public Z gte(String property, Object value) {
-				return part(property+"IsGreaterThanEqual", value);
-			}
-			public Z lt(String property, Object value) {
-				return part(property+"IsLessThan", value);
-			}
-			public Z lte(String property, Object value) {
-				return part(property+"IsLessThanEqual", value);
-			}
-			public Z in(String property, Object value) {
-				return part(property+"IsIn", value);
-			}
-			public Z notIn(String property, Object value) {
-				return part(property+"IsNotIn", value);
-			}
-			
-		}
-	}
-	
-	
-	
 	public static class OrderBuilder<T>{
 
-		private PredicateBuilder<T> builder;
+		private BaseBuilder<T> builder;
 		private List<Order> orders;
 		
-		protected OrderBuilder(PredicateBuilder<T> builder) {
+		protected OrderBuilder(BaseBuilder<T> builder) {
 			this.builder = builder;
 			this.orders = new ArrayList<>();
 		}
@@ -256,46 +56,267 @@ public class PredicateQueryBuilder<T> {
 		
 		public Predicate build() {
 			builder.getQuery().orderBy(orders);
-			return builder.getPredicate();
+			return builder.getBase();
 		}
 	}
 	
 	
-	public static class PredicateBuilder<T>{
+
+	public static class WhereBuilder<T>{
+
+		private BaseBuilder<T> builder;
+		
+		protected WhereBuilder(BaseBuilder<T> builder) {
+			this.builder = builder;
+		}
+
+		public WhereBuilder<T> and(Predicate right) {
+			builder.and(right); return this;
+		}
+		public WhereBuilder<T> or(Predicate right) {
+			builder.or(right); return this;
+		}
+		
+		public AndBuilder<WhereBuilder<T>, T> and() { 
+			return new AndBuilder<WhereBuilder<T>, T>(this, builder) {};
+		}
+		public OrBuilder<WhereBuilder<T>, T> or() { 
+			return new OrBuilder<WhereBuilder<T>, T>(this, builder) {};
+		}
+		
+		public AndStartBuilder<WhereBuilder<T>, T> andStart() { 
+			return new AndStartBuilder<WhereBuilder<T>, T>(this, builder) {};
+		}
+
+		public OrStartBuilder<WhereBuilder<T>, T> orStart() { 
+			return new OrStartBuilder<WhereBuilder<T>, T>(this, builder){};
+		}
+	
+		public OrderBuilder<T> orderBy(){
+			return new OrderBuilder<>(builder);
+		}
+		
+		public Predicate build() {
+			return builder.getBase();
+		}
+		
+		
+		public abstract static class AndStartBuilder<W, T> {
+
+			private W where;
+			private BaseBuilder<T> builder;
+			private BaseBuilder<T> sub;
+			
+			private AndStartBuilder(W where, BaseBuilder<T> builder) {
+				this.where = where;
+				this.builder = builder;
+				this.sub = new BaseBuilder<>(builder);
+			}
+			
+			public AndStartBuilder<W,T> and(Predicate right) {
+				sub.and(right); return this;
+			}
+			public AndStartBuilder<W,T> or(Predicate right) {
+				sub.or(right); return this;
+			}
+			
+			public AndBuilder<AndStartBuilder<W,T>, T> and() { 
+				return new AndBuilder<AndStartBuilder<W,T>, T>(this, sub) {};
+			}
+			public OrBuilder<AndStartBuilder<W,T>, T> or() { 
+				return new OrBuilder<AndStartBuilder<W,T>, T>(this, sub) {};
+			}
+
+			public AndStartBuilder<AndStartBuilder<W,T>, T> andStart() { 
+				return new AndStartBuilder<AndStartBuilder<W,T>, T>(this, sub) {};
+			}
+			public OrStartBuilder<AndStartBuilder<W,T>, T> orStart() { 
+				return new OrStartBuilder<AndStartBuilder<W,T>, T>(this, sub) {};
+			}
+			
+			
+			public W andEnd() {
+				builder.and(sub.getBase());
+				return where;
+			}
+			
+		}
+		
+		
+		public abstract static class OrStartBuilder<W,T> {
+
+			private W where;
+			private BaseBuilder<T> builder;
+			private BaseBuilder<T> sub;
+			
+			private OrStartBuilder(W where, BaseBuilder<T> builder) {
+				this.where = where;
+				this.builder = builder;
+				this.sub = new BaseBuilder<>(builder);
+			}
+			
+			public OrStartBuilder<W,T> and(Predicate right) {
+				sub.and(right); return this;
+			}
+			public OrStartBuilder<W,T> or(Predicate right) {
+				sub.or(right); return this;
+			}
+			
+			public AndBuilder<OrStartBuilder<W,T>, T> and() { 
+				return new AndBuilder<OrStartBuilder<W,T>, T>(this, sub) {};
+			}
+			public OrBuilder<OrStartBuilder<W,T>, T> or() { 
+				return new OrBuilder<OrStartBuilder<W,T>, T>(this, sub) {};
+			}
+
+			public AndStartBuilder<OrStartBuilder<W,T>, T> andStart() { 
+				return new AndStartBuilder<OrStartBuilder<W,T>, T>(this, sub) {};
+			}
+			public OrStartBuilder<OrStartBuilder<W,T>, T> orStart() { 
+				return new OrStartBuilder<OrStartBuilder<W,T>, T>(this, sub) {};
+			}
+			
+			public W orEnd() {
+				builder.or(sub.getBase());
+				return where;
+			}
+		}
+		
+		
+		
+		public abstract static class AndBuilder<W,T> extends OperationBuilder<W,T>{
+
+			private W where;
+			
+			private AndBuilder(W where, BaseBuilder<T> builder) {
+				super(builder);
+				this.where = where;
+			}
+
+			@Override
+			protected W add(Predicate right) {
+				builder.and(right);
+				return where;
+			}
+		}
+		
+		public abstract static class OrBuilder<W,T> extends OperationBuilder<W,T>{
+
+			private W where;
+			
+			private OrBuilder(W where, BaseBuilder<T> builder) {
+				super(builder);
+				this.where = where;
+			}
+
+			@Override
+			protected W add(Predicate right) {
+				builder.or(right);
+				return where;
+			}
+		}
+		
+		private abstract static class OperationBuilder<W,T>{
+			
+			protected abstract W add(Predicate right);
+			
+			protected BaseBuilder<T> builder;
+			
+			protected OperationBuilder(BaseBuilder<T> builder) {
+				this.builder = builder;
+			}
+			
+			private W part(String source, Object value){
+				if(value == null) return add(null);
+				try {
+					Part part = new Part(source, builder.getRoot().getJavaType());
+					Predicate predicate = new PartTreePredicate<T>(builder.getRoot(), builder.getQuery(), builder.getBuilder()).build(part, value);
+					return add(predicate);
+				}catch(Exception e) {
+//					logger.info(source+" -> "+e.getMessage());
+					return add(null);
+				}
+			}
+			public W isNull(String property){
+				return part(property+"IsNull", true);
+			}
+			public W isNotNull(String property){
+				return part(property+"IsNotNull", false);
+			}
+			public W eq(String property, Object value){
+				return part(property, value);
+			}
+			public W notEq(String property, Object value){
+				return part(property+"Not", value);
+			}
+			public W like(String property, Object value){
+				return part(property+"ContainingIgnoreCase", value);
+			}
+			public W notLike(String property, Object value){
+				return part(property+"NotContainingIgnoreCase", value);
+			}
+			public W between(String property, Object value) {
+				return part(property+"IsBetween", value);
+			}
+			public W gt(String property, Object value) {
+				return part(property+"IsGreaterThan", value);
+			}
+			public W gte(String property, Object value) {
+				return part(property+"IsGreaterThanEqual", value);
+			}
+			public W lt(String property, Object value) {
+				return part(property+"IsLessThan", value);
+			}
+			public W lte(String property, Object value) {
+				return part(property+"IsLessThanEqual", value);
+			}
+			public W in(String property, Object value) {
+				return part(property+"IsIn", value);
+			}
+			public W notIn(String property, Object value) {
+				return part(property+"IsNotIn", value);
+			}
+			
+		}
+	}
+	
+	
+	
+	private static class BaseBuilder<T>{
 		
 		private Root<T> root;
 		private CriteriaQuery<?> query;
 		private CriteriaBuilder builder;
 		private Predicate predicate;
 
-		protected PredicateBuilder(PredicateBuilder<T> builder) {
+		private BaseBuilder(BaseBuilder<T> builder) {
 			this(builder.getRoot(), builder.getQuery(), builder.getBuilder());
 		}
 		
-		protected PredicateBuilder(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+		private BaseBuilder(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 			this.root = root;
 			this.query = query;
 			this.builder = builder;
 		}
-		public PredicateBuilder<T> and(Predicate right) {
+		private BaseBuilder<T> and(Predicate right) {
 			predicate = (predicate == null) ? right : builder.and(predicate, right);
 			return this;
 		}
-		public PredicateBuilder<T> or(Predicate right) {
+		private BaseBuilder<T> or(Predicate right) {
 			predicate = (predicate == null) ? right : builder.or(predicate, right);
 			return this;
 		}
 		
-		public Root<T> getRoot() {
+		private Root<T> getRoot() {
 			return root;
 		}
-		public CriteriaQuery<?> getQuery() {
+		private CriteriaQuery<?> getQuery() {
 			return query;
 		}
-		public CriteriaBuilder getBuilder() {
+		private CriteriaBuilder getBuilder() {
 			return builder;
 		}
-		public Predicate getPredicate() {
+		private Predicate getBase() {
 			return predicate;
 		}
 	}

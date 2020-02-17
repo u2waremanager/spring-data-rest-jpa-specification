@@ -4,8 +4,8 @@ import javax.persistence.EntityManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.data.jpa.repository.support.AbstractWhereBuilder.BaseBuilder;
 
-import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.PathBuilder;
@@ -14,7 +14,8 @@ import com.querydsl.jpa.impl.JPAQuery;
 
 public class JPAQueryBuilder<T> {
 
-	protected final Log logger = LogFactory.getLog(getClass());
+	public static Log logger = LogFactory.getLog(JPAQueryBuilder.class);
+	
 	
 	public static <X> JPAQueryBuilder<X> of(JPAQuery<X> query){
 		return new JPAQueryBuilder<>(query);
@@ -42,37 +43,37 @@ public class JPAQueryBuilder<T> {
 
 	public FromBuilder<T> from(PathBuilder<T> type) {
 		query.from(type);
-		return new FromBuilder<>(query, type);
+		return new FromBuilder<>(query, new BaseBuilder(type));
 	}
 	
 	public static class FromBuilder<T>{
 		
 		private JPAQuery<T> query;
-		private PathBuilder<T> type;
+		private BaseBuilder builder;
 		
-		private FromBuilder(JPAQuery<T> query, PathBuilder<T> type) {
+		private FromBuilder(JPAQuery<T> query, BaseBuilder builder) {
 			this.query = query;
-			this.type = type;
+			this.builder = builder;
 		}
 		
 		public FromBuilder<T> leftJoin(String... property) {		
 			for(String p : property) {
-				this.query.leftJoin(type.get(p)).fetchJoin();
+				this.query.leftJoin(builder.getPath().get(p)).fetchJoin();
 			}
 			return this;
 		}
 		public FromBuilder<T> rightJoin(String... property) {		
 			for(String p : property) {
-				this.query.rightJoin(type.get(p)).fetchJoin();
+				this.query.rightJoin(builder.getPath().get(p)).fetchJoin();
 			}
 			return this;
 		}
 		
 		public WhereBuilder<T> where() {			
-			return new WhereBuilder<>(query, type);
+			return new WhereBuilder<>(query, builder);
 		}
 		public OrderBuilder<T> orderBy() {			
-			return new OrderBuilder<>(query, type);
+			return new OrderBuilder<>(query, builder);
 		}
 
 		public JPAQuery<T> build() {			
@@ -81,24 +82,22 @@ public class JPAQueryBuilder<T> {
 	}
 	
 
-	public static class WhereBuilder<T> extends AbstractCriteriaBuilder<WhereBuilder<T>, JPAQuery<T>>{
+	public static class WhereBuilder<T> extends AbstractWhereBuilder<WhereBuilder<T>>{
 
 		private JPAQuery<T> query;
-		private PathBuilder<T> path;
 
-		private WhereBuilder(JPAQuery<T> query, PathBuilder<T> path) {
-			super(new BooleanBuilder(), path);
+		private WhereBuilder(JPAQuery<T> query, BaseBuilder builder) {
+			super(builder);
 			this.query = query;
-			this.path = path;
 		}
 	
 		public JPAQuery<T> build(){
-			return query.where(super.getBase());
+			return query.where(getBuilder().getBase());
 		}
 		
 		public OrderBuilder<T> orderBy(){
-			query.where(super.getBase());
-			return new OrderBuilder<>(query, path);
+			query.where(getBuilder().getBase());
+			return new OrderBuilder<>(query, getBuilder());
 		}
 	}
 	
@@ -106,20 +105,20 @@ public class JPAQueryBuilder<T> {
 	public static class OrderBuilder<T>{
 		
 		private JPAQuery<T> query;
-		private PathBuilder<T> type;
+		private BaseBuilder builder;
 		
-		private OrderBuilder(JPAQuery<T> query, PathBuilder<T> type) {
+		private OrderBuilder(JPAQuery<T> query, BaseBuilder builder) {
 			this.query = query;
-			this.type = type;
+			this.builder = builder;
 		}
 		
 		public OrderBuilder<T> asc(String property) {
-			query.orderBy(new OrderSpecifier<>(Order.ASC, type.getComparable(property, Comparable.class)));
+			query.orderBy(new OrderSpecifier<>(Order.ASC, builder.getPath().getComparable(property, Comparable.class)));
 			return this;
 		}
 
 		public OrderBuilder<T> desc(String property) {
-			query.orderBy(new OrderSpecifier<>(Order.DESC, type.getComparable(property, Comparable.class)));
+			query.orderBy(new OrderSpecifier<>(Order.DESC, builder.getPath().getComparable(property, Comparable.class)));
 			return this;
 		}
 		

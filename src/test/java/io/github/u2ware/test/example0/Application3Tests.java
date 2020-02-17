@@ -58,7 +58,7 @@ public class Application3Tests {
 		
 		SpecificationBuilder<Foo> s = new SpecificationBuilder<>();
 		s.and((r,q,b)->{
-			return org.springframework.data.jpa.repository.query.specification.PredicateBuilder.of(r, q, b).where().and().eq("name", "a").build();
+			return org.springframework.data.jpa.repository.query.specification.BaseBuilder.of(r, q, b).where().and().eq("name", "a").build();
 		});
 		fooRepository.findAll(s);
 	}

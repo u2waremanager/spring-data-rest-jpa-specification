@@ -64,7 +64,7 @@ public class ApplicationTests {
 //		
 		fooRepository.findAll((root, query, builder)->{
 			
-			return PredicateBuilder.of(root, query, builder)
+			return BaseBuilder.of(root, query, builder)
 					.where()
 //					.and().eq("age", 1)
 						.andStart()

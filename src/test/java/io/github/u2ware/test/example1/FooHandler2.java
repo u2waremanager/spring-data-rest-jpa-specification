@@ -38,7 +38,7 @@ public class FooHandler2 {
 		
 		Specification<Foo> spec = (Specification)query;
 		spec.and((r,c,b)->{
-			return PredicateBuilder.of(r,c,b).where().and().eq("name", foo.get_name()).build();
+			return BaseBuilder.of(r,c,b).where().and().eq("name", foo.get_name()).build();
 		});
 	}
 

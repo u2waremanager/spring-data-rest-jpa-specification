@@ -2,8 +2,8 @@ package org.springframework.data.jpa.repository.support;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.data.jpa.repository.support.AbstractWhereBuilder.BaseBuilder;
 
-import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.core.types.dsl.PathBuilderFactory;
@@ -12,9 +12,6 @@ public class PredicateBuilder {
 
 	public static Log logger = LogFactory.getLog(PredicateBuilder.class);
 	
-	private BooleanBuilder root;
-	private WhereBuilder where;
-
 	public static PredicateBuilder of(Class<?> entityType) {
 		return new PredicateBuilder(new PathBuilderFactory().create(entityType));
 	}
@@ -25,26 +22,24 @@ public class PredicateBuilder {
 		return new PredicateBuilder(null);
 	}
 	
+	private PathBuilder<?> path;
+
 	private PredicateBuilder(PathBuilder<?> path) {
-		this.root = new BooleanBuilder();
-		this.where = new WhereBuilder(root, path);
+		this.path = path;
 	}
 	
 	public WhereBuilder where() {			
-		return where;
+		return new WhereBuilder(new BaseBuilder(path));
 	}
 	
-	public static class WhereBuilder extends AbstractCriteriaBuilder<WhereBuilder, Predicate>{
+	public static class WhereBuilder extends AbstractWhereBuilder<WhereBuilder>{
 		
-		private BooleanBuilder root;
-		
-		private WhereBuilder(BooleanBuilder root, PathBuilder<?> path) {
-			super(new BooleanBuilder(), path);
-			this.root = root;
+		private WhereBuilder(BaseBuilder builder) {
+			super(builder);
 		}
 		
 		public Predicate build(){
-			return root.and(getBase());
+			return getBuilder().getBase();
 		}
 	}
 }

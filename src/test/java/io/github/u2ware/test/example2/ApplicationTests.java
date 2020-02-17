@@ -65,7 +65,7 @@ public class ApplicationTests {
 
 		
 		logger.info(fooRepository.findAll((root, query, builder) -> {
-			return PredicateBuilder.of(root, query, builder).where().and().eq("name", "a").build();
+			return BaseBuilder.of(root, query, builder).where().and().eq("name", "a").build();
 		}));
 		
 

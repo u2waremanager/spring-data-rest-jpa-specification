@@ -23,6 +23,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.core.types.dsl.PathBuilderFactory;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -152,7 +153,7 @@ public class Application2Tests {
 		fooRepository.findAll(p);
 	}
 		
-	@Test
+//	@Test
 	public void jqpQuery3() {
 		
 		Predicate p = PredicateBuilder.of(Foo.class)
@@ -175,12 +176,47 @@ public class Application2Tests {
 
 	}
 	
-//	@Test
+	@Test
 	public void jqpQuery4() {
+		
+		PathBuilder<Foo> foo = new PathBuilderFactory().create(Foo.class);
+		
+		BooleanExpression p1 = foo.get("title").eq("1");
+		BooleanExpression p2 = foo.get("name").eq("a");
+		BooleanExpression p3 = foo.get("age").eq(1);
+		
+		
 
 		JPAQueryBuilder.of(em)
 				.from(Foo.class)
 				.where()
+				
+//					.and(p1)
+//					.or(p3)
+				
+//					.and().eq("name", "1")
+//					.or().eq("title", "a")
+				
+//					.andStart()
+//						.and(p1)
+//						.or(p2)
+//					.andEnd()
+//					.andStart()
+//						.and(p2)
+//						.or(p3)
+//					.andEnd()
+					
+//					.andStart()
+//						.and().eq("name", "a")
+//						.or().eq("age", 2)
+//					.andEnd()
+//					.andStart()
+//						.and().eq("name", "a")
+//						.or().eq("age", 2)
+//					.andEnd()
+					
+					
+					
 					.and().eq("name", "a")
 					.andStart()
 						.andStart()
@@ -193,6 +229,8 @@ public class Application2Tests {
 						.andEnd()
 					.andEnd()
 					.and().eq("name", "c")
+					
+					
 				.orderBy()
 				.build()
 			.fetch()
