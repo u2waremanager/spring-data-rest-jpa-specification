@@ -53,7 +53,7 @@ public class ApplicationTests {
 	@Test
 	public void contextLoads() throws Exception {
 
-		$.GET("/foos/query").C("_name", "aa").is2xx();
+		$.GET("/foos/query").C("_name", "a").is2xx();
 //		$.GET("/foos/read").H("partTree", "findByNameAndAge").C("age", "1").is2xx();
 //		$.GET("/foos/read").H("read", "querydsl").C("_name", "bb").is2xx();
 	}

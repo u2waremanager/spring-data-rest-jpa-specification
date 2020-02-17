@@ -168,7 +168,7 @@ public class ReporitoryQueryController extends AbstractRepositoryController{
 	}
 	
 	
-	@RequestMapping(value = BASE_MAPPING+"/{id}", method = RequestMethod.GET, headers = "read=specification")
+	@RequestMapping(value = BASE_MAPPING+"/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Resource<?>> getItemResource1(RootResourceInformation resourceInformation,
 			@BackendId Serializable id, 
 			final PersistentEntityResourceAssembler assembler, 

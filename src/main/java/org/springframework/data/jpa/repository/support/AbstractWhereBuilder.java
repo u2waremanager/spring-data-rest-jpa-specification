@@ -14,14 +14,20 @@ public abstract class AbstractWhereBuilder<X> {
 		private PathBuilder<?> path;
 		private BooleanBuilder predicate;
 		
-		public BaseBuilder(BaseBuilder builder) {
-			this(builder.getPath());
+		private BaseBuilder(BaseBuilder builder) {
+			this(new BooleanBuilder(), builder.getPath());
 		}
+		
 		public BaseBuilder(PathBuilder<?> path) {
-			this.path = path;
-			this.predicate = new BooleanBuilder();
+			this(new BooleanBuilder(), path);
 		}
 
+		public BaseBuilder(BooleanBuilder predicate, PathBuilder<?> path) {
+			this.predicate = predicate;
+			this.path = path;
+		}
+		
+		
 		public BaseBuilder and(Predicate right) {
 			predicate.and(right);
 			return this;

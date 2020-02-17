@@ -53,18 +53,43 @@ public class Application3Tests {
 	@Test
 	public void contextLoads() throws Exception {
 		
-//		BooleanBuilder p = new BooleanBuilder();
-//		p.and(PredicateBuilder.of(Foo.class).where().and().eq("name", "a").build())
-//		//;p
-//		.and(PredicateBuilder.of(Foo.class).where().and().eq("age", 1).build());
-//		fooRepository.findAll(p);
-//		
+		BooleanBuilder p = new BooleanBuilder();
+		p.and(PredicateBuilder.of(Foo.class).where().and().eq("name", "a").build())
+		//;p
+		.and(PredicateBuilder.of(Foo.class).where().and().eq("age", 1).build());
+		fooRepository.findAll(p);
 		
+		
+		
+		
+		
+		
+		
+		
+		
+//		
 		SpecificationBuilder<Foo> s = new SpecificationBuilder<>();
 		s.and((r,q,b)->{return PredicateQueryBuilder.of(r, q, b).where().and().eq("name", "a").build();})
 //		;s
 		.and((r,q,b)->{return PredicateQueryBuilder.of(r, q, b).where().and().eq("age", 1).build();});
 		fooRepository.findAll(s);
+		
+		
+		
+//		SpecificationBuilder.of(s);
+		
+		
+		//SpecificationBuilder.of(s).and();
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 	}
 	
 	

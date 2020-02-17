@@ -24,7 +24,7 @@ public class PredicateQueryBuilder<T> {
 		private CriteriaBuilder builder;
 		private Predicate predicate;
 
-		public BaseBuilder(BaseBuilder<T> builder) {
+		private BaseBuilder(BaseBuilder<T> builder) {
 			this(builder.getRoot(), builder.getQuery(), builder.getBuilder());
 		}
 		
