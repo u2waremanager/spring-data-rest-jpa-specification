@@ -32,16 +32,17 @@ import com.jayway.jsonpath.JsonPath;
 
 
 
-public class ApplicationMockMvc {
+
+public class RestMockMvc {
 
 	public final MockMvc mvc;
 	private final String baseUri;
-	private final HashMap<String, ApplicationMvcResult> results;
+	private final HashMap<String, RestMvcResult> results;
 
-	public ApplicationMockMvc(MockMvc mvc, String baseUri) {
+	public RestMockMvc(MockMvc mvc, String baseUri) {
 		this.mvc = mvc;
 		this.baseUri = baseUri;
-		this.results = new HashMap<String, ApplicationMvcResult>();
+		this.results = new HashMap<String, RestMvcResult>();
 	}
 	
 	public <T> T path(String path) {
@@ -107,81 +108,81 @@ public class ApplicationMockMvc {
 	///////////////////////////////////////////////////////////////
 	//
 	///////////////////////////////////////////////////////////////
-	public ApplicationMockHttpServletRequestBuilder HEAD(String path) throws Exception {
+	public RestMockHttpServletRequestBuilder HEAD(String path) throws Exception {
 		return head(link(path));
 	}
-	public ApplicationMockHttpServletRequestBuilder OPTIONS(String path) throws Exception {
+	public RestMockHttpServletRequestBuilder OPTIONS(String path) throws Exception {
 		return options(link(path));
 	}
-	public ApplicationMockHttpServletRequestBuilder GET(String path) throws Exception {
+	public RestMockHttpServletRequestBuilder GET(String path) throws Exception {
 		return get(link(path));
 	}
-	public ApplicationMockHttpServletRequestBuilder POST(String path) throws Exception {
+	public RestMockHttpServletRequestBuilder POST(String path) throws Exception {
 		return post(link(path));
 	}
-	public ApplicationMockHttpServletRequestBuilder PUT(String path) throws Exception {
+	public RestMockHttpServletRequestBuilder PUT(String path) throws Exception {
 		return put(link(path));
 	}
-	public ApplicationMockHttpServletRequestBuilder PATCH(String path) throws Exception {
+	public RestMockHttpServletRequestBuilder PATCH(String path) throws Exception {
 		return patch(link(path));
 	}
-	public ApplicationMockHttpServletRequestBuilder DELETE(String path) throws Exception {
+	public RestMockHttpServletRequestBuilder DELETE(String path) throws Exception {
 		return delete(link(path));
 	}
-	public ApplicationMockMultipartHttpServletRequestBuilder MULTIPART(String path) throws Exception {
+	public RestMockMultipartHttpServletRequestBuilder MULTIPART(String path) throws Exception {
 		return multipart(link(path));
 	}
 	
 	///////////////////////////////////////////////////////////////
 	//
 	///////////////////////////////////////////////////////////////
-	public ApplicationMockHttpServletRequestBuilder head(String path) throws Exception {
+	public RestMockHttpServletRequestBuilder head(String path) throws Exception {
 		System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------");
-		return new ApplicationMockHttpServletRequestBuilder(this, MockMvcRequestBuilders.head(path));
+		return new RestMockHttpServletRequestBuilder(this, MockMvcRequestBuilders.head(path));
 	}
-	public ApplicationMockHttpServletRequestBuilder options(String path) throws Exception {
+	public RestMockHttpServletRequestBuilder options(String path) throws Exception {
 		System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------");
-		return new ApplicationMockHttpServletRequestBuilder(this, MockMvcRequestBuilders.options(path));
+		return new RestMockHttpServletRequestBuilder(this, MockMvcRequestBuilders.options(path));
 	}
-	public ApplicationMockHttpServletRequestBuilder get(String path) throws Exception {
+	public RestMockHttpServletRequestBuilder get(String path) throws Exception {
 		System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------");
-		return new ApplicationMockHttpServletRequestBuilder(this, MockMvcRequestBuilders.get(path));
+		return new RestMockHttpServletRequestBuilder(this, MockMvcRequestBuilders.get(path));
 	}
-	public ApplicationMockHttpServletRequestBuilder post(String path) throws Exception {
+	public RestMockHttpServletRequestBuilder post(String path) throws Exception {
 		System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------");
-		return new ApplicationMockHttpServletRequestBuilder(this, MockMvcRequestBuilders.post(path));
+		return new RestMockHttpServletRequestBuilder(this, MockMvcRequestBuilders.post(path));
 	}
-	public ApplicationMockHttpServletRequestBuilder put(String path) throws Exception {
+	public RestMockHttpServletRequestBuilder put(String path) throws Exception {
 		System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------");
-		return new ApplicationMockHttpServletRequestBuilder(this, MockMvcRequestBuilders.put(path));
+		return new RestMockHttpServletRequestBuilder(this, MockMvcRequestBuilders.put(path));
 	}
-	public ApplicationMockHttpServletRequestBuilder patch(String path) throws Exception {
+	public RestMockHttpServletRequestBuilder patch(String path) throws Exception {
 		System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------");
-		return new ApplicationMockHttpServletRequestBuilder(this, MockMvcRequestBuilders.patch(path));
+		return new RestMockHttpServletRequestBuilder(this, MockMvcRequestBuilders.patch(path));
 	}
-	public ApplicationMockHttpServletRequestBuilder delete(String path) throws Exception {
+	public RestMockHttpServletRequestBuilder delete(String path) throws Exception {
 		System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------");
-		return new ApplicationMockHttpServletRequestBuilder(this, MockMvcRequestBuilders.delete(path));
+		return new RestMockHttpServletRequestBuilder(this, MockMvcRequestBuilders.delete(path));
 	}
-	public ApplicationMockMultipartHttpServletRequestBuilder multipart(String path) throws Exception {
+	public RestMockMultipartHttpServletRequestBuilder multipart(String path) throws Exception {
 		System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------");
-		return new ApplicationMockMultipartHttpServletRequestBuilder(this, MockMvcRequestBuilders.multipart(path));
+		return new RestMockMultipartHttpServletRequestBuilder(this, MockMvcRequestBuilders.multipart(path));
 	}
 	
 	///////////////////////////////////////////////////////////////
 	//
 	///////////////////////////////////////////////////////////////
-	public static class ApplicationMockHttpServletRequestBuilder {
+	public static class RestMockHttpServletRequestBuilder {
 
 		private static ObjectMapper mapper = new ObjectMapper();
 
-		private ApplicationMockMvc mvc;
+		private RestMockMvc mvc;
 		private MockHttpServletRequestBuilder requestBuilder;
 		private HttpHeaders headers = new HttpHeaders();
 		private MultiValueMap<String,String> params = new LinkedMultiValueMap<>();
 		private Map<String,Object> content = new HashMap<>();
 		
-		private ApplicationMockHttpServletRequestBuilder(ApplicationMockMvc mvc, MockHttpServletRequestBuilder requestBuilder) {
+		private RestMockHttpServletRequestBuilder(RestMockMvc mvc, MockHttpServletRequestBuilder requestBuilder) {
 			this.mvc = mvc;
 			this.requestBuilder = requestBuilder;
 		}
@@ -195,11 +196,11 @@ public class ApplicationMockMvc {
 //			return this;
 //		}	
 		
-		public ApplicationMockHttpServletRequestBuilder H(String key, String value) throws Exception {
-			headers.add(key, value);
+		public RestMockHttpServletRequestBuilder H(String key, Object value) throws Exception {
+			headers.add(key, value.toString());
 			return this;
 		}
-		public ApplicationMockHttpServletRequestBuilder H(Map<String,Object> src) throws Exception {
+		public RestMockHttpServletRequestBuilder H(Map<String,Object> src) throws Exception {
 			src.forEach((key, value)->{
 				if(value != null) {
 					headers.add(key, value.toString());
@@ -207,15 +208,15 @@ public class ApplicationMockMvc {
 			});
 			return this;
 		}
-		public ApplicationMockHttpServletRequestBuilder H(MultiValueMap<String,String> src) throws Exception {
+		public RestMockHttpServletRequestBuilder H(MultiValueMap<String,String> src) throws Exception {
 			headers.addAll(src);
 			return this;
 		}
-		public ApplicationMockHttpServletRequestBuilder P(String key, String value) throws Exception {
-			params.add(key, value);
+		public RestMockHttpServletRequestBuilder P(String key, Object value) throws Exception {
+			params.add(key, value.toString());
 			return this;
 		}
-		public ApplicationMockHttpServletRequestBuilder P(Map<String,Object> src) throws Exception {
+		public RestMockHttpServletRequestBuilder P(Map<String,Object> src) throws Exception {
 			src.forEach((key, value)->{
 				if(value != null) {
 					params.add(key, value.toString());
@@ -223,28 +224,19 @@ public class ApplicationMockMvc {
 			});
 			return this;
 		}
-		public ApplicationMockHttpServletRequestBuilder P(MultiValueMap<String,String> src) throws Exception {
+		public RestMockHttpServletRequestBuilder P(MultiValueMap<String,String> src) throws Exception {
 			params.addAll(src);
 			return this;
 		}
-		public ApplicationMockHttpServletRequestBuilder C() throws Exception {
-			content.put("", "");
-			return this;
-		}
-		public ApplicationMockHttpServletRequestBuilder C(Object value) throws Exception {
-			String requestContent = mapper.writeValueAsString(value);
-			this.requestBuilder.contentType(MediaType.APPLICATION_JSON_UTF8).content(requestContent);
-			return this;
-		}
-		public ApplicationMockHttpServletRequestBuilder C(String key, Object value) throws Exception {
+		public RestMockHttpServletRequestBuilder C(String key, Object value) throws Exception {
 			content.put(key, value);
 			return this;
 		}
-		public ApplicationMockHttpServletRequestBuilder C(Map<String, Object> src) throws Exception {
+		public RestMockHttpServletRequestBuilder C(Map<String, Object> src) throws Exception {
 			content.putAll(src);
 			return this;
 		}
-		public ApplicationMockHttpServletRequestBuilder C(MultiValueMap<String,String> src) throws Exception {
+		public RestMockHttpServletRequestBuilder C(MultiValueMap<String,String> src) throws Exception {
 			src.forEach((key, value)->{ 
 				if(value.size() > 0) { 
 					content.put(key, value.size() > 1 ? value : value.get(0));
@@ -253,54 +245,62 @@ public class ApplicationMockMvc {
 			content.putAll(src.toSingleValueMap());
 			return this;
 		}
+
+		public RestMockHttpServletRequestBuilder C(Object src) throws Exception {
+			String requestContent = mapper.writeValueAsString(src);
+			this.requestBuilder.contentType(MediaType.APPLICATION_JSON_UTF8).content(requestContent);
+			return this;
+		}
+		
 		
 		private void build() throws Exception {
 			this.requestBuilder.headers(headers);
 			this.requestBuilder.params(params);
 			if(content.size() > 0) {
 				String requestContent = mapper.writeValueAsString(content);
-				
-				System.err.println(requestContent);
-				
 				this.requestBuilder.contentType(MediaType.APPLICATION_JSON_UTF8).content(requestContent);
 			}
 		}
 		
-		public ApplicationResultActions is2xx(Object... matcherOrHandlers) throws Exception {
+		public RestResultActions is2xx(Object... matcherOrHandlers) throws Exception {
 			build();
-			return new ApplicationResultActions(mvc, mvc.mvc.perform(requestBuilder).andDo(print()).andExpect(status().is2xxSuccessful())).and(matcherOrHandlers);
+			return new RestResultActions(mvc, mvc.mvc.perform(requestBuilder).andDo(print()).andExpect(status().is2xxSuccessful())).and(matcherOrHandlers);
 		}
-		public ApplicationResultActions is4xx(Object... matcherOrHandlers) throws Exception {
+		public RestResultActions is3xx(Object... matcherOrHandlers) throws Exception {
 			build();
-			return new ApplicationResultActions(mvc, mvc.mvc.perform(requestBuilder).andDo(print()).andExpect(status().is4xxClientError())).and(matcherOrHandlers);
+			return new RestResultActions(mvc, mvc.mvc.perform(requestBuilder).andDo(print()).andExpect(status().is3xxRedirection())).and(matcherOrHandlers);
 		}
-		public ApplicationResultActions is5xx(Object... matcherOrHandlers) throws Exception {
+		public RestResultActions is4xx(Object... matcherOrHandlers) throws Exception {
 			build();
-			return new ApplicationResultActions(mvc, mvc.mvc.perform(requestBuilder).andDo(print()).andExpect(status().is5xxServerError())).and(matcherOrHandlers);
+			return new RestResultActions(mvc, mvc.mvc.perform(requestBuilder).andDo(print()).andExpect(status().is4xxClientError())).and(matcherOrHandlers);
+		}
+		public RestResultActions is5xx(Object... matcherOrHandlers) throws Exception {
+			build();
+			return new RestResultActions(mvc, mvc.mvc.perform(requestBuilder).andDo(print()).andExpect(status().is5xxServerError())).and(matcherOrHandlers);
 		}
 	}
 	
 	///////////////////////////////////////////////////////////////
 	//
 	///////////////////////////////////////////////////////////////
-	public static class ApplicationMockMultipartHttpServletRequestBuilder extends ApplicationMockHttpServletRequestBuilder{
+	public static class RestMockMultipartHttpServletRequestBuilder extends RestMockHttpServletRequestBuilder{
 
 		private MockMultipartHttpServletRequestBuilder requestBuilder;
 		
-		private ApplicationMockMultipartHttpServletRequestBuilder(ApplicationMockMvc mvc, MockMultipartHttpServletRequestBuilder requestBuilder) {
+		private RestMockMultipartHttpServletRequestBuilder(RestMockMvc mvc, MockMultipartHttpServletRequestBuilder requestBuilder) {
 			super(mvc, requestBuilder);
 			this.requestBuilder = requestBuilder;
 		}
 		
-		public ApplicationMockMultipartHttpServletRequestBuilder F(String  name) throws Exception {
+		public RestMockMultipartHttpServletRequestBuilder F(String  name) throws Exception {
 			requestBuilder.file(name, "Hello World".getBytes());
 			return this;
 		}
-		public ApplicationMockMultipartHttpServletRequestBuilder F(MockMultipartFile file) throws Exception {
+		public RestMockMultipartHttpServletRequestBuilder F(MockMultipartFile file) throws Exception {
 			requestBuilder.file(file);
 			return this;
 		}
-		public ApplicationMockMultipartHttpServletRequestBuilder A(ApplicationResultActions r) throws Exception {
+		public RestMockMultipartHttpServletRequestBuilder A(RestResultActions r) throws Exception {
 			this.requestBuilder.header("Authorization", r.andReturn().header("Authorization"));
 			return this;
 		}
@@ -311,17 +311,17 @@ public class ApplicationMockMvc {
 	///////////////////////////////////////////////////////////////
 	//
 	///////////////////////////////////////////////////////////////
-	public static class ApplicationResultActions{
+	public static class RestResultActions{
 
-		private ApplicationMockMvc mvc;
+		private RestMockMvc mvc;
 		private ResultActions resultActions;
 		
-		private ApplicationResultActions(ApplicationMockMvc mvc, ResultActions resultActions) {
+		private RestResultActions(RestMockMvc mvc, ResultActions resultActions) {
 			this.mvc = mvc;
 			this.resultActions = resultActions;
 		}
 		
-		public ApplicationResultActions and(final Object... matcherOrHandlers) throws Exception {
+		public RestResultActions and(final Object... matcherOrHandlers) throws Exception {
 			for(Object matcherOrHandler : matcherOrHandlers) {
 				if(ClassUtils.isAssignableValue(ResultMatcher.class, matcherOrHandler)){
 					resultActions.andExpect((ResultMatcher)matcherOrHandler);
@@ -333,15 +333,15 @@ public class ApplicationMockMvc {
 					final String key = matcherOrHandler.toString();
 					resultActions.andDo(new ResultHandler() {
 						public void handle(MvcResult result) throws Exception {
-							mvc.results.put(key, new ApplicationMvcResult(result));
+							mvc.results.put(key, new RestMvcResult(result));
 						}
 					});
 				}
 			}
 			return this;
 		}		
-		public ApplicationMvcResult andReturn() throws Exception {
-			return new ApplicationMvcResult(this.resultActions.andReturn());
+		public RestMvcResult andReturn() throws Exception {
+			return new RestMvcResult(this.resultActions.andReturn());
 		}
 
 		public static ResultMatcher valueMatch(String path, Object value) throws Exception {
@@ -356,11 +356,11 @@ public class ApplicationMockMvc {
 	///////////////////////////////////////////////////////////////
 	//
 	///////////////////////////////////////////////////////////////
-	public static class ApplicationMvcResult {
+	public static class RestMvcResult {
 		
 		private MvcResult mvcResult;
 		
-		private ApplicationMvcResult(MvcResult mvcResult) {
+		private RestMvcResult(MvcResult mvcResult) {
 			this.mvcResult = mvcResult;
 		}
 		

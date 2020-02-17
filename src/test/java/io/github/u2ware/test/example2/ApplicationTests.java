@@ -11,14 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.repository.config.HibernateAddtionalConfiguration;
-import org.springframework.data.jpa.repository.query.specification.PredicateBuilder;
+import org.springframework.data.jpa.repository.query.PredicateQueryBuilder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-//import static io.github.u2ware.test.ApplicationMockMvc.ApplicationResultActions.sizeMatch;
-import io.github.u2ware.test.ApplicationMockMvc;
+import io.github.u2ware.test.RestMockMvc;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -29,13 +28,13 @@ public class ApplicationTests {
 	
 	protected @Value("${spring.data.rest.base-path:}") String springDataRestBasePath;
 	protected @Autowired WebApplicationContext context;
-	protected ApplicationMockMvc $;
+	protected RestMockMvc $;
 	
 	
 	@Before
 	public void before() throws Exception {
 		MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
-		this.$ = new ApplicationMockMvc(mvc, springDataRestBasePath);
+		this.$ = new RestMockMvc(mvc, springDataRestBasePath);
 	}
 
 	protected @Autowired FooRepository fooRepository;
@@ -65,19 +64,11 @@ public class ApplicationTests {
 
 		
 		logger.info(fooRepository.findAll((root, query, builder) -> {
-			return BaseBuilder.of(root, query, builder).where().and().eq("name", "a").build();
+			return PredicateQueryBuilder.of(root, query, builder).where().and().eq("name", "a").build();
 		}));
 		
 
 	}
 	
-//	String expressionString = sql;
-//	Object rootObject = applicationContext;
-//			
-//	ExpressionParser parser = new SpelExpressionParser();
-//	Expression exp = parser.parseExpression(expressionString, ParserContext.TEMPLATE_EXPRESSION);
-//	EvaluationContext ctx = new StandardEvaluationContext(rootObject);
-//	String result = exp.getValue(ctx, String.class);		
-//	return result;
 	
 }

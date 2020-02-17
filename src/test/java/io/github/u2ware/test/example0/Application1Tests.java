@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.domain.SpecificationBuilder;
@@ -23,14 +22,8 @@ import org.springframework.data.jpa.repository.query.PredicateQueryBuilder;
 import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.PartTree;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-//import static io.github.u2ware.test.ApplicationMockMvc.ApplicationResultActions.sizeMatch;
-import io.github.u2ware.test.ApplicationMockMvc;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -39,17 +32,17 @@ public class Application1Tests {
 	protected Log logger = LogFactory.getLog(getClass());
 
 	
-	protected @Value("${spring.data.rest.base-path:}") String springDataRestBasePath;
-	protected @Autowired WebApplicationContext context;
-	protected ApplicationMockMvc $;
+//	protected @Autowired WebApplicationContext context;
+//	protected @Value("${spring.data.rest.base-path:}") String springDataRestBasePath;
+//	protected RestMockMvc $;
 	
 	private @Autowired FooRepository repository; 
 	
 	
 	@Before
 	public void before() throws Exception {
-		MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
-		this.$ = new ApplicationMockMvc(mvc, springDataRestBasePath);
+//		MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
+//		this.$ = new RestMockMvc(mvc, springDataRestBasePath);
 
 		if(repository.count() > 0) return;
 		

@@ -1,6 +1,7 @@
 package io.github.u2ware.test.example2;
 
 import java.util.UUID;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -52,6 +53,7 @@ public @Data class Foo {
 	@Formula("(SELECT count(t.id) FROM example2_bar t WHERE t.name = '#{fooStatement.fooStatement2.statement}')")
 	@JsonProperty(access=Access.READ_ONLY) 
 	private Long count2;
+
 	
 //	@NotFound(action = NotFoundAction.IGNORE)
 //	@JsonProperty(access=Access.READ_ONLY) 

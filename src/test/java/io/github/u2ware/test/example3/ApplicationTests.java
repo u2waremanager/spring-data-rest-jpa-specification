@@ -17,8 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-//import static io.github.u2ware.test.ApplicationMockMvc.ApplicationResultActions.sizeMatch;
-import io.github.u2ware.test.ApplicationMockMvc;
+import io.github.u2ware.test.RestMockMvc;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -29,7 +28,7 @@ public class ApplicationTests {
 	
 	protected @Value("${spring.data.rest.base-path:}") String springDataRestBasePath;
 	protected @Autowired WebApplicationContext context;
-	protected ApplicationMockMvc $;
+	protected RestMockMvc $;
 	
 	private @Autowired FooRepository fooRepository; 
 	
@@ -42,7 +41,7 @@ public class ApplicationTests {
 	@Before
 	public void before() throws Exception {
 		MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
-		this.$ = new ApplicationMockMvc(mvc, springDataRestBasePath);
+		this.$ = new RestMockMvc(mvc, springDataRestBasePath);
 		
 		fooRepository.save(new Foo(f1, "a", 1));		
 		fooRepository.save(new Foo(f2, "a", 2));		

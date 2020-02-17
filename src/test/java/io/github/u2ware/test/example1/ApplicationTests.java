@@ -13,7 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import io.github.u2ware.test.ApplicationMockMvc;
+import io.github.u2ware.test.RestMockMvc;
 
 
 @RunWith(SpringRunner.class)
@@ -25,18 +25,17 @@ public class ApplicationTests {
 	
 	protected @Value("${spring.data.rest.base-path:}") String springDataRestBasePath;
 	protected @Autowired WebApplicationContext context;
-	protected ApplicationMockMvc $;
+	protected RestMockMvc $;
 	
 	private @Autowired FooRepository fooRepository; 
 	private @Autowired BarRepository barRepository; 
-//	private @Autowired BazRepository bazRepository; 
 	
 	
 	@Before
 	public void before() throws Exception {
 		
 		MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
-		this.$ = new ApplicationMockMvc(mvc, springDataRestBasePath);
+		this.$ = new RestMockMvc(mvc, springDataRestBasePath);
 		
 		fooRepository.save(new Foo("a", 1));
 		fooRepository.save(new Foo("a", 2));
