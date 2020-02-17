@@ -1,4 +1,4 @@
-package org.springframework.data.jpa.repository.query.specification;
+package org.springframework.data.jpa.repository.query;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;

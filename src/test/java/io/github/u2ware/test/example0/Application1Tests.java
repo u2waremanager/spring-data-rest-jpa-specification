@@ -15,11 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.query.ExpressionRecursivelyUtils;
-import org.springframework.data.jpa.repository.query.specification.PartTreePredicate;
-import org.springframework.data.jpa.repository.query.specification.PartTreeSpecification;
-import org.springframework.data.jpa.repository.query.specification.PredicateBuilder;
-import org.springframework.data.jpa.repository.query.specification.SpecificationBuilder;
+import org.springframework.data.jpa.domain.SpecificationBuilder;
+import org.springframework.data.jpa.repository.query.BeanWrapperFactory;
+import org.springframework.data.jpa.repository.query.PartTreePredicate;
+import org.springframework.data.jpa.repository.query.PartTreeSpecification;
+import org.springframework.data.jpa.repository.query.PredicateQueryBuilder;
 import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.PartTree;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -61,7 +61,7 @@ public class Application1Tests {
 		repository.save(new Foo("f", 3, "2"));		
 	}
 
-	@Test
+//	@Test
 	public void criteriaBuilderTests() throws Exception{
 
 		List<Foo> foos1 = repository.findAll((root, query, builder)->{
@@ -73,9 +73,9 @@ public class Application1Tests {
 //			CriteriaBuilderImpl f;
 //			f.equal(x, y);
 			
-			Expression<?> title = ExpressionRecursivelyUtils.toExpressionRecursively(root, "title");
-			Expression<?> name = ExpressionRecursivelyUtils.toExpressionRecursively(root, "name");
-			Expression<?> age = ExpressionRecursivelyUtils.toExpressionRecursively(root, "age");
+			Expression<?> title = PartTreePredicate.toExpressionRecursively(root, "title");
+			Expression<?> name = PartTreePredicate.toExpressionRecursively(root, "name");
+			Expression<?> age = PartTreePredicate.toExpressionRecursively(root, "age");
 			
 			
 			Predicate p1 = builder.equal(title, "1");
@@ -84,11 +84,13 @@ public class Application1Tests {
 
 //			Predicate r1 = builder.and( p1, builder.or(  p2, p3 ) ); //->2
 //			Predicate r2 = builder.or( p1, builder.and( p2, p3 ) ) ; //->3
+//			return age.in(new String[] {"1", "2"});
 			
 			Predicate r3 = builder.and(  p2, p3 );
 			r3 = builder.and( p1, r3 ); //->2
+			
+			
 			return r3;
-//			return age.in(new String[] {"1", "2"});
 		});
 		logger.info(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(foos1));
 
@@ -99,7 +101,7 @@ public class Application1Tests {
 	
 	
 	
-	@Test
+//	@Test
 	public void partTreePredicateBuilderTest() throws Exception{
 		
 		repository.findAll((root, query, builder)->{
@@ -136,15 +138,15 @@ public class Application1Tests {
 		Foo foo = new Foo("a1", 1, "b1");
 		repository.findAll((root, query, builder)->{
 			PartTree partTree = new PartTree("findByNameIgnoreCase", root.getJavaType());
-			return new PartTreePredicate<>(root, query, builder).build(partTree, foo);
+			return new PartTreePredicate<>(root, query, builder).build(partTree, BeanWrapperFactory.getInstance(foo));
 		});
 		repository.findAll((root, query, builder)->{
 			PartTree partTree = new PartTree("ageIn", Foo.class);
-			return new PartTreePredicate<>(root, query, builder).build(partTree, foo);
+			return new PartTreePredicate<>(root, query, builder).build(partTree, BeanWrapperFactory.getInstance(foo));
 		});
 	}
 	
-	@Test
+//	@Test
 	public void partTreeSpecificationTests() throws Exception{
 		
 		//////////////////////////////////////////////////////////////////////////
@@ -174,32 +176,53 @@ public class Application1Tests {
 		
 	}
 	
-	@Test
+//	@Test
 	public void predicateBuilderTest() throws Exception {
 		
 		///////////////////////////////////////////////////
 		//
 		////////////////////////////////////////////////////
 		repository.findAll((root, query, builder)->{
-			return PredicateBuilder.of(root, query, builder)
+			
+			
+			
+			Expression<?> title = PartTreePredicate.toExpressionRecursively(root, "title");
+			Expression<?> name = PartTreePredicate.toExpressionRecursively(root, "name");
+			Expression<?> age = PartTreePredicate.toExpressionRecursively(root, "age");
+			
+			
+			Predicate p1 = builder.equal(title, "1");
+			Predicate p2 = builder.equal(name, "a");
+			Predicate p3 = builder.equal(age, 1);
+		
+			
+			
+			return PredicateQueryBuilder.of(root, query, builder)
 					.where()
+//						.and(p1)
+//						.or(p3)
+					
 //						.and().eq("name", "1")
-						.andStart()
-							.eq("name", "a")
-							.or()
-							.eq("age", 2)
-						.andEnd()
+//						.or().eq("title", "a")
+
 //						.andStart()
-//							.eq("name", "a")
-//							.or()
-//							.eq("age", 2)
+//							.and(p1)
+//							.or(p2)
 //						.andEnd()
 //						.andStart()
-//							.eq("name", "a")
-//							.and()
-//							.eq("age", 2)
+//							.and(p2)
+//							.or(p3)
 //						.andEnd()
-//						.and().eq("title", null)
+						
+						.orStart()
+							.and().eq("name", "a")
+							.or().eq("age", 2)
+						.orEnd()
+						.orStart()
+							.and().eq("name", "a")
+							.or().eq("age", 2)
+						.orEnd()
+
 					.orderBy()
 						.asc("name")
 						.desc("age")
@@ -213,8 +236,9 @@ public class Application1Tests {
 	public void specificationBuilderTests() throws Exception{
 	
 		Specification<Foo> spec = new SpecificationBuilder<>();
-		spec.and((r, q, b) -> {return PredicateBuilder.of(r,q,b).where().and().eq("name", "a").build();});		
-		spec.or((r, q, b) -> {return PredicateBuilder.of(r,q,b).where().and().eq("age", 1).build();});		
+		spec.and((r, q, b) -> {return PredicateQueryBuilder.of(r,q,b).where().and().eq("name", "a").build();})
+//		;spec
+		.or((r, q, b) -> {return PredicateQueryBuilder.of(r,q,b).where().and().eq("age", 1).build();});		
 		List<Foo> foos = repository.findAll(spec);
 		
 		Assert.assertEquals(2, foos.size());

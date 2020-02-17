@@ -1,4 +1,4 @@
-package org.springframework.data.jpa.repository.query.specification;
+package org.springframework.data.jpa.repository.query;
 
 import static org.springframework.data.repository.query.parser.Part.Type.IS_NOT_EMPTY;
 import static org.springframework.data.repository.query.parser.Part.Type.NOT_CONTAINING;
@@ -13,6 +13,7 @@ import java.util.Iterator;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -20,7 +21,6 @@ import javax.persistence.criteria.Root;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanWrapper;
-import org.springframework.data.jpa.repository.query.ExpressionRecursivelyUtils;
 import org.springframework.data.mapping.PropertyPath;
 import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.Part.IgnoreCaseType;
@@ -29,7 +29,6 @@ import org.springframework.data.repository.query.parser.PartTree;
 import org.springframework.data.repository.query.parser.PartTree.OrPart;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.MultiValueMap;
 import org.springframework.util.ObjectUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,15 +57,15 @@ public class PartTreePredicate<X> {
 	}
 	
 	
-	public Predicate build(PartTree partTree, X params){
-		return toPredicate(partTree, BeanWrapperFactory.getInstance(params));
-	}
-	public Predicate build(PartTree partTree, Object... params){
-		return toPredicate(partTree, BeanWrapperFactory.getInstance(params));
-	}
-	public Predicate build(PartTree partTree, MultiValueMap<String,Object> params){
-		return toPredicate(partTree,  BeanWrapperFactory.getInstance(params));
-	}
+//	public Predicate build(PartTree partTree, X params){
+//		return toPredicate(partTree, BeanWrapperFactory.getInstance(params));
+//	}
+//	public Predicate build(PartTree partTree, Object... params){
+//		return toPredicate(partTree, BeanWrapperFactory.getInstance(params));
+//	}
+//	public Predicate build(PartTree partTree, MultiValueMap<String,Object> params){
+//		return toPredicate(partTree,  BeanWrapperFactory.getInstance(params));
+//	}
 	public Predicate build(PartTree partTree, BeanWrapper parameter){
 		return toPredicate(partTree,  parameter);
 	}
@@ -311,13 +310,6 @@ public class PartTreePredicate<X> {
 		return getTypedPath(root, part);
 	}
 	
-	private static <T> Expression<T> getTypedPath(Root<?> root, Part part) {
-		return ExpressionRecursivelyUtils.toExpressionRecursively(root, part.getProperty());
-	}
-	public static <T> Expression<T> getTypedPath(Root<?> root, String property) {
-		return getTypedPath(root, new Part(property, root.getJavaType()));
-	}
-	
 	private <T> Expression<T> getIgnoreCasedPath(Root<?> root, Part part) {
 
 		Expression<? extends T> expression = getTypedPath(root, part);
@@ -350,4 +342,22 @@ public class PartTreePredicate<X> {
 	//////////////////////////////////////////////////////////////////////
 	//
 	//////////////////////////////////////////////////////////////////////
+	public static <T> Expression<T> getTypedPath(Root<?> root, String property) {
+		return getTypedPath(root, new Part(property, root.getJavaType()));
+	}
+	
+	public static <T> Expression<T> getTypedPath(Root<?> root, Part part) {
+		return QueryUtils.toExpressionRecursively(root, part.getProperty());
+//		return ExpressionRecursivelyUtils.toExpressionRecursively(root, part.getProperty());
+	}
+	public static <T> Expression<T> toExpressionRecursively(From<?, ?> from, PropertyPath property) {
+		return QueryUtils.toExpressionRecursively(from, property, false);
+	}
+	
+	public static Expression<?> toExpressionRecursively(Root<?> root, String property){
+		PropertyPath path = PropertyPath.from(property, root.getJavaType());
+		return QueryUtils.toExpressionRecursively(root, path);
+	}
+	
+	
 }

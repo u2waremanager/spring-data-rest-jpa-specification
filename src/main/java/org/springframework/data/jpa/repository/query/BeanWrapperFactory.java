@@ -1,4 +1,4 @@
-package org.springframework.data.jpa.repository.query.specification;
+package org.springframework.data.jpa.repository.query;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -8,17 +8,17 @@ import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.util.MultiValueMap;
 
-class BeanWrapperFactory {
+public class BeanWrapperFactory {
 
 	private BeanWrapperFactory() {}
 	
-	static <T> BeanWrapper getInstance(T params){
+	public static <T> BeanWrapper getInstance(T params){
 		return new BeanWrapperImpl(params);
 	}
-	static BeanWrapper getInstance(Object... params){
+	public static BeanWrapper getInstance(Object... params){
 		return new BeanWrapperObjectArray(params);
 	}
-	static BeanWrapper getInstance(MultiValueMap<String,Object> params){
+	public static BeanWrapper getInstance(MultiValueMap<String,Object> params){
 		return new BeanWrapperMultiValue(params);
 	}
 

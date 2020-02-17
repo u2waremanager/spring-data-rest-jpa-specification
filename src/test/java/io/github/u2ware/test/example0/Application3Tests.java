@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.jpa.repository.query.specification.SpecificationBuilder;
+import org.springframework.data.jpa.domain.SpecificationBuilder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -52,7 +52,7 @@ public class Application3Tests {
 	public void contextLoads() throws Exception {
 		
 		BooleanBuilder p = new BooleanBuilder();
-		p.and(org.springframework.data.jpa.repository.query.querydsl.PredicateBuilder.of(Foo.class).where().and().eq("name", "a").build());
+		p.and(org.springframework.data.jpa.repository.support.PredicateBuilder.of(Foo.class).where().and().eq("name", "a").build());
 		fooRepository.findAll(p);
 		
 		

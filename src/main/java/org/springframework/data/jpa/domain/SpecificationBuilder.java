@@ -1,4 +1,4 @@
-package org.springframework.data.jpa.repository.query.specification;
+package org.springframework.data.jpa.domain;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -33,7 +33,7 @@ public class SpecificationBuilder<T> implements Specification<T>{
 		}else {
 			specification = specification.and(other);
 		}
-		return specification;
+		return this;
 	}
 
 	@Override
@@ -43,6 +43,6 @@ public class SpecificationBuilder<T> implements Specification<T>{
 		}else {
 			specification = specification.or(other);
 		}
-		return specification;
+		return this;
 	}
 }

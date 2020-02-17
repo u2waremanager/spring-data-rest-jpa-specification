@@ -76,15 +76,15 @@ public class Application2Tests {
 //		domainSampleRepository.save(e3);
 		
 		logger.info("-------------------------------------------");
-		domainSampleManyRepository.findAll( (r, q, b) -> {return PartTreeQueryBuilder.of(r, q, b).build();} );
+		domainSampleManyRepository.findAll( (r, q, b) -> {return PredicateQueryBuilder.of(r, q, b).build();} );
 		logger.info("-------------------------------------------");
-		domainSampleManyRepository.findAll( (r, q, b) -> {return PartTreeQueryBuilder.of(r, q, b).where().build();} );
+		domainSampleManyRepository.findAll( (r, q, b) -> {return PredicateQueryBuilder.of(r, q, b).where().build();} );
 		logger.info("-------------------------------------------");
-		domainSampleManyRepository.findAll( (r, q, b) -> {return PartTreeQueryBuilder.of(r, q, b).where().and().eq("name", "a").build();} );
+		domainSampleManyRepository.findAll( (r, q, b) -> {return PredicateQueryBuilder.of(r, q, b).where().and().eq("name", "a").build();} );
 		logger.info("-------------------------------------------");
-		domainSampleManyRepository.findAll( (r, q, b) -> {return PartTreeQueryBuilder.of(r, q, b).order().build();} );
+		domainSampleManyRepository.findAll( (r, q, b) -> {return PredicateQueryBuilder.of(r, q, b).order().build();} );
 		logger.info("-------------------------------------------");
-		domainSampleManyRepository.findAll( (r, q, b) -> {return PartTreeQueryBuilder.of(r, q, b).order().desc("name").build();} );
+		domainSampleManyRepository.findAll( (r, q, b) -> {return PredicateQueryBuilder.of(r, q, b).order().desc("name").build();} );
 		
 		
 		

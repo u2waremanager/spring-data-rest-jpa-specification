@@ -3,7 +3,7 @@ package org.springframework.data.rest.webmvc.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.HibernateAddtionalConfiguration;
-import org.springframework.data.jpa.repository.query.querydsl.ExtendedEntityPathResolver;
+import org.springframework.data.jpa.repository.support.ExtendedEntityPathResolver;
 import org.springframework.data.querydsl.EntityPathResolver;
 import org.springframework.data.rest.core.event.AnnotatedReadEventHandlerInvoker;
 import org.springframework.data.rest.webmvc.RepositoryRestController;

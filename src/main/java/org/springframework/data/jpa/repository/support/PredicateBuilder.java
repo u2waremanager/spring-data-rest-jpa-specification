@@ -1,4 +1,4 @@
-package org.springframework.data.jpa.repository.query.querydsl;
+package org.springframework.data.jpa.repository.support;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
