@@ -53,8 +53,23 @@ public class ApplicationTests {
 	@Test
 	public void contextLoads() throws Exception {
 
-		$.GET("/foos/query").C("_name", "a").is2xx();
-//		$.GET("/foos/read").H("partTree", "findByNameAndAge").C("age", "1").is2xx();
-//		$.GET("/foos/read").H("read", "querydsl").C("_name", "bb").is2xx();
+		$.POST("/foos").C(new Foo("hello", 11)).is2xx("foo1");
+		$.GET("foo1").is2xx();
+		$.GET("foo1").H("query","true").is2xx();
+		
+		$.POST("/bars").C(new Bar("world", 22)).is2xx("bar1");
+		$.GET("bar1").is2xx();
+		$.GET("bar1").H("query","true").is2xx();
+		
+		$.GET("/foos").H("query","true").C("_name", "a").is2xx();
+		$.GET("/bars").H("query","true").C("name", "a").is2xx();
+		
+
+		$.GET("/bars").H("query","true").C("","").P("page", "0").P("size", "2").is2xx();
+		$.GET("/bars").H("query","true").C("age","2").P("unpaged", "true").P("page", "0").P("size", "1").P("sort","name").P("sort","age,desc").is2xx();
+		$.GET("/bars").H("query","true").C("age","2").P("unpaged", "false").P("page", "0").P("size", "2").P("sort","name").P("sort","age,desc").is2xx();
+		
+		
+		$.GET("/bars").H("query","true").H("partTree", "findByNameAndAge").C("age", "1").is2xx();
 	}
 }

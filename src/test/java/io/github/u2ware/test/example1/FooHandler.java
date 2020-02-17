@@ -9,26 +9,27 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Predicate;
 
 @Component
-public class FooHandler1 extends AbstractRepositoryReadEventListener<Foo>{
+public class FooHandler extends AbstractRepositoryReadEventListener<Foo>{
 
 	protected Log logger = LogFactory.getLog(getClass());
 	
 	@Override
 	protected void onBeforeRead(Foo foo, Object query) {
 		
-		if(! ClassUtils.isAssignableValue(Predicate.class, query)) return;
-		logger.info("FooHandler1: "+ foo);
-		logger.info("FooHandler1: "+ query);
-		
-		BooleanBuilder base = (BooleanBuilder)query;
-		PredicateBuilder.of(base, Foo.class)
+		logger.info("onBeforeRead: "+ foo);
+		logger.info("onBeforeRead: "+ query);
+		if(! ClassUtils.isAssignableValue(BooleanBuilder.class, query)) return;
+		PredicateBuilder.of((BooleanBuilder)query, Foo.class)
 			.where()
 				.and().eq("name", foo.get_name())
 			.build();
 	}
 	
-	
+	@Override
+	protected void onAfterRead(Foo bar) {
+		logger.info("onAfterRead: "+ bar);
+	}
+
 }

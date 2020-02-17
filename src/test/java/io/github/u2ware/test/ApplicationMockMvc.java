@@ -227,6 +227,15 @@ public class ApplicationMockMvc {
 			params.addAll(src);
 			return this;
 		}
+		public ApplicationMockHttpServletRequestBuilder C() throws Exception {
+			content.put("", "");
+			return this;
+		}
+		public ApplicationMockHttpServletRequestBuilder C(Object value) throws Exception {
+			String requestContent = mapper.writeValueAsString(value);
+			this.requestBuilder.contentType(MediaType.APPLICATION_JSON_UTF8).content(requestContent);
+			return this;
+		}
 		public ApplicationMockHttpServletRequestBuilder C(String key, Object value) throws Exception {
 			content.put(key, value);
 			return this;
@@ -250,6 +259,9 @@ public class ApplicationMockMvc {
 			this.requestBuilder.params(params);
 			if(content.size() > 0) {
 				String requestContent = mapper.writeValueAsString(content);
+				
+				System.err.println(requestContent);
+				
 				this.requestBuilder.contentType(MediaType.APPLICATION_JSON_UTF8).content(requestContent);
 			}
 		}

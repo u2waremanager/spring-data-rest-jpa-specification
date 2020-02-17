@@ -1,7 +1,6 @@
 package org.springframework.data.rest.webmvc;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Optional;
 
 import org.apache.commons.logging.Log;
@@ -25,7 +24,6 @@ import org.springframework.data.rest.webmvc.support.DefaultedPageable;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -46,129 +44,11 @@ public class ReporitoryQueryController extends AbstractRepositoryController{
 
 	protected Log logger = LogFactory.getLog(getClass());
 
-	private static final String QUERY = "/query";
-	private static final String BASE_MAPPING = "/{repository}" + QUERY;
+	private static final String QUERY_HEADERS = "query=true";
+	private static final String BASE_MAPPING = "/{repository}";
 	
 	
-	/**
-	 * <code>OPTIONS /{repository}/query</code>.
-	 *
-	 * @param resourceInformation
-	 * @return
-	 */
-	@RequestMapping(value = BASE_MAPPING, method = RequestMethod.OPTIONS)
-	public HttpEntity<?> optionsForQueries(RootResourceInformation resourceInformation) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAllow(Collections.singleton(HttpMethod.GET));
-		return ResponseEntity.ok().headers(headers).build();
-	}
-	
-	
-	/**
-	 * <code>HEAD /{repository}/query</code> - Checks whether the query resource is present.
-	 *
-	 * @param resourceInformation
-	 * @return
-	 */
-	@RequestMapping(value = BASE_MAPPING, method = RequestMethod.HEAD)
-	public HttpEntity<?> headForQueries(RootResourceInformation resourceInformation) {
-		return ResponseEntity.noContent().build();
-	}
-	
-	
-
-	/**
-	 * <code>GET /{repository}/query</code> - Exposes links to the individual query resources exposed by the backing
-	 * repository.
-	 *
-	 * @param resourceInformation
-	 * @return
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@ResponseBody
-	@RequestMapping(value = BASE_MAPPING, method = RequestMethod.GET)
-	public <T> Resources<?> executeQuery(@QuerydslPredicate RootResourceInformation resourceInformation,
-			@RequestHeader(name = "partTree", required = false) String partTree,
-			@RequestParam(name = "unpaged", required = false) boolean unpaged,
-			PersistentEntityResource payload, DefaultedPageable pageable, Sort sort, PersistentEntityResourceAssembler assembler)
-			throws ResourceNotFoundException, HttpRequestMethodNotSupportedException {
-		
-		resourceInformation.verifySupportedMethod(HttpMethod.GET, ResourceType.COLLECTION);
-
-		RepositoryInvoker invoker = resourceInformation.getInvoker();
-
-		if (null == invoker) {
-			throw new ResourceNotFoundException();
-		}
-
-		//////////////////////////////////////////////////////////////////////////////////////////////
-		//
-		//////////////////////////////////////////////////////////////////////////////////////////////
-		Class<?> domainType = resourceInformation.getDomainType();
-		logger.info("domain: " + domainType.getName());
-
-		
-		Repository repository = getRepositoryFor(resourceInformation);
-		Iterable<?> results = null;
-		
-		//////////////////////////////////////////////////////////////////////////////////////////////
-		//
-		//////////////////////////////////////////////////////////////////////////////////////////////
-		if(ClassUtils.isAssignableValue(QuerydslPredicateExecutor.class, repository)) {
-
-			QuerydslPredicateExecutor executor = (QuerydslPredicateExecutor)repository;
-			logger.info("executor: " + executor);
-
-			BooleanBuilder predicate = new BooleanBuilder();
-			//....................
-			publisher.publishEvent(new BeforeReadEvent(payload.getContent(), predicate));
-			//...................
-			if(unpaged) {
-				results = executor.findAll(predicate, sort) ;
-			}else {
-				results = executor.findAll(predicate, pageable.getPageable()) ;
-			}
-			
-			
-		}else if(ClassUtils.isAssignableValue(JpaSpecificationExecutor.class, repository)) {
-			
-			
-			JpaSpecificationExecutor executor = (JpaSpecificationExecutor)repository;
-			logger.info("executor: " + executor);
-			
-			Specification specification = null;
-			if(StringUtils.hasText(partTree)) {
-				specification = new PartTreeSpecification(partTree, payload.getContent());
-			}else {
-				specification = new SpecificationBuilder();
-				//....................
-				publisher.publishEvent(new BeforeReadEvent(payload.getContent(), specification));
-				//...................
-			}
-			if(unpaged) {
-				results = executor.findAll(specification, sort) ;
-			}else {
-				results = executor.findAll(specification, pageable.getPageable()) ;
-			}
-			
-		}else {
-			throw new ResourceNotFoundException();
-		}
-		
-		//////////////////////////////////////////////////////////////////////////////////////////////
-		//
-		//////////////////////////////////////////////////////////////////////////////////////////////
-		ResourceMetadata metadata = resourceInformation.getResourceMetadata();
-		Optional<Link> baseLink = Optional.of(entityLinks.linkToPagedResource(resourceInformation.getDomainType(),
-				pageable.isDefault() ? null : pageable.getPageable()));
-
-		Resources<?> result = toResources(results, assembler, metadata.getDomainType(), baseLink);
-		result.add(getCollectionResourceLinks(resourceInformation, pageable));
-		return result;
-	}
-	
-	
-	@RequestMapping(value = BASE_MAPPING+"/{id}", method = RequestMethod.GET)
+	@RequestMapping(value = BASE_MAPPING+"/{id}", method = RequestMethod.GET, headers = QUERY_HEADERS)
 	public ResponseEntity<Resource<?>> getItemResource1(RootResourceInformation resourceInformation,
 			@BackendId Serializable id, 
 			final PersistentEntityResourceAssembler assembler, 
@@ -190,4 +70,89 @@ public class ReporitoryQueryController extends AbstractRepositoryController{
 	}
 	
 
+	@ResponseBody
+	@RequestMapping(value = BASE_MAPPING, method = RequestMethod.GET, headers = QUERY_HEADERS)
+	public <T> Resources<?> executeQuery(@QuerydslPredicate RootResourceInformation resourceInformation,
+			@RequestHeader(name = "partTree", required = false) String partTree,
+			@RequestParam(name = "unpaged", required = false) boolean unpaged,
+			PersistentEntityResource payload, DefaultedPageable pageable, Sort sort, PersistentEntityResourceAssembler assembler)
+			throws ResourceNotFoundException, HttpRequestMethodNotSupportedException {
+		
+		resourceInformation.verifySupportedMethod(HttpMethod.GET, ResourceType.COLLECTION);
+
+		//////////////////////////////////////////////////////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////////////////////////////////////////////////////
+		RepositoryInvoker invoker = resourceInformation.getInvoker();
+		if (null == invoker) {
+			throw new ResourceNotFoundException();
+		}
+		
+		//////////////////////////////////////////////////////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////////////////////////////////////////////////////
+		Iterable<?> results = executeQuery(resourceInformation, partTree, unpaged, pageable, sort, payload.getContent());
+		if (null == results) {
+			throw new ResourceNotFoundException();
+		}
+		
+		//////////////////////////////////////////////////////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////////////////////////////////////////////////////
+		ResourceMetadata metadata = resourceInformation.getResourceMetadata();
+		Optional<Link> baseLink = Optional.of(entityLinks.linkToPagedResource(resourceInformation.getDomainType(), pageable.isDefault() ? null : pageable.getPageable()));
+
+		Resources<?> result = toResources(results, assembler, metadata.getDomainType(), baseLink);
+		result.add(getCollectionResourceLinks(resourceInformation, pageable));
+		return result;
+	}
+
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private Iterable<?> executeQuery(final RootResourceInformation resourceInformation, final String partTree, final boolean unpaged, final DefaultedPageable pageable, final Sort sort, final Object content){
+		
+		
+		Repository repository = getRepositoryFor(resourceInformation);
+		
+		if(ClassUtils.isAssignableValue(QuerydslPredicateExecutor.class, repository)) {
+
+			QuerydslPredicateExecutor executor = (QuerydslPredicateExecutor)repository;
+			logger.info("QuerydslPredicateExecutor: " + executor);
+
+			BooleanBuilder predicate = new BooleanBuilder();
+			publisher.publishEvent(new BeforeReadEvent(content, predicate));
+
+			if(unpaged) {
+				return executor.findAll(predicate, sort) ;
+			}else {
+				return executor.findAll(predicate, pageable.getPageable()) ;
+			}
+			
+			
+		}else if(ClassUtils.isAssignableValue(JpaSpecificationExecutor.class, repository)) {
+			
+			
+			JpaSpecificationExecutor executor = (JpaSpecificationExecutor)repository;
+			logger.info("JpaSpecificationExecutor: " + executor);
+			
+			Specification specification = null;
+			if(StringUtils.hasText(partTree)) {
+				specification = new PartTreeSpecification(partTree, content);
+			}else {
+				specification = new SpecificationBuilder();
+				publisher.publishEvent(new BeforeReadEvent(content, specification));
+			}
+			
+			
+			if(unpaged) {
+				return executor.findAll(specification, sort) ;
+			}else {
+				return executor.findAll(specification, pageable.getPageable()) ;
+			}
+			
+		}else {
+			return null;
+		}
+		
+	}
 }
