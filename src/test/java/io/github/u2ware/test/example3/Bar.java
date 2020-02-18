@@ -13,7 +13,8 @@ import lombok.Data;
 @Entity
 public @Data class Bar {
 
-	@Id
+	@Id 
+//	@GeneratedValue(generator = "UUID") @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
 	@Column(name = "id")
 	private UUID id;
 	

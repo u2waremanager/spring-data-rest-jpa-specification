@@ -62,8 +62,6 @@ public class UriLinkParser implements InitializingBean{
 
 	@SuppressWarnings("unchecked")
 	public static <T> T resolveEntity(String link, Class<T> domainType) {
-		System.err.println(link);
-		
 		URI source = UriComponentsBuilder.fromUriString(link).build().toUri();
 		TypeDescriptor sourceType = new TypeDescriptor(ResolvableType.forClass(URI.class), URI.class, null);
 		TypeDescriptor targetType = new TypeDescriptor(ResolvableType.forClass(domainType), domainType, null);

@@ -251,6 +251,11 @@ public class RestMockMvc {
 			this.requestBuilder.contentType(MediaType.APPLICATION_JSON_UTF8).content(requestContent);
 			return this;
 		}
+
+		public RestMockHttpServletRequestBuilder C() throws Exception {
+			this.requestBuilder.contentType(MediaType.APPLICATION_JSON_UTF8).content("{}");
+			return this;
+		}
 		
 		
 		private void build() throws Exception {

@@ -6,16 +6,14 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
 
-@Table(name="example4_foo")
 @Entity
-public @Data class Foo {
-
+public @Data class ManyToOnePhysicalColumn4 {
+	
 	@Id
 	@GeneratedValue(generator = "UUID") @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")	
 	@Column(name = "id")
@@ -25,14 +23,15 @@ public @Data class Foo {
 
 	private Integer age;
 	
-	public Foo() {
+	public ManyToOnePhysicalColumn4() {
 		
 	}
-	public Foo(UUID id) {
+	public ManyToOnePhysicalColumn4(UUID id) {
 		this.id = id;
 	}
-	public Foo(String name, Integer age) {
+	public ManyToOnePhysicalColumn4(String name, Integer age) {
 		this.name = name;
 		this.age = age;
 	}
+
 }

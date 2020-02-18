@@ -9,20 +9,21 @@ import javax.persistence.PersistenceContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.rest.webmvc.support.UriLinkParser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.WebApplicationContext;
 
-//import static io.github.u2ware.test.ApplicationMockMvc.ApplicationResultActions.sizeMatch;
-import io.github.u2ware.test.ApplicationMockMvc;
+import io.github.u2ware.test.RestMockMvc;
+import io.github.u2ware.test.RestMockMvc.RestMvcResult;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -33,39 +34,37 @@ public class ApplicationTests {
 	
 	protected @Value("${spring.data.rest.base-path:}") String springDataRestBasePath;
 	protected @Autowired WebApplicationContext context;
-	protected ApplicationMockMvc $;
+	protected RestMockMvc $;
 	
-	private @Autowired FooRepository fooRepository; 
-	private @Autowired BarRepository barRepository; 
-	
-//	private @Autowired UriToEntityConverter uriToEntityConverter;
+	private @Autowired ManyToOnePhysicalColumn1Repository manyToOnePhysicalColumn1Repository;
+	private @Autowired ManyToOnePhysicalColumn2Repository manyToOnePhysicalColumn2Repository;
+	private @Autowired ManyToOnePhysicalColumn3Repository manyToOnePhysicalColumn3Repository;
+	private @Autowired ManyToOnePhysicalColumn4Repository manyToOnePhysicalColumn4Repository;
 	
 	
 	@Before
 	public void before() throws Exception {
 		MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
-		this.$ = new ApplicationMockMvc(mvc, springDataRestBasePath);
-		
-		fooRepository.save(new Foo("a", 1));		
-		fooRepository.save(new Foo("a", 2));		
-		fooRepository.save(new Foo("b", 1));		
-		fooRepository.save(new Foo("b", 2));		
-
-		barRepository.save(new Bar("a", 1));		
-		barRepository.save(new Bar("a", 2));		
-		barRepository.save(new Bar("b", 1));		
-		barRepository.save(new Bar("b", 2));		
+		this.$ = new RestMockMvc(mvc, springDataRestBasePath);
 	}
 	
 	@Test
 	public void contextLoads() throws Exception {
 
-		String uri1 = $.GET("/foos").H("read","specification").H("partTree", "findByNameAndAge").C("name", "a").C("age","1").is2xx().andReturn().path("_embedded.foos[0]._links.self.href");
-		logger.info(uri1);
+		
+		String e11 = $.POST("/manyToOnePhysicalColumn1s").C(new ManyToOnePhysicalColumn1("a", 1)).is2xx().andReturn().path();		
+		ManyToOnePhysicalColumn1 e12 = manyToOnePhysicalColumn1Repository.save(new ManyToOnePhysicalColumn1("b", 2));	
+		
+		String e21 = $.POST("/manyToOnePhysicalColumn2s").C(new ManyToOnePhysicalColumn1("c", 3)).is2xx().andReturn().path();
+		ManyToOnePhysicalColumn2 e22 = manyToOnePhysicalColumn2Repository.save(new ManyToOnePhysicalColumn2("d", 4));		
+		
+		ManyToOnePhysicalColumn3 e31 = manyToOnePhysicalColumn3Repository.save(new ManyToOnePhysicalColumn3("e", 5));		
+		ManyToOnePhysicalColumn3 e32 = manyToOnePhysicalColumn3Repository.save(new ManyToOnePhysicalColumn3("f", 6));		
 
-		String uri2 = $.GET("/foos").H("read","specification").H("partTree", "findByNameAndAge").C("name", "b").C("age","2").is2xx().andReturn().path("_embedded.foos[0]._links.self.href");
-		logger.info(uri2);
-
+		ManyToOnePhysicalColumn4 e41 = manyToOnePhysicalColumn4Repository.save(new ManyToOnePhysicalColumn4("g", 7));		
+		ManyToOnePhysicalColumn4 e42 = manyToOnePhysicalColumn4Repository.save(new ManyToOnePhysicalColumn4("h", 8));		
+		
+		
 		Map<String, Object> node = new HashMap<String,Object>();
 		node.put("name", "X");
 		node.put("age", 6);
@@ -73,34 +72,42 @@ public class ApplicationTests {
 		Map<String, Object> c = new HashMap<String,Object>();
 		c.put("name", "John");
 		c.put("age", 10);
-		c.put("foo01", node);  //      node
-		c.put("foo02", node); //       node
-		c.put("foo03", uri1.replaceAll("localhost", "a.com"));  //uri , node
-		c.put("foo04", uri1);  //uri   node
-		c.put("foo05", Arrays.asList(uri1, uri2));  //uri   node
-		c.put("foo06", Arrays.asList(uri1, uri2));  //uri   node
+//		c.put("foo01", node);  //      node
+//		c.put("foo02", node); //       node
+//		c.put("foo03", uri1.replaceAll("localhost", "a.com"));  //uri , node
+//		c.put("foo04", uri1);  //uri   node
+//		c.put("foo05", Arrays.asList(uri1, uri2));  //uri   node
+//		c.put("foo06", Arrays.asList(uri1, uri2));  //uri   node
 		
-		c.put("foo11", uri1);
-		c.put("foo12", uri1);
-		c.put("foo13", uri2);
-		c.put("foo14", uri2);
+//		c.put("foo11", e11);
+		c.put("foo11", e12);
+		c.put("foo12", e22);
+		c.put("foo13", e32);
+		c.put("foo14", e42);
 		
-		c.put("foo21", uri1);
-		c.put("foo22", uri2);
+//		c.put("foo21", e11);
+//		c.put("foo22", e21);
+//		c.put("foo23", e31);
+//		c.put("foo24", e41);
 		
-		c.put("foo", UriLinkParser.resolveUuid(uri1));
-		
-		c.put("foo31", Arrays.asList(uri1, uri2));
-		c.put("foo32", Arrays.asList(uri1, uri2));
-		
-		c.put("foo41", Arrays.asList(uri1, uri2));
-		c.put("foo42", Arrays.asList(uri1, uri2));
-		
-		c.put("foo51", Arrays.asList(uri1, uri2));
-		c.put("foo52", Arrays.asList(uri1, uri2));
-
-		c.put("foo61", Arrays.asList(uri1, uri2));
-		c.put("foo62", Arrays.asList(uri1, uri2));
+//		c.put("foo21", e12);
+//		c.put("foo22", e22);
+//		c.put("foo23", e32);
+//		c.put("foo24", e42);
+//		
+//		c.put("foo", UriLinkParser.resolveUuid(uri1));
+//		
+//		c.put("foo31", Arrays.asList(uri1, uri2));
+//		c.put("foo32", Arrays.asList(uri1, uri2));
+//		
+//		c.put("foo41", Arrays.asList(uri1, uri2));
+//		c.put("foo42", Arrays.asList(uri1, uri2));
+//		
+//		c.put("foo51", Arrays.asList(uri1, uri2));
+//		c.put("foo52", Arrays.asList(uri1, uri2));
+//
+//		c.put("foo61", Arrays.asList(uri1, uri2));
+//		c.put("foo62", Arrays.asList(uri1, uri2));
 
 		
 		Map<String, Object> child = new HashMap<String,Object>();
@@ -109,40 +116,32 @@ public class ApplicationTests {
 		c.put("childs", Arrays.asList(child, child));
 		
 		
-		$.POST("/bars").H("read","specification").C(c).is2xx("bar");
-		$.POST("/bars").H("read","specification").C(c).is2xx("bar");
-		$.GET("bar").H("read","specification").is2xx();
-		
-		$.GET("/bars").H("read","querydsl").C("","").is2xx();
+		$.POST("/domainSamples").C(c).is2xx("d1");
+//		$.POST("/domainSamples").C(c).is2xx("d2");
 
 		
-//		Foo foo1 = fooRepository.save(new Foo("a", 1));		
-//		Foo foo2 = fooRepository.save(new Foo("a", 2));		
-//		Foo foo3 = fooRepository.save(new Foo("b", 1));		
-//		Foo foo4 = fooRepository.save(new Foo("b", 2));		
+//		////////////////////////////////////////////////////
+//		//
+//		////////////////////////////////////////////////////
+		RestMvcResult r = $.GET("d1").is2xx().andReturn();
+		
+//		String foo11 = r.path("_links.foo11.href");
+//		Assert.assertTrue(foo11.endsWith("/foo11"));
+//		
 //
-//		
-//		Bar bar1 = new Bar("a", 1); bar1.setFoo11(foo1);
-//		Bar bar2 = new Bar("a", 2); bar2.setFoo11(foo2);
-//		Bar bar3 = new Bar("b", 1); bar3.setFoo11(foo3);
-//		Bar bar4 = new Bar("b", 2); bar4.setFoo11(foo4);
-//		
-//		
-//		barRepository.save(bar1);		
-//		barRepository.save(bar2);		
-//		barRepository.save(bar3);		
-//		barRepository.save(bar4);		
-//		
-//		
-//		logger.info("---------------------------------------------");
-//		JPAQuery<Bar> q = new JPAQuery(em);
-//		JPAQueryType<Bar> t = new JPAQueryType<>(Bar.class);
-//		q.from(t.getRoot()).leftJoin(t.get("foo12")).fetchJoin().fetch().forEach(f->{
-//			logger.info(f);
-//		});
-//		JPAQueryBuilder.of(q).from(Bar.class).leftJoin("foo12", "foo14").build().fetch().forEach(f->{
-//			logger.info(f);
-//		});
+//		Map foo14 = r.path("foo14._links");
+//		Assert.assertFalse(ObjectUtils.isEmpty(foo14));
+				
+		
+		
+		
+//		////////////////////////////////////////////////////
+//		//
+//		////////////////////////////////////////////////////
+//		$.GET("/domainSamples").is2xx();
+//		$.GET("/domainSamples").H("query","true").C().is2xx();
+//		$.GET("/domainSamples").H("query","true").C("name", "John").P("unpaged", "true").is2xx();
+
 	}
 	private @PersistenceContext EntityManager em;
 }

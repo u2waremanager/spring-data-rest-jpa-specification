@@ -42,11 +42,11 @@ public class UriLinkDeserializer<T> extends JsonDeserializer<T> implements Conte
 	@Override
 	public T deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
 
-		logger.debug("rawClass: "+rawClass);
+		logger.info("rawClass: "+rawClass);
 		
 		if (p.getCurrentToken() == JsonToken.START_OBJECT) {
 			JsonNode node = p.getCodec().readTree(p);
-//			logger.debug("node: "+node);
+			logger.info("node: "+node);
 			try {
 				T object = (T)objectMapper.treeToValue(node, rawClass);
 //				logger.debug("object: "+ object);
@@ -56,7 +56,7 @@ public class UriLinkDeserializer<T> extends JsonDeserializer<T> implements Conte
 			}
 		}else {
 			String text = p.getValueAsString();
-			logger.debug("text: "+text);
+			logger.info("text: "+text);
 			
 			try {
 				T object = (T) UriLinkParser.resolveEntity(text, rawClass);
