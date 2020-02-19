@@ -70,6 +70,11 @@ public class ApplicationTests {
 		c.put("foo3", foo3json); //c.put("foo3", foo3uri); (X)   c.put("foo3", foo3json); (O)  
 		c.put("foo4", foo4uri);  //c.put("foo3", foo4uri); (O)   c.put("foo3", foo4json); (O)  
 		
+		
+		c.put("bar1", foo1uri);  //c.put("foo1", foo1uri); (X)   c.put("foo1", foo1json); (O)  
+//		c.put("bar2", foo1uri); 
+		c.put("bar3", foo3uri); 
+		c.put("bar4", foo4uri); 
 
 		$.POST("/domainSamples").C(c).is2xx("d1");
 		$.POST("/domainSamples").C(c).is2xx("d2");
