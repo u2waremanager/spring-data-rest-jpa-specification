@@ -1,4 +1,4 @@
-package io.github.u2ware.test.example4;
+package io.github.u2ware.test.example5;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
