@@ -1,4 +1,4 @@
-package io.github.u2ware.test.example5;
+package io.github.u2ware.test.example50;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.github.u2ware.test.RestMockMvc;
 import io.github.u2ware.test.RestMockMvc.RestMvcResult;
-import io.github.u2ware.test.example5.FooRepository;
+import io.github.u2ware.test.example50.FooRepository;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

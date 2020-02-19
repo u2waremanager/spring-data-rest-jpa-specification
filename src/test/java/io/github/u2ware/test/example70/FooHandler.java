@@ -1,4 +1,4 @@
-package io.github.u2ware.test.example7;
+package io.github.u2ware.test.example70;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

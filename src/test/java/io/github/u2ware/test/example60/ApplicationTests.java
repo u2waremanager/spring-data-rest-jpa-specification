@@ -1,4 +1,4 @@
-package io.github.u2ware.test.example6;
+package io.github.u2ware.test.example60;
 
 import java.util.UUID;
 
