@@ -1,9 +1,9 @@
 package io.github.u2ware.test.example4;
 
-import java.util.UUID;
-
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.rest.core.annotation.RestResource;
 
-public interface ManyToOnePhysicalColumn1Repository extends PagingAndSortingRepository<ManyToOnePhysicalColumn1, UUID>{
+@RestResource(exported=true) //Default
+public interface ManyToOnePhysicalColumn1Repository extends PagingAndSortingRepository<ManyToOnePhysicalColumn1, Long>{
 
 }

@@ -2,24 +2,19 @@ package io.github.u2ware.test.example4;
 
 import java.util.UUID;
 
-import javax.persistence.ConstraintMode;
 import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedAttributeNode;
-import javax.persistence.NamedEntityGraph;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.rest.core.annotation.RestResource;
-import org.springframework.data.rest.webmvc.support.UriLinkDeserializer;
+import org.springframework.data.rest.webmvc.support.EntityViewDeserializer;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import lombok.Data;
-
 
 @Entity
 //@NamedEntityGraph(name = "io.github.u2ware.test.example4.DomainSampleGraph", 
@@ -88,27 +83,53 @@ public @Data class DomainSample {
 	///////////////////////////////////////////////////////////////////
 	// @ManyToOne physical foreign key
 	//////////////////////////////////////////////////////////////////
-	@RestResource(exported=true)/*rendering link only */
 	@ManyToOne
-	@JoinColumn(name=/*Bar*/"foo11" , referencedColumnName=/* Foo's primary*/"id")
-	@JsonDeserialize(using=UriLinkDeserializer.class)
-	private ManyToOnePhysicalColumn1 foo11;
-	
-	@RestResource(exported=false) /*rendering data only */
-	@ManyToOne 
-	@JoinColumn(name=/*Bar*/"foo12" , referencedColumnName=/* Foo's primary*/"id")
-	@JsonDeserialize(using=UriLinkDeserializer.class)
-	private ManyToOnePhysicalColumn2 foo12;
+	@JoinColumn(name=/*DomainSample*/"foo1" , referencedColumnName=/*ManyToOnePhysicalColumn1 primary*/"seq")
+	private ManyToOnePhysicalColumn1 foo1; /*request: uri only. response:  link */
 
-	@RestResource(exported=true) /*Don't care*/
-	@ManyToOne 
-	@JoinColumn(name=/*Bar*/"foo13" , referencedColumnName=/* Foo's primary*/"id")
-	private ManyToOnePhysicalColumn3 foo13;
 	
-	@RestResource(exported=false) /*Don't care*/
 	@ManyToOne 
-	@JoinColumn(name=/*Bar*/"foo14" , referencedColumnName=/* Foo's primary*/"id")
-	private ManyToOnePhysicalColumn4 foo14;
+	@JoinColumn(name=/*DomainSample*/"foo2" , referencedColumnName=/* ManyToOnePhysicalColumn2 primary*/"seq")
+	private ManyToOnePhysicalColumn2 foo2; /*request: json only. response:  body */
+
+	
+	@ManyToOne 
+	@JoinColumn(name=/*DomainSample*/"foo3" , referencedColumnName=/* ManyToOnePhysicalColumn2 primary*/"seq")
+	@RestResource(exported=false) 
+	private ManyToOnePhysicalColumn3 foo3; /*request: json only. response:  body */
+	
+	
+	@ManyToOne 
+	@JoinColumn(name=/*DomainSample*/"foo4" , referencedColumnName=/* ManyToOnePhysicalColumn2 primary*/"seq")
+	@RestResource(exported=false) 
+	@JsonDeserialize(using=EntityViewDeserializer.class) 
+	private ManyToOnePhysicalColumn4 foo4; /*request: uri & json , response:  body */
+
+	
+	
+	
+	
+	
+	
+	
+//
+//	@ManyToOne 
+//	@JoinColumn(name=/*DomainSample*/"foo13" , referencedColumnName=/* ManyToOnePhysicalColumn3 primary*/"seq")
+//	private ManyToOnePhysicalColumn4 foo13;
+//	
+//
+//	@ManyToOne 
+//	@JoinColumn(name=/*DomainSample*/"foo14" , referencedColumnName=/* ManyToOnePhysicalColumn3 primary*/"seq")
+//	private ManyToOnePhysicalColumn5 foo14;
+//	
+//	
+//	@ManyToOne 
+//	@JoinColumn(name=/*DomainSample*/"foo15" , referencedColumnName=/* ManyToOnePhysicalColumn3 primary*/"seq")
+//	@JsonDeserialize(using=EntityViewDeserializer.class) /*request: uri*/ 
+//	private ManyToOnePhysicalColumn6 foo15;
+	
+	
+	
 	
 	///////////////////////////////////////////////////////////////////
 	// @ManyToOne logical foreign column 

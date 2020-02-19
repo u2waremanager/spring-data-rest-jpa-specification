@@ -263,6 +263,10 @@ public class RestMockMvc {
 			this.requestBuilder.params(params);
 			if(content.size() > 0) {
 				String requestContent = mapper.writeValueAsString(content);
+				
+				System.err.println();
+				System.err.println(requestContent);
+				System.err.println();
 				this.requestBuilder.contentType(MediaType.APPLICATION_JSON_UTF8).content(requestContent);
 			}
 		}
@@ -401,8 +405,12 @@ public class RestMockMvc {
 			}
 		}
 
-		public Map<String,Object> body()  {
-			return path("$");
+		public String body()  {
+			try {
+				return mvcResult.getResponse().getContentAsString();
+			} catch (UnsupportedEncodingException e) {
+				return null;
+			}
 		}
 	}
 }

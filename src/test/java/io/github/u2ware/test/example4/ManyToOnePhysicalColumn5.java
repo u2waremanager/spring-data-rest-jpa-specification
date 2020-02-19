@@ -6,8 +6,8 @@ import javax.persistence.Id;
 
 import lombok.Data;
 
-@Entity
-public @Data class ManyToOnePhysicalColumn3 {
+//@Entity
+public @Data class ManyToOnePhysicalColumn5 {
 	
 	@Id @GeneratedValue
 	private Long seq;
@@ -16,10 +16,10 @@ public @Data class ManyToOnePhysicalColumn3 {
 
 	private Integer age;
 	
-	public ManyToOnePhysicalColumn3() {
+	public ManyToOnePhysicalColumn5() {
 		
 	}
-	public ManyToOnePhysicalColumn3(String name, Integer age) {
+	public ManyToOnePhysicalColumn5(String name, Integer age) {
 		this.name = name;
 		this.age = age;
 	}

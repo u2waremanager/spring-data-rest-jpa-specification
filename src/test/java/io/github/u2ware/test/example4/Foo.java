@@ -3,25 +3,29 @@ package io.github.u2ware.test.example4;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 import lombok.Data;
 
 @Entity
-public @Data class ManyToOnePhysicalColumn3 {
-	
+@Table(name="example4_foo")
+public @Data class Foo {
+
 	@Id @GeneratedValue
 	private Long seq;
 	
 	private String name;
 
 	private Integer age;
-	
-	public ManyToOnePhysicalColumn3() {
+
+	public Foo() {
 		
 	}
-	public ManyToOnePhysicalColumn3(String name, Integer age) {
+	public Foo(Long seq) {
+		this.seq = seq;
+	}
+	public Foo(String name, Integer age) {
 		this.name = name;
 		this.age = age;
 	}
-
 }
