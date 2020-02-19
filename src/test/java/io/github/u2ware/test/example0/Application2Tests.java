@@ -26,7 +26,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class Application2QuerydslTests {
+public class Application2Tests {
 
 	protected Log logger = LogFactory.getLog(getClass());
 
