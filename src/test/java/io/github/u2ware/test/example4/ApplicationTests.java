@@ -3,9 +3,6 @@ package io.github.u2ware.test.example4;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
@@ -21,11 +18,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.github.u2ware.test.RestMockMvc;
 import io.github.u2ware.test.RestMockMvc.RestMvcResult;
-import io.github.u2ware.test.example5.FooRepository;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -42,11 +36,6 @@ public class ApplicationTests {
 	private @Autowired ManyToOnePhysicalColumn2Repository manyToOnePhysicalColumn2Repository;
 	private @Autowired ManyToOnePhysicalColumn3Repository manyToOnePhysicalColumn3Repository;
 	private @Autowired ManyToOnePhysicalColumn4Repository manyToOnePhysicalColumn4Repository;
-	
-	private @Autowired DomainSampleRepository domainSampleRepository;
-	private @Autowired FooRepository fooRepository;
-	
-	private @Autowired ObjectMapper objectMapper;
 	
 	@Before
 	public void before() throws Exception {
@@ -83,7 +72,7 @@ public class ApplicationTests {
 		
 
 		$.POST("/domainSamples").C(c).is2xx("d1");
-//		$.POST("/domainSamples").C(c).is2xx("d2");
+		$.POST("/domainSamples").C(c).is2xx("d2");
 
 		////////////////////////////////////////////////////
 		//
@@ -110,13 +99,16 @@ public class ApplicationTests {
 		////////////////////////////////////////////////////
 		//
 		////////////////////////////////////////////////////
-		DomainSample d = objectMapper.readValue(r.body(), DomainSample.class);
-		logger.info(d);
-		d.setFoo12(null);
-		$.PATCH("d1").C(d).is2xx();
-		$.GET("/domainSamples").is2xx();
-		$.GET("/domainSamples").H("query","true").C().is2xx();
-		$.GET("/domainSamples").H("query","true").C("name", "John").P("unpaged", "true").is2xx();
+//		Map<String, Object> u = new HashMap<String,Object>();
+//		u.put("name", "XXXXXXXXXXXX");
+//		u.put("age", 10);
+//		u.put("foo1", null);  //c.put("foo1", foo1uri); (O)   c.put("foo1", foo1json); (X)  
+//		u.put("foo2", null); //c.put("foo2", foo2uri); (X)   c.put("foo2", foo2json); (O)  
+//		u.put("foo3", foo3json); //c.put("foo3", foo3uri); (X)   c.put("foo3", foo3json); (O)  
+//		u.put("foo4", foo4uri);  //c.put("foo3", foo4uri); (O)   c.put("foo3", foo4json); (O)  
+//		
+//		$.PATCH("d1").C(u).is2xx();
+//		$.PUT("d1").C(u).is2xx();
+//		$.GET("d1").is2xx();
 	}
-	private @PersistenceContext EntityManager em;
 }
