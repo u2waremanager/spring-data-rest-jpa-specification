@@ -16,7 +16,7 @@ import com.querydsl.core.BooleanBuilder;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class Application3Tests {
+public class Application3AllTests {
 
 	protected Log logger = LogFactory.getLog(getClass());
 

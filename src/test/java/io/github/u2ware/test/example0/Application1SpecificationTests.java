@@ -27,7 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class Application1Tests {
+public class Application1SpecificationTests {
 
 	protected Log logger = LogFactory.getLog(getClass());
 
