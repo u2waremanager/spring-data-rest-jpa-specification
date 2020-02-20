@@ -85,25 +85,25 @@ public @Data class DomainSample {
 	//////////////////////////////////////////////////////////////////
 	@ManyToOne
 	@JoinColumn(name=/*DomainSample*/"foo1" , referencedColumnName=/*ManyToOnePhysicalColumn1 primary*/"seq")
-	private ManyToOnePhysicalColumn1 foo1; /*request: uri only. response:  link */
+	private OneToManyColumn1 foo1; /*request: uri only. response:  link */
 
 	
 	@ManyToOne 
 	@JoinColumn(name=/*DomainSample*/"foo2" , referencedColumnName=/* ManyToOnePhysicalColumn2 primary*/"seq")
-	private ManyToOnePhysicalColumn2 foo2; /*request: json only. response:  body */
+	private OneToManyColumn2 foo2; /*request: json only. response:  body */
 
 	
 	@ManyToOne 
 	@JoinColumn(name=/*DomainSample*/"foo3" , referencedColumnName=/* ManyToOnePhysicalColumn2 primary*/"seq")
 	@RestResource(exported=false) 
-	private ManyToOnePhysicalColumn3 foo3; /*request: json only. response:  body */
+	private OneToManyColumn3 foo3; /*request: json only. response:  body */
 	
 	
 	@ManyToOne 
 	@JoinColumn(name=/*DomainSample*/"foo4" , referencedColumnName=/* ManyToOnePhysicalColumn2 primary*/"seq")
 	@RestResource(exported=false) 
 	@JsonDeserialize(using=EntityViewDeserializer.class) 
-	private ManyToOnePhysicalColumn4 foo4; /*request: uri & json , response:  body */
+	private OneToManyColumn4 foo4; /*request: uri & json , response:  body */
 
 	
 	

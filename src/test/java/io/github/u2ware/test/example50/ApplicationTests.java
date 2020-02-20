@@ -38,10 +38,10 @@ public class ApplicationTests {
 	protected @Autowired WebApplicationContext context;
 	protected RestMockMvc $;
 	
-	private @Autowired ManyToOnePhysicalColumn1Repository manyToOnePhysicalColumn1Repository;
-	private @Autowired ManyToOnePhysicalColumn2Repository manyToOnePhysicalColumn2Repository;
-	private @Autowired ManyToOnePhysicalColumn3Repository manyToOnePhysicalColumn3Repository;
-	private @Autowired ManyToOnePhysicalColumn4Repository manyToOnePhysicalColumn4Repository;
+	private @Autowired OneToManyColumn1Repository manyToOnePhysicalColumn1Repository;
+	private @Autowired OneToManyColumn2Repository manyToOnePhysicalColumn2Repository;
+	private @Autowired OneToManyColumn3Repository manyToOnePhysicalColumn3Repository;
+	private @Autowired OneToManyColumn4Repository manyToOnePhysicalColumn4Repository;
 	
 	private @Autowired DomainSampleRepository domainSampleRepository;
 	private @Autowired FooRepository fooRepository;
@@ -57,17 +57,17 @@ public class ApplicationTests {
 	@Test
 	public void contextLoads() throws Exception {
 
-		String foo1uri = $.POST("/manyToOnePhysicalColumn1s").C(new ManyToOnePhysicalColumn1("a", 1)).is2xx().andReturn().path();		
-		ManyToOnePhysicalColumn1 foo1json = manyToOnePhysicalColumn1Repository.save(new ManyToOnePhysicalColumn1("b", 2));	
+		String foo1uri = $.POST("/manyToOnePhysicalColumn1s").C(new OneToManyColumn1("a", 1)).is2xx().andReturn().path();		
+		OneToManyColumn1 foo1json = manyToOnePhysicalColumn1Repository.save(new OneToManyColumn1("b", 2));	
 		
-		$.POST("/manyToOnePhysicalColumn2s").C(new ManyToOnePhysicalColumn2("c", 3)).is4xx();
-		ManyToOnePhysicalColumn2 foo2json = manyToOnePhysicalColumn2Repository.save(new ManyToOnePhysicalColumn2("d", 4));		
+		$.POST("/manyToOnePhysicalColumn2s").C(new OneToManyColumn2("c", 3)).is4xx();
+		OneToManyColumn2 foo2json = manyToOnePhysicalColumn2Repository.save(new OneToManyColumn2("d", 4));		
 
-		String foo3uri = $.POST("/manyToOnePhysicalColumn3s").C(new ManyToOnePhysicalColumn3("e", 5)).is2xx().andReturn().path();
-		ManyToOnePhysicalColumn3 foo3json = manyToOnePhysicalColumn3Repository.save(new ManyToOnePhysicalColumn3("f", 6));		
+		String foo3uri = $.POST("/manyToOnePhysicalColumn3s").C(new OneToManyColumn3("e", 5)).is2xx().andReturn().path();
+		OneToManyColumn3 foo3json = manyToOnePhysicalColumn3Repository.save(new OneToManyColumn3("f", 6));		
 
-		String foo4uri = $.POST("/manyToOnePhysicalColumn4s").C(new ManyToOnePhysicalColumn4("e", 5)).is2xx().andReturn().path();
-		ManyToOnePhysicalColumn4 foo4json = manyToOnePhysicalColumn4Repository.save(new ManyToOnePhysicalColumn4("f", 6));		
+		String foo4uri = $.POST("/manyToOnePhysicalColumn4s").C(new OneToManyColumn4("e", 5)).is2xx().andReturn().path();
+		OneToManyColumn4 foo4json = manyToOnePhysicalColumn4Repository.save(new OneToManyColumn4("f", 6));		
 		
 		
 //		ManyToOnePhysicalColumn4 e31 = manyToOnePhysicalColumn3Repository.save(new ManyToOnePhysicalColumn4("e", 5));		
