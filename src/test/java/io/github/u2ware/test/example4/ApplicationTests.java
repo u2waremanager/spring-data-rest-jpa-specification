@@ -12,6 +12,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -36,6 +38,7 @@ public class ApplicationTests {
 	private @Autowired ManyToOnePhysicalColumn2Repository manyToOnePhysicalColumn2Repository;
 	private @Autowired ManyToOnePhysicalColumn3Repository manyToOnePhysicalColumn3Repository;
 	private @Autowired ManyToOnePhysicalColumn4Repository manyToOnePhysicalColumn4Repository;
+	private @Autowired DomainSampleRepository domainSampleRepository;
 	
 	@Before
 	public void before() throws Exception {
@@ -71,10 +74,10 @@ public class ApplicationTests {
 		c.put("foo4", foo4uri);  //c.put("foo3", foo4uri); (O)   c.put("foo3", foo4json); (O)  
 		
 		
-		c.put("bar1", foo1uri);  //c.put("foo1", foo1uri); (X)   c.put("foo1", foo1json); (O)  
-//		c.put("bar2", foo1uri); 
-		c.put("bar3", foo3uri); 
-		c.put("bar4", foo4uri); 
+		c.put("bar1", foo1uri);  //c.put("bar1", foo1uri); (O)   c.put("bar1", foo1json); (O)  
+		c.put("bar2", foo2json); //c.put("bar2", foo2uri); (X)   c.put("bar2", foo2json); (O)  
+		c.put("bar3", foo3uri);  //c.put("bar3", foo3uri); (O)   c.put("bar3", foo3json); (O)  
+		c.put("bar4", foo4uri);  //c.put("bar4", foo4uri); (O)   c.put("bar4", foo4json); (O)  
 
 		$.POST("/domainSamples").C(c).is2xx("d1");
 		$.POST("/domainSamples").C(c).is2xx("d2");
@@ -100,7 +103,6 @@ public class ApplicationTests {
 		
 		
 		
-		
 		////////////////////////////////////////////////////
 		//
 		////////////////////////////////////////////////////
@@ -115,5 +117,18 @@ public class ApplicationTests {
 //		$.PATCH("d1").C(u).is2xx();
 //		$.PUT("d1").C(u).is2xx();
 //		$.GET("d1").is2xx();
+		
+		
+		////////////////////////////////////////////////////
+		//
+		////////////////////////////////////////////////////
+		logger.info("-----------------------------");
+		logger.info("-----------------------------");
+		domainSampleRepository.findAll(PageRequest.of(0, 10));
+		logger.info("-----------------------------");
+		logger.info("-----------------------------");
+		domainSampleRepository.findAll(Sort.by("name"));
+		
+		
 	}
 }
