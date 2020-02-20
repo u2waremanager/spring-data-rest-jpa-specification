@@ -12,7 +12,7 @@ import javax.persistence.ForeignKey;
 import javax.persistence.ConstraintMode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedAttributeNode;
-
+import javax.persistence.CascadeType;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.rest.core.annotation.RestResource;
@@ -25,14 +25,14 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
 
 @Entity
-@NamedEntityGraph(name = "io.github.u2ware.test.example4.DomainSampleGraph", 
-	attributeNodes = {
-			@NamedAttributeNode("foo1"),
-			@NamedAttributeNode("foo2"),
-			@NamedAttributeNode("foo3"),
-			@NamedAttributeNode("foo4"),
-	}
-)
+//@NamedEntityGraph(name = "io.github.u2ware.test.example4.DomainSampleGraph", 
+//	attributeNodes = {
+//			@NamedAttributeNode("foo1"),
+//			@NamedAttributeNode("foo2"),
+//			@NamedAttributeNode("foo3"),
+//			@NamedAttributeNode("foo4"),
+//	}
+//)
 public @Data class DomainSample {
 
 	@Id 
@@ -58,36 +58,35 @@ public @Data class DomainSample {
 	// @ManyToOne physical foreign key
 	//////////////////////////////////////////////////////////////////
 	@ManyToOne
-//	@JoinColumn(name=/*DomainSample*/"foo1" , referencedColumnName=/*ManyToOnePhysicalColumn1 primary*/"seq")
-	@JoinColumn(name=/*DomainSample*/"foo1" , foreignKey=/* Not exists*/@ForeignKey(value=ConstraintMode.NO_CONSTRAINT))
-	private ManyToOnePhysicalColumn1 foo1; /*request: uri only. response:  link */
+	@JoinColumn(name=/*DomainSample*/"sample1" , referencedColumnName=/*ManyToOnePhysicalColumn1 primary*/"seq")
+//	@JoinColumn(name=/*DomainSample*/"sample1" , foreignKey=/* Not exists*/@ForeignKey(value=ConstraintMode.NO_CONSTRAINT))
+	private ManyToOneSample1 sample1; /*request: uri only. response:  link */
 
 	
 	@ManyToOne 
-//	@JoinColumn(name=/*DomainSample*/"foo2" , referencedColumnName=/* ManyToOnePhysicalColumn2 primary*/"seq")
-	@JoinColumn(name=/*DomainSample*/"foo2" , foreignKey=/* Not exists*/@ForeignKey(value=ConstraintMode.NO_CONSTRAINT))
-	private ManyToOnePhysicalColumn2 foo2; /*request: json only. response:  body */
+	@JoinColumn(name=/*DomainSample*/"sample2" , referencedColumnName=/* ManyToOnePhysicalColumn2 primary*/"seq")
+//	@JoinColumn(name=/*DomainSample*/"sample2" , foreignKey=/* Not exists*/@ForeignKey(value=ConstraintMode.NO_CONSTRAINT))
+	private ManyToOneSample2 sample2; /*request: json only. response:  body */
 
 	
 	@ManyToOne 
-//	@JoinColumn(name=/*DomainSample*/"foo3" , referencedColumnName=/* ManyToOnePhysicalColumn3 primary*/"seq")
-	@JoinColumn(name=/*DomainSample*/"foo3" , foreignKey=/* Not exists*/@ForeignKey(value=ConstraintMode.NO_CONSTRAINT))
+	@JoinColumn(name=/*DomainSample*/"sample3" , referencedColumnName=/* ManyToOnePhysicalColumn3 primary*/"seq")
+//	@JoinColumn(name=/*DomainSample*/"sample3" , foreignKey=/* Not exists*/@ForeignKey(value=ConstraintMode.NO_CONSTRAINT))
 	@RestResource(exported=false) 
-	private ManyToOnePhysicalColumn3 foo3; /*request: json only. response:  body */
-	
+	private ManyToOneSample3 sample3; /*request: json only. response:  body */
 	
 	@ManyToOne 
-//	@JoinColumn(name=/*DomainSample*/"foo4" , referencedColumnName=/* ManyToOnePhysicalColumn4 primary*/"seq")
-	@JoinColumn(name=/*DomainSample*/"foo4" , foreignKey=/* Not exists*/@ForeignKey(value=ConstraintMode.NO_CONSTRAINT))
+//	@JoinColumn(name=/*DomainSample*/"sample4" , referencedColumnName=/* ManyToOnePhysicalColumn4 primary*/"seq")
+	@JoinColumn(name=/*DomainSample*/"sample4" , foreignKey=/* Not exists*/@ForeignKey(value=ConstraintMode.NO_CONSTRAINT))
 	@RestResource(exported=false) 
 	@JsonDeserialize(using=EntityViewDeserializer.class) 
-	private ManyToOnePhysicalColumn4 foo4; /*request: uri & json , response:  body */
+	private ManyToOneSample4 sample4; /*request: uri & json , response:  body */
 
-	@ManyToOne 
-	@JoinColumn(name=/*DomainSample*/"foo5" , referencedColumnName=/* ManyToOnePhysicalColumn5 primary*/"seq")
-//	@JoinColumn(name=/*DomainSample*/"foo5" , foreignKey=/* Not exists*/@ForeignKey(value=ConstraintMode.NO_CONSTRAINT))
-	@JsonDeserialize(using=EntityViewDeserializer.class) 
-	private ManyToOnePhysicalColumn5View foo5; /*request: uri & json , response:  body */
+//	@ManyToOne 
+//	@JoinColumn(name=/*DomainSample*/"foo5" , referencedColumnName=/* ManyToOnePhysicalColumn5 primary*/"seq")
+////	@JoinColumn(name=/*DomainSample*/"foo5" , foreignKey=/* Not exists*/@ForeignKey(value=ConstraintMode.NO_CONSTRAINT))
+//	@JsonDeserialize(using=EntityViewDeserializer.class) 
+//	private ManyToOnePhysicalColumn5View foo5; /*request: uri & json , response:  body */
 
 	
 	///////////////////////////////////////////////////////////////////
@@ -95,17 +94,17 @@ public @Data class DomainSample {
 	////////////////////////////////////////////////////////////////////
 	@Transient @JsonProperty(access=Access.WRITE_ONLY) 
 	@JsonDeserialize(using=EntityViewDeserializer.class) 
-	private ManyToOnePhysicalColumn1 bar1;
+	private ManyToOneSample1 bar1;
 
 	@Transient @JsonProperty(access=Access.WRITE_ONLY) 
-	private ManyToOnePhysicalColumn2 bar2;
+	private ManyToOneSample2 bar2;
 	
 	@Transient @JsonProperty(access=Access.WRITE_ONLY) 
 	@JsonDeserialize(using=EntityViewDeserializer.class) 
-	private ManyToOnePhysicalColumn3 bar3;
+	private ManyToOneSample3 bar3;
 
 	@Transient @JsonProperty(access=Access.WRITE_ONLY) 
 	@JsonDeserialize(using=EntityViewDeserializer.class) 
-	private ManyToOnePhysicalColumn4 bar4;
+	private ManyToOneSample4 bar4;
 	
 }

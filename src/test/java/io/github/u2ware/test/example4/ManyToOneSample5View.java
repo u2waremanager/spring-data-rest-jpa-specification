@@ -13,7 +13,7 @@ import lombok.Data;
 
 @Table(name="many_to_one_physical_column5")
 @Entity
-public @Data class ManyToOnePhysicalColumn5View implements EntityView<ManyToOnePhysicalColumn5, Long>{
+public @Data class ManyToOneSample5View implements EntityView<ManyToOneSample5, Long>{
 	
 	@Id @GeneratedValue
 	private Long seq;
@@ -24,10 +24,10 @@ public @Data class ManyToOnePhysicalColumn5View implements EntityView<ManyToOneP
 	
 	private @Transient String addon;
 	
-	public ManyToOnePhysicalColumn5View() {
+	public ManyToOneSample5View() {
 		
 	}
-	public ManyToOnePhysicalColumn5View(String name, Integer age) {
+	public ManyToOneSample5View(String name, Integer age) {
 		this.name = name;
 		this.age = age;
 	}
@@ -38,12 +38,12 @@ public @Data class ManyToOnePhysicalColumn5View implements EntityView<ManyToOneP
 		return seq;
 	}
 	@Override
-	public void deserialize(ManyToOnePhysicalColumn5 source) {
+	public void deserialize(ManyToOneSample5 source) {
 		PropertyMapper.get().from(source::getSeq).to(this::setSeq);
 		PropertyMapper.get().from(source::getName).to(this::setName);
 	}
 	@Override
-	public ManyToOnePhysicalColumn5 serialize() {
-		return PropertyMapper.get().from(this::getId).toInstance(id -> new ManyToOnePhysicalColumn5(id));
+	public ManyToOneSample5 serialize() {
+		return PropertyMapper.get().from(this::getId).toInstance(id -> new ManyToOneSample5(id));
 	}
 }
