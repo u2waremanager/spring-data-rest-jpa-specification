@@ -38,6 +38,8 @@ public class ApplicationTests {
 	private @Autowired ManyToOnePhysicalColumn2Repository manyToOnePhysicalColumn2Repository;
 	private @Autowired ManyToOnePhysicalColumn3Repository manyToOnePhysicalColumn3Repository;
 	private @Autowired ManyToOnePhysicalColumn4Repository manyToOnePhysicalColumn4Repository;
+	private @Autowired ManyToOnePhysicalColumn5Repository manyToOnePhysicalColumn5Repository;
+	
 	private @Autowired DomainSampleRepository domainSampleRepository;
 	
 	@Before
@@ -61,6 +63,11 @@ public class ApplicationTests {
 		String foo4uri = $.POST("/manyToOnePhysicalColumn4s").C(new ManyToOnePhysicalColumn4("e", 5)).is2xx().andReturn().path();
 		ManyToOnePhysicalColumn4 foo4json = manyToOnePhysicalColumn4Repository.save(new ManyToOnePhysicalColumn4("f", 6));		
 		
+		
+		String foo5uri = $.POST("/manyToOnePhysicalColumn5s").C(new ManyToOnePhysicalColumn5("g", 5)).is2xx().andReturn().path();
+		ManyToOnePhysicalColumn5 foo5json = manyToOnePhysicalColumn5Repository.save(new ManyToOnePhysicalColumn5("h", 6));		
+		
+		
 		///////////////////////////////////////////////
 		//
 		///////////////////////////////////////////////
@@ -71,7 +78,8 @@ public class ApplicationTests {
 		c.put("foo1", foo1uri);  //c.put("foo1", foo1uri); (O)   c.put("foo1", foo1json); (X)  
 		c.put("foo2", foo2json); //c.put("foo2", foo2uri); (X)   c.put("foo2", foo2json); (O)  
 		c.put("foo3", foo3json); //c.put("foo3", foo3uri); (X)   c.put("foo3", foo3json); (O)  
-		c.put("foo4", foo4uri);  //c.put("foo3", foo4uri); (O)   c.put("foo3", foo4json); (O)  
+		c.put("foo4", foo4uri);  //c.put("foo4", foo4uri); (O)   c.put("foo4", foo4json); (O)  
+		c.put("foo5", foo5uri);  //c.put("foo5", foo5uri); (O)   c.put("foo5", foo5json); (O)  
 		
 		
 		c.put("bar1", foo1uri);  //c.put("bar1", foo1uri); (O)   c.put("bar1", foo1json); (O)  
@@ -120,14 +128,14 @@ public class ApplicationTests {
 		
 		
 		////////////////////////////////////////////////////
-		//
+		// EntityGraphics
 		////////////////////////////////////////////////////
-		logger.info("-----------------------------");
-		logger.info("-----------------------------");
-		domainSampleRepository.findAll(PageRequest.of(0, 10));
-		logger.info("-----------------------------");
-		logger.info("-----------------------------");
-		domainSampleRepository.findAll(Sort.by("name"));
+//		logger.info("-----------------------------");
+//		logger.info("-----------------------------");
+//		domainSampleRepository.findAll(PageRequest.of(0, 10));
+//		logger.info("-----------------------------");
+//		logger.info("-----------------------------");
+//		domainSampleRepository.findAll(Sort.by("name"));
 		
 		
 	}

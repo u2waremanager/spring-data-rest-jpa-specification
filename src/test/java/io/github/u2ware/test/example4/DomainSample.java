@@ -70,19 +70,24 @@ public @Data class DomainSample {
 
 	
 	@ManyToOne 
-//	@JoinColumn(name=/*DomainSample*/"foo3" , referencedColumnName=/* ManyToOnePhysicalColumn2 primary*/"seq")
+//	@JoinColumn(name=/*DomainSample*/"foo3" , referencedColumnName=/* ManyToOnePhysicalColumn3 primary*/"seq")
 	@JoinColumn(name=/*DomainSample*/"foo3" , foreignKey=/* Not exists*/@ForeignKey(value=ConstraintMode.NO_CONSTRAINT))
 	@RestResource(exported=false) 
 	private ManyToOnePhysicalColumn3 foo3; /*request: json only. response:  body */
 	
 	
 	@ManyToOne 
-//	@JoinColumn(name=/*DomainSample*/"foo4" , referencedColumnName=/* ManyToOnePhysicalColumn2 primary*/"seq")
+//	@JoinColumn(name=/*DomainSample*/"foo4" , referencedColumnName=/* ManyToOnePhysicalColumn4 primary*/"seq")
 	@JoinColumn(name=/*DomainSample*/"foo4" , foreignKey=/* Not exists*/@ForeignKey(value=ConstraintMode.NO_CONSTRAINT))
 	@RestResource(exported=false) 
 	@JsonDeserialize(using=EntityViewDeserializer.class) 
 	private ManyToOnePhysicalColumn4 foo4; /*request: uri & json , response:  body */
 
+	@ManyToOne 
+	@JoinColumn(name=/*DomainSample*/"foo5" , referencedColumnName=/* ManyToOnePhysicalColumn5 primary*/"seq")
+//	@JoinColumn(name=/*DomainSample*/"foo5" , foreignKey=/* Not exists*/@ForeignKey(value=ConstraintMode.NO_CONSTRAINT))
+	@JsonDeserialize(using=EntityViewDeserializer.class) 
+	private ManyToOnePhysicalColumn5View foo5; /*request: uri & json , response:  body */
 
 	
 	///////////////////////////////////////////////////////////////////

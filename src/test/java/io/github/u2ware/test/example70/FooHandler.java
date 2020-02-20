@@ -24,14 +24,14 @@ public class FooHandler {
 	protected Log logger = LogFactory.getLog(getClass());
 
 	@HandleBeforeCreate
-	public void handleBeforeCreate(Foo foo) {
+	public void handleBeforeCreate(ManyToOnePhysicalColumn5 foo) {
 		logger.info("handleBeforeCreate: "+foo);
 	}
 	@HandleBeforeRead
-	public void handleBeforeRead(Foo foo, Object obj) {
+	public void handleBeforeRead(ManyToOnePhysicalColumn5 foo, Object obj) {
 		logger.info("handleBeforeRead: "+foo);
 		
-		JPAQuery<Foo> query = (JPAQuery)obj;
+		JPAQuery<ManyToOnePhysicalColumn5> query = (JPAQuery)obj;
 		
 //		Specification s;
 //		s.and(other);
@@ -40,29 +40,29 @@ public class FooHandler {
 		logger.info("handleBeforeRead: "+query.getClass());
 	}
 	@HandleBeforeSave
-	public void handleBeforeSave(Foo foo) {
+	public void handleBeforeSave(ManyToOnePhysicalColumn5 foo) {
 		logger.info("handleBeforeSave: "+foo);
 	}
 	@HandleBeforeDelete
-	public void handleBeforeDelete(Foo foo) {
+	public void handleBeforeDelete(ManyToOnePhysicalColumn5 foo) {
 		logger.info("handleBeforeDelete: "+foo);
 	}
 	
 
 	@HandleAfterCreate
-	public void handleAfterCreate(Foo foo) {
+	public void handleAfterCreate(ManyToOnePhysicalColumn5 foo) {
 		logger.info("handleAfterCreate: "+foo);
 	}
 	@HandleAfterRead
-	public void handleAfterRead(Foo foo) {
+	public void handleAfterRead(ManyToOnePhysicalColumn5 foo) {
 		logger.info("handleAfterRead: "+foo);
 	}
 	@HandleAfterSave
-	public void handleAfterSave(Foo foo) {
+	public void handleAfterSave(ManyToOnePhysicalColumn5 foo) {
 		logger.info("handleAfterSave: "+foo);
 	}
 	@HandleAfterDelete
-	public void handleAfterDelete(Foo foo) {
+	public void handleAfterDelete(ManyToOnePhysicalColumn5 foo) {
 		logger.info("handleAfterDelete: "+foo);
 	}
 	
