@@ -206,39 +206,72 @@ public abstract class AbstractWhereBuilder<X> {
 		
 		protected abstract W add(Predicate right);
 		
+		
+		public W isNull(String property) {
+			return add(builder.getPath().get(property).isNull());
+		}
+		public W isNotNull(String property) {
+			return add(builder.getPath().get(property).isNotNull());
+		}
 		public W eq(String property, Object right) {
 			if(StringUtils.isEmpty(right)) return where;
 			return add(builder.getPath().get(property).eq(right));
 		}
-		public W goe(String property, Comparable<?> right) {
+		public W ne(String property, Object right) {
 			if(StringUtils.isEmpty(right)) return where;
-			return add(builder.getPath().getComparable(property, Comparable.class).goe(right));
+			return add(builder.getPath().get(property).ne(right));
 		}
+
 		public W like(String property, String right) {
 			if(StringUtils.isEmpty(right)) return where;
 			return add(builder.getPath().getString(property).like(right));
 		}
+		
+		public W notLike(String property, String right) {
+			if(StringUtils.isEmpty(right)) return where;
+			return add(builder.getPath().getString(property).notLike(right));
+		}
 
 		
-//		public W in(String property, Object right) {
-//			if(StringUtils.isEmpty(right)) return where;
-//			return add(builder.getPath().getCollection(property, Object.class).contains(right));
-//		}
+		public W between(String property, Comparable<?> from, Comparable<?> to) {
+			if(StringUtils.isEmpty(from) || StringUtils.isEmpty(to)) return where;
+			return add(builder.getPath().getComparable(property, Comparable.class).between(from, to));
+		}
+		
+		
+		public W gt(String property, Comparable<?> right) {
+			if(StringUtils.isEmpty(right)) return where;
+			return add(builder.getPath().getComparable(property, Comparable.class).gt(right));
+		}
+		
+		public W goe(String property, Comparable<?> right) {
+			if(StringUtils.isEmpty(right)) return where;
+			return add(builder.getPath().getComparable(property, Comparable.class).goe(right));
+		}
+		
+		public W lt(String property, Comparable<?> right) {
+			if(StringUtils.isEmpty(right)) return where;
+			return add(builder.getPath().getComparable(property, Comparable.class).lt(right));
+		}
+		
+		public W loe(String property, Comparable<?> right) {
+			if(StringUtils.isEmpty(right)) return where;
+			return add(builder.getPath().getComparable(property, Comparable.class).loe(right));
+		}
 		
 		public W in(String property, Collection<?> right) {
 			if(StringUtils.isEmpty(right)) return where;
 			return add(builder.getPath().get(property).in(right));
 		}
+		
+		public W notIn(String property, Collection<?> right) {
+			if(StringUtils.isEmpty(right)) return where;
+			return add(builder.getPath().get(property).notIn(right));
+		}
+		
 		public W contains(String property, Object right) {
 			if(StringUtils.isEmpty(right)) return where;
 			return add(builder.getPath().getCollection(property, Object.class).contains(right));
 		}
-		
 	}
-	
-	
-	
-	
-	
-	
 }
