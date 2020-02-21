@@ -33,10 +33,10 @@ public class ApplicationTests {
 	protected @Autowired WebApplicationContext context;
 	protected RestMockMvc $;
 	
-	private @Autowired OneToManyColumn1Repository oneToManyColumn1Repository;
-	private @Autowired OneToManyColumn2Repository oneToManyColumn2Repository;
-	private @Autowired OneToManyColumn3Repository oneToManyColumn3Repository;
-	private @Autowired OneToManyColumn4Repository oneToManyColumn4Repository;
+	private @Autowired OneToManySample1Repository oneToManySample1Repository;
+	private @Autowired OneToManySample2Repository oneToManySample2Repository;
+	private @Autowired OneToManySample3Repository oneToManySample3Repository;
+	private @Autowired OneToManySample4Repository oneToManySample4Repository;
 	
 	private @Autowired DomainSampleRepository domainSampleRepository;
 	
@@ -50,74 +50,66 @@ public class ApplicationTests {
 	public void contextLoads() throws Exception {
 
 
-		String otm1Link1 = $.POST("/oneToManyColumn1s").C(new OneToManyColumn1("a", 1)).is2xx().andReturn().path();		
-		String otm1Link2 = $.POST("/oneToManyColumn1s").C(new OneToManyColumn1("b", 1)).is2xx().andReturn().path();		
-		OneToManyColumn1 otm1Json1 = oneToManyColumn1Repository.save(new OneToManyColumn1("c", 2));	
-		OneToManyColumn1 otm1Json2 = oneToManyColumn1Repository.save(new OneToManyColumn1("d", 2));	
+		String otm1Link1 = $.POST("/oneToManySample1s").C(new OneToManySample1("a")).is2xx().andReturn().path();		
+		String otm1Link2 = $.POST("/oneToManySample1s").C(new OneToManySample1("b")).is2xx().andReturn().path();		
+		OneToManySample1 otm1Json1 = oneToManySample1Repository.save(new OneToManySample1("c"));	
+		OneToManySample1 otm1Json2 = oneToManySample1Repository.save(new OneToManySample1("d"));	
 		
-		$.POST("/oneToManyColumn2s").C(new OneToManyColumn2("c", 3)).is4xx();
-		OneToManyColumn2 otm2Json1 = oneToManyColumn2Repository.save(new OneToManyColumn2("e", 4));		
-		OneToManyColumn2 otm2Json2 = oneToManyColumn2Repository.save(new OneToManyColumn2("f", 4));	
+		$.POST("/oneToManyColumn2s").C(new OneToManySample2("c")).is4xx();
+		OneToManySample2 otm2Json1 = oneToManySample2Repository.save(new OneToManySample2("e"));		
+		OneToManySample2 otm2Json2 = oneToManySample2Repository.save(new OneToManySample2("f"));	
 		
+		String otm3Link1 = $.POST("/oneToManySample3s").C(new OneToManySample3("a")).is2xx().andReturn().path();		
+		String otm3Link2 = $.POST("/oneToManySample3s").C(new OneToManySample3("b")).is2xx().andReturn().path();		
+		OneToManySample3 otm3Json1 = oneToManySample3Repository.save(new OneToManySample3("c"));	
+		OneToManySample3 otm3Json2 = oneToManySample3Repository.save(new OneToManySample3("d"));	
 		
-		String otm3Link1 = $.POST("/oneToManyColumn3s").C(new OneToManyColumn3("a", 1)).is2xx().andReturn().path();		
-		String otm3Link2 = $.POST("/oneToManyColumn3s").C(new OneToManyColumn3("b", 1)).is2xx().andReturn().path();		
-		OneToManyColumn3 otm3Json1 = oneToManyColumn3Repository.save(new OneToManyColumn3("c", 2));	
-		OneToManyColumn3 otm3Json2 = oneToManyColumn3Repository.save(new OneToManyColumn3("d", 2));	
-		
-		String otm4Link1 = $.POST("/oneToManyColumn4s").C(new OneToManyColumn4("a", 1)).is2xx().andReturn().path();		
-		String otm4Link2 = $.POST("/oneToManyColumn4s").C(new OneToManyColumn4("b", 1)).is2xx().andReturn().path();		
-		OneToManyColumn4 otm4Json1 = oneToManyColumn4Repository.save(new OneToManyColumn4("c", 2));	
-		OneToManyColumn4 otm4Json2 = oneToManyColumn4Repository.save(new OneToManyColumn4("d", 2));	
+		String otm4Link1 = $.POST("/oneToManySample4s").C(new OneToManySample4("a")).is2xx().andReturn().path();		
+		String otm4Link2 = $.POST("/oneToManySample4s").C(new OneToManySample4("b")).is2xx().andReturn().path();		
+		OneToManySample4 otm4Json1 = oneToManySample4Repository.save(new OneToManySample4("c"));	
+		OneToManySample4 otm4Json2 = oneToManySample4Repository.save(new OneToManySample4("d"));	
 		
 		
 		///////////////////////////////////////////////
-		// Insert
+		// POST
 		///////////////////////////////////////////////
 		Map<String, Object> c = new HashMap<String,Object>();
 		c.put("name", "John");
 		c.put("age", 10);
 		
-		c.put("foo1", Arrays.asList(otm1Link1, otm1Link2));  //c.put("foo1", [link...]); (O)   c.put("foo1", [json...]); (X)  
-		c.put("foo2", Arrays.asList(otm2Json1, otm2Json2));  //c.put("foo2", [link...]); (X)   c.put("foo2", [json...]); (O) 
-		c.put("foo3", Arrays.asList(otm3Json1, otm3Json2));  //c.put("foo3", [link...]); (X)   c.put("foo3", [json...]); (O) 
-		c.put("foo4", Arrays.asList(otm4Link1, otm4Link2));  //c.put("foo4", [link...]); (O)   c.put("foo4", [json...]); (O) 
+		c.put("sample1", Arrays.asList(otm1Link1, otm1Link2));  //link(O) json(X)  
+		c.put("sample2", Arrays.asList(otm2Json1, otm2Json2));  //link(X) json(O)  
+		c.put("sample3", Arrays.asList(otm3Json1, otm3Json2));  //link(X) json(O)  
+		c.put("sample4", Arrays.asList(otm4Link1, otm4Link2));  //link(O) json(O)  
 		
+		
+		
+		$.POST("/domainSamples").C(c).is2xx("uri");
+		RestMvcResult post = $.GET("uri").is2xx().andReturn();
 
-		$.POST("/domainSamples").C(c).is2xx("d1");
-
-		////////////////////////////////////////////////////
-		// Select
-		////////////////////////////////////////////////////
-		RestMvcResult r = $.GET("d1").is2xx().andReturn();
-		
-		//foo1
-		Assert.assertTrue(r.path("_links.foo1.href").toString().endsWith("/foo1"));
-//		$.get(r.path("_links.foo1.href").toString()).is2xx(); //foo1uri
-//		$.get(r.path("_links.foo1.href").toString()).is4xx(); //foo1json
-		
-		//foo2
-		Assert.assertFalse(StringUtils.isEmpty(r.path("foo2")));
-		
-		////////////////////////////////////////////////////
-		// Update
-		////////////////////////////////////////////////////
-		Map<String, Object> u = new HashMap<String,Object>();
-		u.put("name", "John####");
-		u.put("age", 10);
-		
-//		u.put("foo1", Arrays.asList(otm1Link1, otm1Link2));  //c.put("foo1", [link...]); (O)   c.put("foo1", [json...]); (X)  
-//		u.put("foo2", Arrays.asList(otm2Json1, otm2Json2));  //c.put("foo2", [link...]); (X)   c.put("foo2", [json...]); (O) 
-//		u.put("foo3", Arrays.asList(otm3Json1, otm3Json2));  //c.put("foo3", [link...]); (X)   c.put("foo3", [json...]); (O) 
-		u.put("foo4", Arrays.asList(otm4Link2));             //c.put("foo4", [link...]); (O)   c.put("foo4", [json...]); (O) 
-		
-		$.PATCH("d1").C(u).is2xx();
-//		$.PUT("d1").C(u).is2xx();
-		//$.GET("d1").is2xx().andReturn();
-		
-		////////////////////////////////////////////////////
-		// Search Graphic
-		////////////////////////////////////////////////////
-		//$.GET("/domainSamples").is2xx("d1");
+//		////////////////////////////////////////////////////
+//		// Select
+//		////////////////////////////////////////////////////
+//		
+//		////////////////////////////////////////////////////
+//		// Update
+//		////////////////////////////////////////////////////
+//		Map<String, Object> u = new HashMap<String,Object>();
+//		u.put("name", "John####");
+//		u.put("age", 10);
+//		
+////		u.put("foo1", Arrays.asList(otm1Link1, otm1Link2));  //c.put("foo1", [link...]); (O)   c.put("foo1", [json...]); (X)  
+////		u.put("foo2", Arrays.asList(otm2Json1, otm2Json2));  //c.put("foo2", [link...]); (X)   c.put("foo2", [json...]); (O) 
+////		u.put("foo3", Arrays.asList(otm3Json1, otm3Json2));  //c.put("foo3", [link...]); (X)   c.put("foo3", [json...]); (O) 
+//		u.put("foo4", Arrays.asList(otm4Link2));             //c.put("foo4", [link...]); (O)   c.put("foo4", [json...]); (O) 
+//		
+//		$.PATCH("d1").C(u).is2xx();
+////		$.PUT("d1").C(u).is2xx();
+//		//$.GET("d1").is2xx().andReturn();
+//		
+//		////////////////////////////////////////////////////
+//		// Search Graphic
+//		////////////////////////////////////////////////////
+//		//$.GET("/domainSamples").is2xx("d1");
 	}
 }

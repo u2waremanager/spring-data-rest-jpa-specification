@@ -7,7 +7,7 @@ import javax.persistence.Id;
 import lombok.Data;
 
 @Entity
-public @Data class OneToManyColumn1 {
+public @Data class OneToManySample4 {
 	
 	@Id @GeneratedValue
 	private Long seq;
@@ -16,12 +16,11 @@ public @Data class OneToManyColumn1 {
 
 	private Integer age;
 	
-	public OneToManyColumn1() {
+	public OneToManySample4() {
 		
 	}
-	public OneToManyColumn1(String name, Integer age) {
+	public OneToManySample4(String name) {
 		this.name = name;
-		this.age = age;
 	}
 
 }

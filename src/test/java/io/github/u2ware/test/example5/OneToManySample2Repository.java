@@ -5,6 +5,6 @@ import org.springframework.data.rest.core.annotation.RestResource;
 
 
 @RestResource(exported = false)
-public interface OneToManyColumn2Repository extends PagingAndSortingRepository<OneToManyColumn2, Long>{
+public interface OneToManySample2Repository extends PagingAndSortingRepository<OneToManySample2, Long>{
 
 }

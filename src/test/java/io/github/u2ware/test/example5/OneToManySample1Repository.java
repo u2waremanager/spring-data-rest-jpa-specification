@@ -4,6 +4,6 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RestResource;
 
 @RestResource(exported = true) //default
-public interface OneToManyColumn1Repository extends PagingAndSortingRepository<OneToManyColumn1, Long>{
+public interface OneToManySample1Repository extends PagingAndSortingRepository<OneToManySample1, Long>{
 
 }

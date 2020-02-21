@@ -53,20 +53,20 @@ public @Data class DomainSample {
 	@OneToMany(fetch = FetchType.EAGER)
 	@JoinColumn(name="domainSample")
 //	@JoinColumn(name="domainSample", foreignKey=@ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
-	private Set<OneToManyColumn1> foo1;	
+	private Set<OneToManySample1> sample1;	
 
 	
 	@OneToMany(fetch = FetchType.EAGER)
 	@JoinColumn(name="domainSample")
 //	@JoinColumn(name="domainSample", foreignKey=@ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
-	private Set<OneToManyColumn2> foo2;	
+	private Set<OneToManySample2> sample2;	
 
 	
 	@OneToMany(fetch = FetchType.EAGER)
 	@JoinColumn(name="domainSample")
 //	@JoinColumn(name="domainSample", foreignKey=@ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
 	@RestResource(exported = false)
-	private Set<OneToManyColumn3> foo3;	
+	private Set<OneToManySample3> sample3;	
 	
 	
 	@OneToMany(fetch = FetchType.EAGER)
@@ -74,7 +74,7 @@ public @Data class DomainSample {
 //	@JoinColumn(name="domainSample", foreignKey=@ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
 	@RestResource(exported = false)
 	@JsonDeserialize(contentUsing=EntityViewDeserializer.class)
-	private Set<OneToManyColumn4> foo4;	
+	private Set<OneToManySample4> sample4;	
 	
 	
 	
