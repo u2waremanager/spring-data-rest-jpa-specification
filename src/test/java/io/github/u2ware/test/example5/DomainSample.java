@@ -1,16 +1,21 @@
 package io.github.u2ware.test.example5;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.persistence.ConstraintMode;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.rest.core.annotation.RestResource;
@@ -21,6 +26,14 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
 
 @Entity
+//@NamedEntityGraph(name = "io.github.u2ware.test.example5.DomainSampleGraph", 
+//attributeNodes = {
+//		@NamedAttributeNode("sample1"),
+//		@NamedAttributeNode("sample2"),
+//		@NamedAttributeNode("sample3"),
+//		@NamedAttributeNode("sample4"),
+//}
+//)
 public @Data class DomainSample {
 
 	@Id 
@@ -37,39 +50,44 @@ public @Data class DomainSample {
 		this.age = age;
 	}
 	
-//	@NotFound(action = NotFoundAction.IGNORE)	
+	@Transient 
+	@JsonDeserialize(using = EntityViewDeserializer.class)
+	private OneToManySample4 _sample4; 
+
+	
+	@Transient 
+	private Set<String> names; 
 	
 	
 	///////////////////////////////////////////////////////////////////
 	// @OneToMany foreign key
 	//////////////////////////////////////////////////////////////////
 	@OneToMany(fetch = FetchType.EAGER)
-	@JoinColumn(name="domainSample")
-//	@JoinColumn(name="domainSample", foreignKey=@ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+//	@JoinColumn(name="domainSample")
+	@JoinColumn(name="domainSample", foreignKey=@ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+	@OrderBy(value="name DESC")
 	private Set<OneToManySample1> sample1;	
 
 	
 	@OneToMany(fetch = FetchType.EAGER)
-	@JoinColumn(name="domainSample")
-//	@JoinColumn(name="domainSample", foreignKey=@ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+//	@JoinColumn(name="domainSample")
+	@JoinColumn(name="domainSample", foreignKey=@ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
 	private Set<OneToManySample2> sample2;	
 
 	
 	@OneToMany(fetch = FetchType.EAGER)
-	@JoinColumn(name="domainSample")
-//	@JoinColumn(name="domainSample", foreignKey=@ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+//	@JoinColumn(name="domainSample")
+	@JoinColumn(name="domainSample", foreignKey=@ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
 	@RestResource(exported = false)
 	private Set<OneToManySample3> sample3;	
 	
 	
 	@OneToMany(fetch = FetchType.EAGER)
-	@JoinColumn(name="domainSample")
-//	@JoinColumn(name="domainSample", foreignKey=@ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+//	@JoinColumn(name="domainSample")
+	@JoinColumn(name="domainSample", foreignKey=@ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
 	@RestResource(exported = false)
 	@JsonDeserialize(contentUsing=EntityViewDeserializer.class)
 	private Set<OneToManySample4> sample4;	
-	
-	
 	
 	
 //	@OneToMany(fetch=FetchType.EAGER)

@@ -24,14 +24,14 @@ public class FooHandler {
 	protected Log logger = LogFactory.getLog(getClass());
 
 	@HandleBeforeCreate
-	public void handleBeforeCreate(ManyToOneSample5 foo) {
+	public void handleBeforeCreate(OneToManySample5 foo) {
 		logger.info("handleBeforeCreate: "+foo);
 	}
 	@HandleBeforeRead
-	public void handleBeforeRead(ManyToOneSample5 foo, Object obj) {
+	public void handleBeforeRead(OneToManySample5 foo, Object obj) {
 		logger.info("handleBeforeRead: "+foo);
 		
-		JPAQuery<ManyToOneSample5> query = (JPAQuery)obj;
+		JPAQuery<OneToManySample5> query = (JPAQuery)obj;
 		
 //		Specification s;
 //		s.and(other);
@@ -40,29 +40,29 @@ public class FooHandler {
 		logger.info("handleBeforeRead: "+query.getClass());
 	}
 	@HandleBeforeSave
-	public void handleBeforeSave(ManyToOneSample5 foo) {
+	public void handleBeforeSave(OneToManySample5 foo) {
 		logger.info("handleBeforeSave: "+foo);
 	}
 	@HandleBeforeDelete
-	public void handleBeforeDelete(ManyToOneSample5 foo) {
+	public void handleBeforeDelete(OneToManySample5 foo) {
 		logger.info("handleBeforeDelete: "+foo);
 	}
 	
 
 	@HandleAfterCreate
-	public void handleAfterCreate(ManyToOneSample5 foo) {
+	public void handleAfterCreate(OneToManySample5 foo) {
 		logger.info("handleAfterCreate: "+foo);
 	}
 	@HandleAfterRead
-	public void handleAfterRead(ManyToOneSample5 foo) {
+	public void handleAfterRead(OneToManySample5 foo) {
 		logger.info("handleAfterRead: "+foo);
 	}
 	@HandleAfterSave
-	public void handleAfterSave(ManyToOneSample5 foo) {
+	public void handleAfterSave(OneToManySample5 foo) {
 		logger.info("handleAfterSave: "+foo);
 	}
 	@HandleAfterDelete
-	public void handleAfterDelete(ManyToOneSample5 foo) {
+	public void handleAfterDelete(OneToManySample5 foo) {
 		logger.info("handleAfterDelete: "+foo);
 	}
 	

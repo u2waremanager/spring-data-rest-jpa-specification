@@ -1,5 +1,7 @@
 package org.springframework.data.jpa.repository.support;
 
+import java.util.Collection;
+
 import org.springframework.util.StringUtils;
 
 import com.querydsl.core.BooleanBuilder;
@@ -216,7 +218,24 @@ public abstract class AbstractWhereBuilder<X> {
 			if(StringUtils.isEmpty(right)) return where;
 			return add(builder.getPath().getString(property).like(right));
 		}
+
+		
+//		public W in(String property, Object right) {
+//			if(StringUtils.isEmpty(right)) return where;
+//			return add(builder.getPath().getCollection(property, Object.class).contains(right));
+//		}
+		
+		public W in(String property, Collection<?> right) {
+			if(StringUtils.isEmpty(right)) return where;
+			return add(builder.getPath().get(property).in(right));
+		}
+		public W contains(String property, Object right) {
+			if(StringUtils.isEmpty(right)) return where;
+			return add(builder.getPath().getCollection(property, Object.class).contains(right));
+		}
+		
 	}
+	
 	
 	
 	
