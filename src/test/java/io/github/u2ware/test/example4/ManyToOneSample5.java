@@ -7,7 +7,7 @@ import javax.persistence.Table;
 
 import lombok.Data;
 
-@Table(name="many_to_one_physical_column5")
+@Table(name="many_to_one_sample5")
 @Entity
 public @Data class ManyToOneSample5 {
 
@@ -23,5 +23,8 @@ public @Data class ManyToOneSample5 {
 	}
 	public ManyToOneSample5(String name) {
 		this.name = name;
+	}
+	public ManyToOneSample5(Long id) {
+		this.seq = id;
 	}
 }

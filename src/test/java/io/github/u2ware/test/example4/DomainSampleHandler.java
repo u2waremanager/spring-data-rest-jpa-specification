@@ -16,10 +16,6 @@ public class DomainSampleHandler {
 	@HandleBeforeCreate
 	protected void handleBeforeCreate(DomainSample e) {
 		logger.info("handleBeforeCreate: "+ e);
-		logger.info("handleBeforeCreate: "+ e.getBar1());
-		logger.info("handleBeforeCreate: "+ e.getBar2());
-		logger.info("handleBeforeCreate: "+ e.getBar3());
-		logger.info("handleBeforeCreate: "+ e.getBar4());
 	}
 
 }

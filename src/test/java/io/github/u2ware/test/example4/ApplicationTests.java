@@ -72,84 +72,62 @@ public class ApplicationTests {
 		
 		
 		String mto5link1 = $.POST("/manyToOneSample5s").C(new ManyToOneSample5("mto5link1")).is2xx().andReturn().path();
-		String mto5link2 = $.POST("/manyToOneSample5s").C(new ManyToOneSample5("mto5link2")).is2xx().andReturn().path();
+		String mto5Link2 = $.POST("/manyToOneSample5s").C(new ManyToOneSample5("mto5link2")).is2xx().andReturn().path();
 		ManyToOneSample5 mto5Json1 = manyToOneSample5Repository.save(new ManyToOneSample5("mto5Json1"));		
 		ManyToOneSample5 mto5Json2 = manyToOneSample5Repository.save(new ManyToOneSample5("mto5Json2"));		
 		
 		
 		///////////////////////////////////////////////
-		// Insert
+		// POST
 		///////////////////////////////////////////////
 		Map<String, Object> c = new HashMap<String,Object>();
 		c.put("name", "John");
 		c.put("age", 10);
-		
-		c.put("foo1", mto1Link1);  //c.put("foo1", link); (O)   c.put("foo1", json); (X)  
-		c.put("foo2", mto2Json1);  //c.put("foo2", link); (X)   c.put("foo2", json); (O)  
-		c.put("foo3", mto3Json1);  //c.put("foo3", link); (X)   c.put("foo3", json); (O)  
-		c.put("foo4", mto4Link1);  //c.put("foo4", link); (O)   c.put("foo4", json); (O)  
-		c.put("foo5", mto5link1);  //c.put("foo5", link); (O)   c.put("foo5", json); (O)  
-		
-		
-//		c.put("bar1", foo1uri);  //c.put("bar1", foo1uri); (O)   c.put("bar1", foo1json); (O)  
-//		c.put("bar2", foo2json); //c.put("bar2", foo2uri); (X)   c.put("bar2", foo2json); (O)  
-//		c.put("bar3", foo3uri);  //c.put("bar3", foo3uri); (O)   c.put("bar3", foo3json); (O)  
-//		c.put("bar4", foo4uri);  //c.put("bar4", foo4uri); (O)   c.put("bar4", foo4json); (O)  
 
-		$.POST("/domainSamples").C(c).is2xx("d1");
-
-		////////////////////////////////////////////////////
-		// Select
-		////////////////////////////////////////////////////
-		RestMvcResult r = $.GET("d1").is2xx().andReturn();
-
-//		//foo1
-//		Assert.assertTrue(r.path("_links.foo1.href").toString().endsWith("/foo1"));
-//		$.get(r.path("_links.foo1.href").toString()).is2xx(); //foo1uri
-//		$.get(r.path("_links.foo1.href").toString()).is4xx(); //foo1json
-
-//		//foo2
-//		Assert.assertFalse(StringUtils.isEmpty(r.path("foo2")));
-//		
-//		//foo3
-//		Assert.assertFalse(StringUtils.isEmpty(r.path("foo3")));
-//		
-//		//foo4
-//		Assert.assertFalse(StringUtils.isEmpty(r.path("foo4")));
+		c.put("sample1", mto1Link1);  //link(O) json(X)  
+		c.put("sample2", mto2Json1);  //link(X) json(O)  
+		c.put("sample3", mto3Json1);  //link(X) json(O)  
+		c.put("sample4", mto4Link1);  //link(O) json(O)  
+		c.put("sample5", mto5link1);  //link(O) json(O)  
 		
-		
+
+		$.POST("/domainSamples").C(c).is2xx("uri");
+		RestMvcResult post = $.GET("uri").is2xx().andReturn();
+		$.get(post.path("_links.sample1.href").toString()).is2xx();
 		
 		////////////////////////////////////////////////////
-		// Update Patch 
+		// PATCH
 		////////////////////////////////////////////////////
 		Map<String, Object> u1 = new HashMap<String,Object>();
-		u1.put("name", "XXXXXXXXXXXX");
+		u1.put("name", "PATCH");
 		u1.put("age", 10);
-		u1.put("foo1", mto1Link2);  //c.put("foo1", link); (O)   c.put("foo1", json); (X)  
-		u1.put("foo2", mto2Json2);  //c.put("foo2", link); (X)   c.put("foo2", json); (X)  
-		u1.put("foo3", mto3Link2);  //c.put("foo3", link); (X)   c.put("foo3", json); (X)  
-		u1.put("foo4", mto4Link2);  //c.put("foo3", link); (O)   c.put("foo3", json); (X)  
-		u1.put("foo5", mto5link2);  //c.put("foo5", link); (O)   c.put("foo5", json); (O)  
 		
-		$.PATCH("d1").C(u1).is2xx();
-		r = $.GET("d1").is2xx().andReturn();
-//		$.get(r.path("_links.foo1.href").toString()).is2xx();
+		u1.put("sample1", mto1Link2);  //link(O)  json(X) null(O)
+		u1.put("sample2", null);       //link(X)  json(X) null(O)
+		u1.put("sample3", null);       //link(X)  json(X) null(O) 
+		u1.put("sample4", mto4Link2);  //link(O)  json(X) null(O) 
+		u1.put("sample5", mto5Link2);  //link(O)  json(X) null(O) 
+
+		$.PATCH("uri").C(u1).is2xx();
+		RestMvcResult patch = $.GET("uri").is2xx().andReturn();
+		$.get(patch.path("_links.sample1.href").toString()).is2xx();
 
 		
-//		////////////////////////////////////////////////////
-//		// Update Put //Null Update
-//		////////////////////////////////////////////////////
-//		Map<String, Object> u2 = new HashMap<String,Object>();
-//		u2.put("name", "XXXXXXXXXXXX");
-//		u2.put("age", 10);
-//		u2.put("foo1", mto1Link2);  //c.put("foo1", link); (X)   c.put("foo1", json); (X)  
-//		u2.put("foo2", null);       //c.put("foo2", foo2uri); (X)   c.put("foo2", foo2json); (O)  
-//		u2.put("foo3", null);   //c.put("foo3", foo3uri); (X)   c.put("foo3", foo3json); (O)  
-//		u2.put("foo4", mto4Link2);  //c.put("foo3", link); (O)   c.put("foo3", foo4json); (O)  
-//		
-//		$.PUT("d1").C(u2).is2xx();
-//		r = $.GET("d1").is2xx().andReturn();
-////		$.get(r.path("_links.foo1.href").toString()).is2xx();
+		////////////////////////////////////////////////////
+		// PUT // -> Null Update
+		////////////////////////////////////////////////////
+		Map<String, Object> u2 = new HashMap<String,Object>();
+		u2.put("name", "PUT");
+		u2.put("age", 10);
+		u2.put("sample1", null);       //link(X) json(X) null(X)
+		u2.put("sample2", mto2Json2);  //link(X) json(O) null(O) 
+		u2.put("sample3", mto3Json2);  //link(X) json(O) null(O) 
+		u2.put("sample4", mto4Link2);  //link(O) json(O) null(O) 
+		u2.put("sample5", mto5Link2);  //link(O) json(O) null(O) 
+
+		$.PUT("uri").C(u2).is2xx();
+		RestMvcResult put = $.GET("uri").is2xx().andReturn();
+		$.get(put.path("_links.sample1.href").toString()).is2xx();
 		
 		
 		////////////////////////////////////////////////////
@@ -161,7 +139,5 @@ public class ApplicationTests {
 //		logger.info("-----------------------------");
 //		logger.info("-----------------------------");
 //		domainSampleRepository.findAll(Sort.by("name"));
-		
-		
 	}
 }

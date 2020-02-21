@@ -11,7 +11,7 @@ import org.springframework.data.rest.webmvc.support.EntityView;
 
 import lombok.Data;
 
-@Table(name="many_to_one_physical_column5")
+@Table(name="many_to_one_sample5")
 @Entity
 public @Data class ManyToOneSample5View implements EntityView<ManyToOneSample5, Long>{
 	
@@ -23,14 +23,6 @@ public @Data class ManyToOneSample5View implements EntityView<ManyToOneSample5, 
 	private Integer age;
 	
 	private @Transient String addon;
-	
-	public ManyToOneSample5View() {
-		
-	}
-	public ManyToOneSample5View(String name, Integer age) {
-		this.name = name;
-		this.age = age;
-	}
 	
 
 	@Override
