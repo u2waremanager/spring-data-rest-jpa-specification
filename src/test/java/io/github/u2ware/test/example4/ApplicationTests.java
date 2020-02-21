@@ -5,23 +5,20 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 
 import io.github.u2ware.test.RestMockMvc;
 import io.github.u2ware.test.RestMockMvc.RestMvcResult;
+import io.github.u2ware.test.RestMockMvc.RestResultActions;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -103,8 +100,8 @@ public class ApplicationTests {
 		u1.put("age", 10);
 		
 		u1.put("sample1", mto1Link2);  //link(O)  json(X) null(O)
-		u1.put("sample2", null);       //link(X)  json(X) null(O)
-		u1.put("sample3", null);       //link(X)  json(X) null(O) 
+//		u1.put("sample2", null);       //link(X)  json(X) null(O)
+//		u1.put("sample3", null);       //link(X)  json(X) null(O) 
 		u1.put("sample4", mto4Link2);  //link(O)  json(X) null(O) 
 		u1.put("sample5", mto5Link2);  //link(O)  json(X) null(O) 
 
@@ -119,7 +116,7 @@ public class ApplicationTests {
 		Map<String, Object> u2 = new HashMap<String,Object>();
 		u2.put("name", "PUT");
 		u2.put("age", 10);
-		u2.put("sample1", null);       //link(X) json(X) null(X)
+//		u2.put("sample1", null);       //link(X) json(X) null(X)
 		u2.put("sample2", mto2Json2);  //link(X) json(O) null(O) 
 		u2.put("sample3", mto3Json2);  //link(X) json(O) null(O) 
 		u2.put("sample4", mto4Link2);  //link(O) json(O) null(O) 
@@ -133,11 +130,7 @@ public class ApplicationTests {
 		////////////////////////////////////////////////////
 		// Search EntityGraphics
 		////////////////////////////////////////////////////
-//		logger.info("-----------------------------");
-//		logger.info("-----------------------------");
-//		domainSampleRepository.findAll(PageRequest.of(0, 10));
-//		logger.info("-----------------------------");
-//		logger.info("-----------------------------");
-//		domainSampleRepository.findAll(Sort.by("name"));
+		$.GET("/domainSamples").H("query","true").C("sample4", mto4Link2).is2xx(RestResultActions.sizeMatch(1));
+		$.GET("/domainSamples").H("query","true").C("sample3Name", "mto3Json2").is2xx(RestResultActions.sizeMatch(1));
 	}
 }

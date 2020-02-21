@@ -204,7 +204,7 @@ public abstract class AbstractWhereBuilder<X> {
 		
 		protected abstract W add(Predicate right);
 		
-		public W eq(String property, Comparable<?> right) {
+		public W eq(String property, Object right) {
 			if(StringUtils.isEmpty(right)) return where;
 			return add(builder.getPath().get(property).eq(right));
 		}

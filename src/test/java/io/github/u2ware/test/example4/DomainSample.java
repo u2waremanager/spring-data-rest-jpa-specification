@@ -9,6 +9,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.rest.core.annotation.RestResource;
@@ -19,14 +22,15 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
 
 @Entity
-//@NamedEntityGraph(name = "io.github.u2ware.test.example4.DomainSampleGraph", 
-//	attributeNodes = {
-//			@NamedAttributeNode("foo1"),
-//			@NamedAttributeNode("foo2"),
-//			@NamedAttributeNode("foo3"),
-//			@NamedAttributeNode("foo4"),
-//	}
-//)
+@NamedEntityGraph(name = "io.github.u2ware.test.example4.DomainSampleGraph", 
+	attributeNodes = {
+			@NamedAttributeNode("sample1"),
+			@NamedAttributeNode("sample2"),
+			@NamedAttributeNode("sample3"),
+			@NamedAttributeNode("sample4"),
+			@NamedAttributeNode("sample5"),
+	}
+)
 public @Data class DomainSample {
 
 	@Id 
@@ -45,8 +49,8 @@ public @Data class DomainSample {
 	
 //	@NotFound(action = NotFoundAction.IGNORE)	
 	
-	
-
+	@Transient 
+	private String sample3Name; 
 	
 	///////////////////////////////////////////////////////////////////
 	// @ManyToOne physical foreign key

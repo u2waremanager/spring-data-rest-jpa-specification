@@ -21,13 +21,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
 
 @Entity
-@NamedEntityGraph(name = "io.github.u2ware.test.example5.DomainSampleGraph", 
-	attributeNodes = {
-		@NamedAttributeNode("foo1"),
-		@NamedAttributeNode("foo2"),
-		@NamedAttributeNode("foo3"),
-		@NamedAttributeNode("foo4"),
-})
 public @Data class DomainSample {
 
 	@Id 
