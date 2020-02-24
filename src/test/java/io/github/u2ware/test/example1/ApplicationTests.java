@@ -52,13 +52,13 @@ public class ApplicationTests {
 	@Test
 	public void contextLoads() throws Exception {
 
-		$.POST("/foos").C(new Foo("hello", 11)).is2xx("foo1");
-		$.GET("foo1").is2xx();
-		$.GET("foo1").H("query","true").is2xx();
+		$.POST("/foos").C(new Foo("hello", 11)).is2xx().andReturn("foo1");
+		$.GET("{foo1}").is2xx();
+		$.GET("{foo1}").H("query","true").is2xx();
 		
-		$.POST("/bars").C(new Bar("world", 22)).is2xx("bar1");
-		$.GET("bar1").is2xx();
-		$.GET("bar1").H("query","true").is2xx();
+		$.POST("/bars").C(new Bar("world", 22)).is2xx().andReturn("bar1");
+		$.GET("{bar1}").is2xx();
+		$.GET("{bar1}").H("query","true").is2xx();
 		
 		$.GET("/foos").H("query","true").C("_name", "a").is2xx();
 		$.GET("/bars").H("query","true").C("name", "a").is2xx();

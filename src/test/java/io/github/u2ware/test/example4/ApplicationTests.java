@@ -17,8 +17,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import io.github.u2ware.test.RestMockMvc;
-import io.github.u2ware.test.RestMockMvc.RestMvcResult;
-import io.github.u2ware.test.RestMockMvc.RestResultActions;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -48,8 +46,8 @@ public class ApplicationTests {
 	@Test
 	public void contextLoads() throws Exception {
 
-		String mto1Link1 = $.POST("/manyToOneSample1s").C(new ManyToOneSample1("mto1Link1")).is2xx().andReturn().path();		
-		String mto1Link2 = $.POST("/manyToOneSample1s").C(new ManyToOneSample1("mto1Link2")).is2xx().andReturn().path();		
+		String mto1Link1 = $.POST("/manyToOneSample1s").C(new ManyToOneSample1("mto1Link1")).is2xx().andReturn().link();		
+		String mto1Link2 = $.POST("/manyToOneSample1s").C(new ManyToOneSample1("mto1Link2")).is2xx().andReturn().link();		
 		ManyToOneSample1 mto1Json1 = manyToOneSample1Repository.save(new ManyToOneSample1("mto1Json1"));	
 		ManyToOneSample1 mto1Json2 = manyToOneSample1Repository.save(new ManyToOneSample1("mto1Json2"));	
 		
@@ -57,19 +55,19 @@ public class ApplicationTests {
 		ManyToOneSample2 mto2Json1 = manyToOneSample2Repository.save(new ManyToOneSample2("mto2Json1"));		
 		ManyToOneSample2 mto2Json2 = manyToOneSample2Repository.save(new ManyToOneSample2("mto2Json2"));		
 
-		String mto3Link1 = $.POST("/manyToOneSample3s").C(new ManyToOneSample3("mto3Link1")).is2xx().andReturn().path();
-		String mto3Link2 = $.POST("/manyToOneSample3s").C(new ManyToOneSample3("mto3Link2")).is2xx().andReturn().path();
+		String mto3Link1 = $.POST("/manyToOneSample3s").C(new ManyToOneSample3("mto3Link1")).is2xx().andReturn().link();
+		String mto3Link2 = $.POST("/manyToOneSample3s").C(new ManyToOneSample3("mto3Link2")).is2xx().andReturn().link();
 		ManyToOneSample3 mto3Json1 = manyToOneSample3Repository.save(new ManyToOneSample3("mto3Json1"));		
 		ManyToOneSample3 mto3Json2 = manyToOneSample3Repository.save(new ManyToOneSample3("mto3Json2"));		
 
-		String mto4Link1 = $.POST("/manyToOneSample4s").C(new ManyToOneSample4("mto4Link1")).is2xx().andReturn().path();
-		String mto4Link2 = $.POST("/manyToOneSample4s").C(new ManyToOneSample4("mto4Link2")).is2xx().andReturn().path();
+		String mto4Link1 = $.POST("/manyToOneSample4s").C(new ManyToOneSample4("mto4Link1")).is2xx().andReturn().link();
+		String mto4Link2 = $.POST("/manyToOneSample4s").C(new ManyToOneSample4("mto4Link2")).is2xx().andReturn().link();
 		ManyToOneSample4 mto4Json1 = manyToOneSample4Repository.save(new ManyToOneSample4("mto4Json1"));		
 		ManyToOneSample4 mto4Json2 = manyToOneSample4Repository.save(new ManyToOneSample4("mto4Json2"));		
 		
 		
-		String mto5link1 = $.POST("/manyToOneSample5s").C(new ManyToOneSample5("mto5link1")).is2xx().andReturn().path();
-		String mto5Link2 = $.POST("/manyToOneSample5s").C(new ManyToOneSample5("mto5link2")).is2xx().andReturn().path();
+		String mto5link1 = $.POST("/manyToOneSample5s").C(new ManyToOneSample5("mto5link1")).is2xx().andReturn().link();
+		String mto5Link2 = $.POST("/manyToOneSample5s").C(new ManyToOneSample5("mto5link2")).is2xx().andReturn().link();
 		ManyToOneSample5 mto5Json1 = manyToOneSample5Repository.save(new ManyToOneSample5("mto5Json1"));		
 		ManyToOneSample5 mto5Json2 = manyToOneSample5Repository.save(new ManyToOneSample5("mto5Json2"));		
 		
@@ -88,9 +86,9 @@ public class ApplicationTests {
 		c.put("sample5", mto5link1);  //link(O) json(O)  
 		
 
-		$.POST("/domainSamples").C(c).is2xx("uri");
-		RestMvcResult post = $.GET("uri").is2xx().andReturn();
-		$.get(post.path("_links.sample1.href").toString()).is2xx();
+		$.POST("/domainSamples").C(c).is2xx().andReturn("uri");
+		$.GET("{uri}").is2xx().andReturn("post");
+		$.GET("{post._links.sample1.href}").is2xx();
 		
 		////////////////////////////////////////////////////
 		// PATCH
@@ -105,9 +103,9 @@ public class ApplicationTests {
 		u1.put("sample4", mto4Link2);  //link(O)  json(X) null(O) 
 		u1.put("sample5", mto5Link2);  //link(O)  json(X) null(O) 
 
-		$.PATCH("uri").C(u1).is2xx();
-		RestMvcResult patch = $.GET("uri").is2xx().andReturn();
-		$.get(patch.path("_links.sample1.href").toString()).is2xx();
+		$.PATCH("{uri}").C(u1).is2xx();
+		$.GET("{uri}").is2xx().andReturn("patch");
+		$.GET("{patch._links.sample1.href}").is2xx();
 
 		
 		////////////////////////////////////////////////////
@@ -122,15 +120,15 @@ public class ApplicationTests {
 		u2.put("sample4", mto4Link2);  //link(O) json(O) null(O) 
 		u2.put("sample5", mto5Link2);  //link(O) json(O) null(O) 
 
-		$.PUT("uri").C(u2).is2xx();
-		RestMvcResult put = $.GET("uri").is2xx().andReturn();
-		$.get(put.path("_links.sample1.href").toString()).is2xx();
+		$.PUT("{uri}").C(u2).is2xx();
+		$.GET("{uri}").is2xx().andReturn("put");
+		$.GET("{put._links.sample1.href}").is2xx();
 		
 		
 		////////////////////////////////////////////////////
 		// Search EntityGraphics
 		////////////////////////////////////////////////////
-		$.GET("/domainSamples").H("query","true").C("sample4", mto4Link2).is2xx(RestResultActions.sizeMatch(1));
-		$.GET("/domainSamples").H("query","true").C("sample3Name", "mto3Json2").is2xx(RestResultActions.sizeMatch(1));
+		$.GET("/domainSamples").H("query","true").C("sample4", mto4Link2).is2xx().andExpect(1);
+		$.GET("/domainSamples").H("query","true").C("sample3Name", "mto3Json2").is2xx().andExpect(1);
 	}
 }
