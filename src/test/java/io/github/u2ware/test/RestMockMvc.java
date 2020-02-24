@@ -167,21 +167,25 @@ public class RestMockMvc {
 			this.mvc = mvc;
 		}
 		
+		public UriTemplateVariables variables() {
+			return variables;
+		}
+
 		
-		public MockMvcRequestSupport H(String key, Object... values) throws Exception{
-			builder.header(key, values); return this;
+		public MockMvcRequestSupport H(String key, String value) throws Exception{
+			builder.header(key, UriComponentsBuilder.fromUriString(value).build().expand(variables()).toUriString()); return this;
 		}
 		public MockMvcRequestSupport H(HttpHeaders headers) throws Exception{
 			builder.headers(headers); return this;
 		}
-		public MockMvcRequestSupport P(String key, String... value) throws Exception{
-			builder.param(key, value); return this;
+		public MockMvcRequestSupport P(String key, String value) throws Exception{
+			builder.param(key, UriComponentsBuilder.fromUriString(value).build().expand(variables()).toUriString()); return this;
 		}
 		public MockMvcRequestSupport P(MultiValueMap<String,String> params) throws Exception{
 			builder.params(params); return this;
 		}
-		public MockMvcRequestSupport C(String key, Object value) throws Exception{
-			content.put(key, value); return this;
+		public MockMvcRequestSupport C(String key, String value) throws Exception{
+			content.put(key, UriComponentsBuilder.fromUriString(value).build().expand(variables()).toUriString()); return this;
 		}
 		public MockMvcRequestSupport C(Object contentValue) throws Exception{
 			this.contentValue = contentValue; return this;
@@ -246,6 +250,10 @@ public class RestMockMvc {
 			this.variables = variables;
 		}
 		
+		public UriTemplateVariables variables() {
+			return variables;
+		}
+
 		public ResultActionsSupport andDo(ResultHandler... resultHandlers) throws Exception{
 			for(ResultHandler resultHandler : resultHandlers) {
 				actions.andDo(resultHandler);
