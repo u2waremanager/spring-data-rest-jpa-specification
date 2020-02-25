@@ -98,8 +98,8 @@ public class ApplicationTests {
 		u1.put("age", 10);
 		
 		u1.put("sample1", mto1Link2);  //link(O)  json(X) null(O)
-//		u1.put("sample2", null);       //link(X)  json(X) null(O)
-//		u1.put("sample3", null);       //link(X)  json(X) null(O) 
+		u1.put("sample2", null);       //link(X)  json(X) null(O)
+		u1.put("sample3", null);       //link(X)  json(X) null(O) 
 		u1.put("sample4", mto4Link2);  //link(O)  json(X) null(O) 
 		u1.put("sample5", mto5Link2);  //link(O)  json(X) null(O) 
 
@@ -114,7 +114,7 @@ public class ApplicationTests {
 		Map<String, Object> u2 = new HashMap<String,Object>();
 		u2.put("name", "PUT");
 		u2.put("age", 10);
-//		u2.put("sample1", null);       //link(X) json(X) null(X)
+		u2.put("sample1", null);       //link(X) json(X) null(X)
 		u2.put("sample2", mto2Json2);  //link(X) json(O) null(O) 
 		u2.put("sample3", mto3Json2);  //link(X) json(O) null(O) 
 		u2.put("sample4", mto4Link2);  //link(O) json(O) null(O) 

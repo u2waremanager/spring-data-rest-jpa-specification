@@ -90,27 +90,35 @@ public class RestMockMvc {
 	
 	
 	public MockMvcRequestSupport get(String uri) throws Exception{
+		System.out.println("\n-----------------------------------------------------------------------------------------------");
 		return new MockMvcRequestSupport(MockMvcRequestBuilders.get(uri), variables, mvc);
 	}
 	public MockMvcRequestSupport post(String uri) throws Exception{
+		System.out.println("\n-----------------------------------------------------------------------------------------------");
 		return new MockMvcRequestSupport(MockMvcRequestBuilders.post(uri), variables, mvc);
 	}
 	public MockMvcRequestSupport put(String uri) throws Exception{
+		System.out.println("\n-----------------------------------------------------------------------------------------------");
 		return new MockMvcRequestSupport(MockMvcRequestBuilders.put(uri), variables, mvc);
 	}
 	public MockMvcRequestSupport patch(String uri) throws Exception{
+		System.out.println("\n-----------------------------------------------------------------------------------------------");
 		return new MockMvcRequestSupport(MockMvcRequestBuilders.patch(uri), variables, mvc);
 	}
 	public MockMvcRequestSupport delete(String uri) throws Exception{
+		System.out.println("\n-----------------------------------------------------------------------------------------------");
 		return new MockMvcRequestSupport(MockMvcRequestBuilders.delete(uri), variables, mvc);
 	}
 	public MockMvcRequestSupport options(String uri) throws Exception{
+		System.out.println("\n-----------------------------------------------------------------------------------------------");
 		return new MockMvcRequestSupport(MockMvcRequestBuilders.options(uri), variables, mvc);
 	}
 	public MockMvcRequestSupport head(String uri) throws Exception{
+		System.out.println("\n-----------------------------------------------------------------------------------------------");
 		return new MockMvcRequestSupport(MockMvcRequestBuilders.head(uri), variables, mvc);
 	}
 	public MockMvcRequestSupport multipart(String uri) throws Exception{
+		System.out.println("\n-----------------------------------------------------------------------------------------------");
 		return new MockMvcRequestSupport(MockMvcRequestBuilders.multipart(uri), variables, mvc);
 	}
 	
