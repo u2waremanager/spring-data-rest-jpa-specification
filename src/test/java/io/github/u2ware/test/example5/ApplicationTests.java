@@ -31,12 +31,12 @@ public class ApplicationTests {
 	protected @Autowired WebApplicationContext context;
 	protected RestMockMvc $;
 	
-	private @Autowired OneToManySample1Repository oneToManySample1Repository;
-	private @Autowired OneToManySample2Repository oneToManySample2Repository;
-	private @Autowired OneToManySample3Repository oneToManySample3Repository;
-	private @Autowired OneToManySample4Repository oneToManySample4Repository;
+	protected @Autowired OneToManySample1Repository oneToManySample1Repository;
+	protected @Autowired OneToManySample2Repository oneToManySample2Repository;
+	protected @Autowired OneToManySample3Repository oneToManySample3Repository;
+	protected @Autowired OneToManySample4Repository oneToManySample4Repository;
 	
-	private @Autowired DomainSampleRepository domainSampleRepository;
+	protected @Autowired DomainSampleRepository domainSampleRepository;
 	
 	@Before
 	public void before() throws Exception {
