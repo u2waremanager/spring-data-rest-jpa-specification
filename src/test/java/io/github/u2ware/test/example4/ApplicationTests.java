@@ -30,14 +30,14 @@ public class ApplicationTests {
 	protected @Autowired WebApplicationContext context;
 	protected RestMockMvc $;
 	
-	private @Autowired ManyToOneSample1Repository manyToOneSample1Repository;
-	private @Autowired ManyToOneSample2Repository manyToOneSample2Repository;
-	private @Autowired ManyToOneSample3Repository manyToOneSample3Repository;
-	private @Autowired ManyToOneSample4Repository manyToOneSample4Repository;
-	private @Autowired ManyToOneSample5Repository manyToOneSample5Repository;
-	private @Autowired ManyToOneSample6Repository manyToOneSample6Repository;
+	protected @Autowired ManyToOneSample1Repository manyToOneSample1Repository;
+	protected @Autowired ManyToOneSample2Repository manyToOneSample2Repository;
+	protected @Autowired ManyToOneSample3Repository manyToOneSample3Repository;
+	protected @Autowired ManyToOneSample4Repository manyToOneSample4Repository;
+	protected @Autowired ManyToOneSample5Repository manyToOneSample5Repository;
+	protected @Autowired ManyToOneSample6Repository manyToOneSample6Repository;
 	
-	private @Autowired DomainSampleRepository domainSampleRepository;
+	protected @Autowired DomainSampleRepository domainSampleRepository;
 	
 	@Before
 	public void before() throws Exception {

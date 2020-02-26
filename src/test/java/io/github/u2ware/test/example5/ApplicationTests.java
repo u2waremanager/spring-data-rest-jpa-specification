@@ -128,14 +128,11 @@ public class ApplicationTests {
 		// Search EntityGraphics
 		////////////////////////////////////////////////////
 		$.GET("/domainSamples").is2xx();
-		$.GET("/domainSamples").H("query","true")
-			.C("sample2", Arrays.asList(otm2Link3, otm2Json1))
-			.C("sample4", Arrays.asList(otm4Link3, otm4Json1))
-			.C("_name", "otm2Link3")
-			.C("_names", Arrays.asList("otm5Json3"))
-		.is2xx();
-
-	
+		$.GET("/domainSamples").H("query","true").C("sample2All", Arrays.asList(otm2Link3, otm2Json3)).is2xx().andExpect(1);
+		$.GET("/domainSamples").H("query","true").C("sample2All", Arrays.asList(otm2Link3, otm2Json1)).is2xx().andExpect(0);
+		$.GET("/domainSamples").H("query","true").C("sample2Any", Arrays.asList(otm2Link3, otm2Json1)).is2xx().andExpect(1);
+		$.GET("/domainSamples").H("query","true").C("sample2Any", Arrays.asList(otm2Link2, otm2Json3)).is2xx().andExpect(1);
+		
 		////////////////////////////////////////////////////
 		// DELETE
 		////////////////////////////////////////////////////

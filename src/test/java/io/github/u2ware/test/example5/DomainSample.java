@@ -4,11 +4,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicLong;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
-import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -21,13 +19,10 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Transient;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.data.rest.webmvc.support.EntityViewDeserializer;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -46,9 +41,6 @@ import lombok.Data;
 )
 @Data
 public class DomainSample {
-	
-	@Transient @JsonIgnore
-	protected Log logger = LogFactory.getLog(getClass());
 	
 	@Id 
 	@GeneratedValue(generator = "UUID") @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
@@ -160,16 +152,18 @@ public class DomainSample {
 	// @OneToMany cascade 
 	///////////////////////////////////////////////////////////////////
 	@ElementCollection(fetch= FetchType.EAGER)
-	@CollectionTable(name="one_to_many_sample5", joinColumns=@JoinColumn(name="domainSample"))
+	@CollectionTable(joinColumns=@JoinColumn(name="domainSample"))
 	private Set<OneToManySample5> sample5;
 
 	///////////////////////////////////////////////////////////////////
 	// Parameters
 	///////////////////////////////////////////////////////////////////
 	@Transient
-	private String _name;
+	@JsonDeserialize(contentUsing=EntityViewDeserializer.class)
+	private Set<OneToManySample2> sample2Any;
 	
 	@Transient
-	private Set<String> _names;
+	@JsonDeserialize(contentUsing=EntityViewDeserializer.class)
+	private Set<OneToManySample2> sample2All;
 	
 }
