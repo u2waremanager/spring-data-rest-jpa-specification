@@ -269,9 +269,22 @@ public abstract class AbstractWhereBuilder<X> {
 			return add(builder.getPath().get(property).notIn(right));
 		}
 		
-		public W contains(String property, Object right) {
+		public W containsAll(String property, Collection<?> right) {
 			if(StringUtils.isEmpty(right)) return where;
-			return add(builder.getPath().getCollection(property, Object.class).contains(right));
+			BooleanBuilder b = new BooleanBuilder();
+			right.forEach(r->{
+				b.and(builder.getPath().getCollection(property, Object.class).contains(r));
+			});
+			return add(b);
+		}
+		
+		public W containsAny(String property, Collection<?> right) {
+			if(StringUtils.isEmpty(right)) return where;
+			BooleanBuilder b = new BooleanBuilder();
+			right.forEach(r->{
+				b.or(builder.getPath().getCollection(property, Object.class).contains(r));
+			});
+			return add(b);
 		}
 	}
 }

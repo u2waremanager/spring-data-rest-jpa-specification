@@ -29,5 +29,6 @@ public @Data class Bar {
 		this.name = name;
 		this.age = age;
 	}
-	
+	  @Enumerated(EnumType.STRING)
+	    private GroupMemberType type
 }

@@ -1,13 +1,18 @@
 package io.github.u2ware.test.example5;
 
 
+import java.util.Iterator;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.data.jpa.repository.support.PredicateBuilder;
 import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
 import org.springframework.data.rest.core.annotation.HandleBeforeRead;
 import org.springframework.data.rest.core.annotation.HandleBeforeSave;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
 import org.springframework.stereotype.Component;
+
+import com.querydsl.core.BooleanBuilder;
 
 
 @Component
@@ -34,11 +39,18 @@ public class DomainSampleHandler {
 	@HandleBeforeRead
 	protected void handleBeforeRead(DomainSample e, Object base) {
 		logger.info("handleBeforeRead: "+ e);
-//		
-//		PredicateBuilder.of((BooleanBuilder)base, DomainSample.class)
-//			.where()
-//			.and().in("name", e.getNames())
-//			.build();
+		logger.info("handleBeforeRead: "+ e.get_name());
+		logger.info("handleBeforeRead: "+ e.get_names());
+		logger.info("handleBeforeRead: "+ e.getSample2Request());
+		logger.info("handleBeforeRead: "+ e.getSample4Request());
+		
+		Iterator<OneToManySample2> it = e.getSample2Request().iterator();
+		
+		PredicateBuilder.of((BooleanBuilder)base, DomainSample.class)
+			.where()
+			.and().eq("name", e.get_name())
+			.and().containsAny("sample2Response", e.getSample2Request())
+			.build();
 	}
 	
 }

@@ -4,9 +4,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
@@ -86,16 +83,15 @@ public class ApplicationTests {
 		Map<String, Object> c = new HashMap<String,Object>();
 		c.put("name", "John");
 		c.put("age", 10);
-//		c.put("sample1", Arrays.asList(otm1Link1, otm1Json1));  //link(X-> O, EntityViewDeserializer) json(O)
-		c.put("sample2", Arrays.asList(otm2Link1, otm2Json1));  //link(O) json(O)
-//		c.put("sample3", Arrays.asList(otm3Link1,otm3Json1));  //link(X-> O, EntityViewDeserializer) json(O)
-//		c.put("sample4", Arrays.asList(otm4Link1, otm4Json1));  //link(O) json(O)
-		c.put("sample5", Arrays.asList(new OneToManySample5("otm5Json1"), new OneToManySample5("otm5Json2")));  //link(X) json(O)
+		c.put("sample1", Arrays.asList(otm1Link1, otm1Json1));               //link(X-> O, EntityViewDeserializer) json(O)
+		c.put("sample2", Arrays.asList(otm2Link1, otm2Json1));               //link(O) json(O)
+		c.put("sample3", Arrays.asList(otm3Link1,otm3Json1));                //link(X-> O, EntityViewDeserializer) json(O)
+		c.put("sample4", Arrays.asList(otm4Link1, otm4Json1));               //link(O) json(O)
+		c.put("sample5", Arrays.asList(new OneToManySample5("otm5Json1")));  //link(X) json(O)
 
 		
 		$.POST("/domainSamples").C(c).is2xx().andReturn("uri");
 		$.GET("{uri}").is2xx().andReturn("post");
-		//$.GET("{post._links.sample1.href}").is2xx();
 		
 		
 		////////////////////////////////////////////////////
@@ -104,11 +100,11 @@ public class ApplicationTests {
 		Map<String, Object> u1 = new HashMap<String,Object>();
 		u1.put("name", "PATCH");
 		u1.put("age", 10);
-//		u1.put("sample1", Arrays.asList(otm1Link2, otm1Link3)); //link(X-> O, EntityViewDeserializer) json(X) null(O)
-//		u1.put("sample2", Arrays.asList(otm2Link2, otm2Json2)); //link(O) json(O) null(O)
-//		u1.put("sample3",  Arrays.asList(otm3Link2, otm3Link3)); //link(O -> O, EntityViewDeserializer) json(X) null(O)
-//		u1.put("sample4", Arrays.asList(otm4Link2, otm4Json2)); //link(O) json(O) null(O)
-//		u1.put("sample5", Arrays.asList(new OneToManySample5("otm5Json3")));  //link(X) json(O)
+		u1.put("sample1", Arrays.asList(otm1Link2, otm1Link3));               //link(X-> O, EntityViewDeserializer) json(X) null(O)
+		u1.put("sample2", Arrays.asList(otm2Link2, otm2Json2));               //link(O) json(O) null(O)
+		u1.put("sample3",  Arrays.asList(otm3Link2, otm3Link3));              //link(O -> O, EntityViewDeserializer) json(X) null(O)
+		u1.put("sample4", Arrays.asList(otm4Link2, otm4Json2));               //link(O) json(O) null(O)
+		u1.put("sample5", Arrays.asList(new OneToManySample5("otm5Json2")));  //link(X) json(O)
 
 		$.PATCH("{uri}").C(u1).is2xx();
 		$.GET("{uri}").is2xx().andReturn("patch");
@@ -119,30 +115,32 @@ public class ApplicationTests {
 		Map<String, Object> u2 = new HashMap<String,Object>();
 		u2.put("name", "PUT");
 		u2.put("age", 10);
-//		u2.put("sample1", null);                                  //link(X) json(X) null(O)
-//		u2.put("sample2", Arrays.asList(otm2Link3, otm2Json3));   //link(O) json(O) null(O)
-//		u1.put("sample3",  Arrays.asList(otm3Link2, otm3Link3));  //link(X) json(X) null(O)
-//		u2.put("sample4", Arrays.asList(otm4Link3, otm4Json3));   //link(O) json(O) null(O)
-//		u2.put("sample5", Arrays.asList(new OneToManySample5("otm5Json3"), new OneToManySample5("otm5Json4"), new OneToManySample5("otm5Json6")));  //link(X) json(O)
+		u2.put("sample1", null);                                              //link(X) json(X) null(O)
+		u2.put("sample2", Arrays.asList(otm2Link3, otm2Json3));               //link(O) json(O) null(O)
+		u2.put("sample3",  Arrays.asList(otm3Link2, otm3Link3));              //link(X) json(X) null(O)
+		u2.put("sample4", Arrays.asList(otm4Link3, otm4Json3));               //link(O) json(O) null(O)
+		u2.put("sample5", Arrays.asList(new OneToManySample5("otm5Json3")));  //link(X) json(O)
 
-//		$.PUT("{uri}").C(u2).is2xx();
-//		$.GET("{uri}").is2xx().andReturn("put");
+		$.PUT("{uri}").C(u2).is2xx();
+		$.GET("{uri}").is2xx().andReturn("put");
 		
 
-		////////////////////////////////////////////////////
-		// DELETE
-		////////////////////////////////////////////////////
-//		$.DELETE("{uri}").is2xx();
-		
-		
 		////////////////////////////////////////////////////
 		// Search EntityGraphics
 		////////////////////////////////////////////////////
-//		$.GET("/domainSamples").is2xx();
-//		$.GET("/domainSamples").H("query","true").C("names", Arrays.asList("PUT","GET")).is2xx();
-//		$.GET("/domainSamples").H("query","true").C("_sample4", Arrays.asList(otm4Link3)).is2xx();
-	}
+		$.GET("/domainSamples").is2xx();
+		$.GET("/domainSamples").H("query","true")
+			.C("sample2", Arrays.asList(otm2Link3, otm2Json1))
+			.C("sample4", Arrays.asList(otm4Link3, otm4Json1))
+			.C("_name", "otm2Link3")
+			.C("_names", Arrays.asList("otm5Json3"))
+		.is2xx();
+
 	
-	@PersistenceContext
-	private EntityManager em;
+		////////////////////////////////////////////////////
+		// DELETE
+		////////////////////////////////////////////////////
+		$.DELETE("{uri}").is2xx();
+	
+	}
 }

@@ -6,18 +6,19 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.persistence.*;
-import javax.persistence.ConstraintMode;
+import javax.persistence.CollectionTable;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.logging.Log;
@@ -34,14 +35,15 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
 
 @Entity
-//@NamedEntityGraph(name = "io.github.u2ware.test.example5.DomainSampleGraph", 
-//attributeNodes = {
-//		@NamedAttributeNode("sample1"),
-//		@NamedAttributeNode("sample2"),
-//		@NamedAttributeNode("sample3"),
-//		@NamedAttributeNode("sample4"),
-//}
-//)
+@NamedEntityGraph(name = "io.github.u2ware.test.example5.DomainSampleGraph", 
+	attributeNodes = {
+			@NamedAttributeNode("sample1"),
+			@NamedAttributeNode("sample2Response"),
+			@NamedAttributeNode("sample3"),
+			@NamedAttributeNode("sample4Response"),
+			@NamedAttributeNode("sample5"),
+	}
+)
 @Data
 public class DomainSample {
 	
@@ -66,19 +68,12 @@ public class DomainSample {
 	private void handlePrePersist(){
 		sample2Response = new HashSet<>(sample2Request != null ? sample2Request : Collections.emptySet());
 		sample4Response = new HashSet<>(sample4Request != null ? sample4Request : Collections.emptySet());
-		sample5Response = new HashSet<>(sample5Request != null ? sample5Request : Collections.emptySet());
-		
 	}
 
-	@Transient @JsonIgnore
-	private AtomicLong seq = new AtomicLong(0);
-	
 	@PreUpdate
 	private void handlePreUpdate(){
 		sample2Response.clear(); sample2Response.addAll(sample2Request != null ? sample2Request : Collections.emptySet());
 		sample4Response.clear(); sample4Response.addAll(sample4Request != null ? sample4Request : Collections.emptySet());
-		sample5Response.clear(); sample5Response.addAll(Collections.emptySet());
-		
 	}
 	
 	
@@ -164,56 +159,16 @@ public class DomainSample {
 	///////////////////////////////////////////////////////////////////
 	// @OneToMany cascade 
 	///////////////////////////////////////////////////////////////////
-	@Transient
-	@JsonProperty(access = Access.WRITE_ONLY, value = "sample5")
-	protected Set<OneToManySample5> sample5Request;
-	
-	
-	@OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL}, orphanRemoval = true)
-//	@JoinColumn(name = "domainSample", referencedColumnName = "id")
-//	@JoinColumn(name = "domainSample", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-	@JoinColumn(name = "domainSample")
-	@JsonProperty(access = Access.READ_ONLY, value = "sample5")
-	@RestResource(exported = false)
-	private Set<OneToManySample5> sample5Response;
-	
-	
-	
-	@Entity
-	@Table(name = "one_to_many_sample5")
+	@ElementCollection(fetch= FetchType.EAGER)
+	@CollectionTable(name="one_to_many_sample5", joinColumns=@JoinColumn(name="domainSample"))
+	private Set<OneToManySample5> sample5;
+
+	@Embeddable
 	public @Data static class OneToManySample5 {
-
-//		@EqualsAndHashCode(exclude = {"domainSample"}) @ToString(exclude = {"domainSample"})  
-//		
-//		@EmbeddedId
-//		private ID id = new ID();
-//
-//		@Embeddable
-//		@SuppressWarnings("serial")
-//		public static @Data  class ID implements Serializable{
-//
-//			@ManyToOne(fetch = FetchType.LAZY) 
-//			@JsonIgnore
-//			@RestResource(exported = false)
-//			private DomainSample domainSample;
-//			
-//			
-//			private Long seq;
-//			
-//		}
-
-		@Id @GeneratedValue
-		private Long seq;
 		
-//		@ManyToOne(fetch = FetchType.LAZY) 
-//		@JsonIgnore
-//		@RestResource(exported = false)
-//		private DomainSample domainSample;
-//		
 		private String name;
 
 		private Integer age;
-
 		
 		public OneToManySample5() {
 			
@@ -222,44 +177,14 @@ public class DomainSample {
 			this.name = name;
 		}
 	}
-
 	
+	///////////////////////////////////////////////////////////////////
+	// Parameters
+	///////////////////////////////////////////////////////////////////
+	@Transient
+	private String _name;
 	
+	@Transient
+	private Set<String> _names;
 	
-	
-	
-
-	
-	
-	
-		
-//	///////////////////////////////////////////////////////////////////
-//	// @OneToMany cascade
-//	//////////////////////////////////////////////////////////////////
-//	@OneToMany(mappedBy = "parent", fetch = FetchType.EAGER, cascade = { CascadeType.ALL }, orphanRemoval = true)
-////	@RestResource(exported=false)
-//	protected Set<Child> childs = new LinkedHashSet<Child>();
-//
-//	public void setChilds(Set<Child> childs) {
-//		this.childs = new LinkedHashSet<Child>();
-//		for(Child f : childs) {
-//			f.setParent(this);
-//			this.childs.add(f);
-//		} 
-//	}
-//
-//	@Entity
-//	@Table(name = "Bar_Childs")
-//	public static class Child {
-//
-//		@Id @GeneratedValue 
-//		private @JsonIgnore @Getter @Setter Long seq;
-//
-//		@RestResource(exported = false)
-//		@ManyToOne(fetch = FetchType.LAZY) 
-//		private @JsonIgnore @Getter @Setter Bar parent;
-//
-//		private @Getter @Setter String stringValue;
-//		private @Getter @Setter Integer integerValue;
-//	}
 }

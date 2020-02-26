@@ -195,6 +195,9 @@ public class RestMockMvc {
 		public MockMvcRequestSupport C(String key, String value) throws Exception{
 			content.put(key, UriComponentsBuilder.fromUriString(value).build().expand(variables()).toUriString()); return this;
 		}
+		public MockMvcRequestSupport C(String key, Object value) throws Exception{
+			content.put(key, value); return this;
+		}
 		public MockMvcRequestSupport C(Object contentValue) throws Exception{
 			this.contentValue = contentValue; return this;
 		}
