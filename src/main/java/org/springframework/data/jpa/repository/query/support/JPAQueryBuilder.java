@@ -1,10 +1,10 @@
-package org.springframework.data.jpa.repository.support;
+package org.springframework.data.jpa.repository.query.support;
 
 import javax.persistence.EntityManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.data.jpa.repository.support.AbstractWhereBuilder.BaseBuilder;
+import org.springframework.data.jpa.repository.query.support.AbstractWhereBuilder.BaseBuilder;
 
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;

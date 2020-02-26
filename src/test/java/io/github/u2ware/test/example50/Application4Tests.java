@@ -146,7 +146,7 @@ public class Application4Tests {
 
 		
 		domainSampleRepository.findAll( (r, q, b) -> {
-			return PredicateQueryBuilder.of(r, q, b)
+			return PredicateBuilder.of(r, q, b)
 					.where()
 						.and().like("name", "CCfffGGGGc")
 						.and().gt("age", 1)

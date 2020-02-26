@@ -11,10 +11,10 @@ import javax.persistence.criteria.Root;
 
 import org.springframework.data.repository.query.parser.Part;
 
-public class PredicateQueryBuilder<T> {
+public class PredicateBuilder<T> {
 
-	public static <X> PredicateQueryBuilder<X> of(Root<X> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
-		return new PredicateQueryBuilder<>(root, criteriaQuery, criteriaBuilder);
+	public static <X> PredicateBuilder<X> of(Root<X> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+		return new PredicateBuilder<>(root, criteriaQuery, criteriaBuilder);
 	}
 	
 	public static class BaseBuilder<T>{
@@ -59,7 +59,7 @@ public class PredicateQueryBuilder<T> {
 	
 	private BaseBuilder<T> builder;
 	
-	private PredicateQueryBuilder(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+	private PredicateBuilder(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 		this.builder = new BaseBuilder<>(root, query, builder);
 	}
 	

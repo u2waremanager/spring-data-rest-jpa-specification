@@ -1,4 +1,4 @@
-package org.springframework.data.jpa.repository.config;
+package org.springframework.data.rest.webmvc.config;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
@@ -21,6 +21,8 @@ import org.hibernate.internal.SessionFactoryImpl;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.EmbeddedValueResolverAware;
+import org.springframework.data.rest.core.event.HibernatePostLoadEvent;
+import org.springframework.data.rest.core.event.HibernatePreLoadEvent;
 import org.springframework.util.StringValueResolver;
 
 public class HibernateAddtionalConfiguration extends EmptyInterceptor implements ApplicationEventPublisherAware, EmbeddedValueResolverAware, 

@@ -3,7 +3,7 @@ package io.github.u2ware.test.example1;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.data.jpa.repository.support.PredicateBuilder;
+import org.springframework.data.jpa.repository.query.support.PredicateBuilder;
 import org.springframework.data.rest.core.event.AbstractRepositoryReadEventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;

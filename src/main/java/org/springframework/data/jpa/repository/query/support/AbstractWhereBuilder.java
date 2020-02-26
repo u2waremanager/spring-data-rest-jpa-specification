@@ -1,4 +1,4 @@
-package org.springframework.data.jpa.repository.support;
+package org.springframework.data.jpa.repository.query.support;
 
 import java.util.Collection;
 

@@ -4,8 +4,7 @@ import java.io.Serializable;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.HibernateAddtionalConfiguration;
-import org.springframework.data.jpa.repository.support.ExtendedEntityPathResolver;
+import org.springframework.data.jpa.repository.query.support.ExtendedEntityPathResolver;
 import org.springframework.data.querydsl.EntityPathResolver;
 import org.springframework.data.rest.core.event.AnnotatedReadEventHandlerInvoker;
 import org.springframework.data.rest.webmvc.RepositoryRestController;

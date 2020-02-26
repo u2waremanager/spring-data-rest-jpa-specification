@@ -11,8 +11,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.jpa.repository.support.JPAQueryBuilder;
-import org.springframework.data.jpa.repository.support.PredicateBuilder;
+import org.springframework.data.jpa.repository.query.support.JPAQueryBuilder;
+import org.springframework.data.jpa.repository.query.support.PredicateBuilder;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.querydsl.core.BooleanBuilder;

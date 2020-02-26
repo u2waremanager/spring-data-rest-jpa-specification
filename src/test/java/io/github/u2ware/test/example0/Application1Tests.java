@@ -14,11 +14,11 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.domain.SpecificationBuilder;
 import org.springframework.data.jpa.repository.query.BeanWrapperFactory;
 import org.springframework.data.jpa.repository.query.PartTreePredicate;
 import org.springframework.data.jpa.repository.query.PartTreeSpecification;
-import org.springframework.data.jpa.repository.query.PredicateQueryBuilder;
+import org.springframework.data.jpa.repository.query.PredicateBuilder;
+import org.springframework.data.jpa.repository.query.SpecificationBuilder;
 import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.PartTree;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -190,7 +190,7 @@ public class Application1Tests {
 		
 			
 			
-			return PredicateQueryBuilder.of(root, query, builder)
+			return PredicateBuilder.of(root, query, builder)
 					.where()
 //						.and(p1)
 //						.or(p3)
@@ -245,9 +245,9 @@ public class Application1Tests {
 	public void specificationBuilderTests() throws Exception{
 	
 		Specification<Foo> spec = new SpecificationBuilder<>();
-		spec.and((r, q, b) -> {return PredicateQueryBuilder.of(r,q,b).where().and().eq("name", "a").build();})
+		spec.and((r, q, b) -> {return PredicateBuilder.of(r,q,b).where().and().eq("name", "a").build();})
 //		;spec
-		.or((r, q, b) -> {return PredicateQueryBuilder.of(r,q,b).where().and().eq("age", 1).build();});		
+		.or((r, q, b) -> {return PredicateBuilder.of(r,q,b).where().and().eq("age", 1).build();});		
 		List<Foo> foos = repository.findAll(spec);
 		
 		Assert.assertEquals(2, foos.size());

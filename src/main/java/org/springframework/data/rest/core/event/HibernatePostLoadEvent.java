@@ -1,4 +1,4 @@
-package org.springframework.data.jpa.repository.config;
+package org.springframework.data.rest.core.event;
 
 import org.springframework.context.ApplicationEvent;
 

@@ -7,9 +7,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.jpa.domain.SpecificationBuilder;
-import org.springframework.data.jpa.repository.query.PredicateQueryBuilder;
-import org.springframework.data.jpa.repository.support.PredicateBuilder;
+import org.springframework.data.jpa.repository.query.PredicateBuilder;
+import org.springframework.data.jpa.repository.query.SpecificationBuilder;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.querydsl.core.BooleanBuilder;
@@ -47,42 +46,20 @@ public class Application3Tests {
 	public void contextLoads() throws Exception {
 		
 		BooleanBuilder p = new BooleanBuilder();
-		p.and(PredicateBuilder.of(Foo.class).where().and().eq("name", "a").build())
+		p.and(org.springframework.data.jpa.repository.query.support.PredicateBuilder.of(Foo.class).where().and().eq("name", "a").build())
 		//;p
-		.and(PredicateBuilder.of(Foo.class).where().and().eq("age", 1).build());
+		.and(org.springframework.data.jpa.repository.query.support.PredicateBuilder.of(Foo.class).where().and().eq("age", 1).build());
 		fooRepository.findAll(p);
 		
 		
 		
 		
 		
-		
-		
-		
-		
-//		
 		SpecificationBuilder<Foo> s = new SpecificationBuilder<>();
-		s.and((r,q,b)->{return PredicateQueryBuilder.of(r, q, b).where().and().eq("name", "a").build();})
+		s.and((r,q,b)->{return org.springframework.data.jpa.repository.query.PredicateBuilder.of(r, q, b).where().and().eq("name", "a").build();})
 //		;s
-		.and((r,q,b)->{return PredicateQueryBuilder.of(r, q, b).where().and().eq("age", 1).build();});
+		.and((r,q,b)->{return org.springframework.data.jpa.repository.query.PredicateBuilder.of(r, q, b).where().and().eq("age", 1).build();});
 		fooRepository.findAll(s);
-		
-		
-		
-//		SpecificationBuilder.of(s);
-		
-		
-		//SpecificationBuilder.of(s).and();
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 	}
 	
 	

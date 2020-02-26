@@ -3,7 +3,7 @@ package io.github.u2ware.test.example1;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.query.PredicateQueryBuilder;
+import org.springframework.data.jpa.repository.query.PredicateBuilder;
 import org.springframework.data.rest.core.annotation.HandleAfterRead;
 import org.springframework.data.rest.core.annotation.HandleBeforeRead;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
@@ -28,7 +28,7 @@ public class BarHandler {
 		if(! ClassUtils.isAssignableValue(Specification.class, query)) return;
 		Specification<Bar> spec = (Specification)query;
 		spec.and((r,c,b)->{
-			return PredicateQueryBuilder.of(r,c,b).where().and().eq("name", bar.getName()).build();
+			return PredicateBuilder.of(r,c,b).where().and().eq("name", bar.getName()).build();
 		});
 		
 	}

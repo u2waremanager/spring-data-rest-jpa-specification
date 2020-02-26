@@ -3,7 +3,7 @@ package io.github.u2ware.test.example5;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.data.jpa.repository.support.PredicateBuilder;
+import org.springframework.data.jpa.repository.query.support.PredicateBuilder;
 import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
 import org.springframework.data.rest.core.annotation.HandleBeforeRead;
 import org.springframework.data.rest.core.annotation.HandleBeforeSave;
