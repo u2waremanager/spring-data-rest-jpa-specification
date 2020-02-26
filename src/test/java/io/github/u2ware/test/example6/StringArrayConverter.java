@@ -1,4 +1,4 @@
-package io.github.u2ware.test.example50;
+package io.github.u2ware.test.example6;
 
 import javax.persistence.AttributeConverter;
 

@@ -74,6 +74,26 @@
 			<artifactId>lombok</artifactId>
 			<scope>test</scope>
 		</dependency>
+	<!-- 	
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-joda</artifactId>
+			<scope>test</scope>
+		</dependency>
+	 -->	
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>joda-time</groupId>
+		    <artifactId>joda-time-hibernate</artifactId>
+		    <version>1.4</version>
+			<scope>test</scope>
+		</dependency>
+		
+		
 		<dependency>
 			<groupId>org.hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
