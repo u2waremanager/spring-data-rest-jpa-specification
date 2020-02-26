@@ -1,8 +1,6 @@
 package org.springframework.data.rest.webmvc.config;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,6 +16,7 @@ import org.hibernate.event.spi.PostLoadEventListener;
 import org.hibernate.event.spi.PreLoadEvent;
 import org.hibernate.event.spi.PreLoadEventListener;
 import org.hibernate.internal.SessionFactoryImpl;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.EmbeddedValueResolverAware;
@@ -25,18 +24,21 @@ import org.springframework.data.rest.core.event.HibernatePostLoadEvent;
 import org.springframework.data.rest.core.event.HibernatePreLoadEvent;
 import org.springframework.util.StringValueResolver;
 
-public class HibernateAddtionalConfiguration extends EmptyInterceptor implements ApplicationEventPublisherAware, EmbeddedValueResolverAware, 
+public class HibernateAddtionalConfiguration extends EmptyInterceptor implements InitializingBean, ApplicationEventPublisherAware, EmbeddedValueResolverAware, 
 PostLoadEventListener, PreLoadEventListener {
 
 	private static final long serialVersionUID = 2787103521260283735L;
 
 	protected Log logger = LogFactory.getLog(getClass());
 
-	private @PersistenceUnit EntityManagerFactory emf;
-
+	private EntityManagerFactory emf;
 	private StringValueResolver resolver;
 	private ApplicationEventPublisher publisher;
 	private boolean enableHandleLoad = false;
+	
+	public HibernateAddtionalConfiguration(EntityManagerFactory emf) {
+		this.emf = emf;
+	}
 
 	@Override
 	public void setEmbeddedValueResolver(StringValueResolver resolver) {
@@ -56,9 +58,9 @@ PostLoadEventListener, PreLoadEventListener {
 		this.enableHandleLoad = enableHandleLoad;
 	}
 	
-
-	@PostConstruct
-	protected void init() {
+	
+	@Override
+	public void afterPropertiesSet() throws Exception {
 		SessionFactoryImpl sessionFactory = emf.unwrap(SessionFactoryImpl.class);
 		SessionFactoryOptionsBuilder options = (SessionFactoryOptionsBuilder) sessionFactory.getSessionFactoryOptions();
 		options.applyInterceptor(this);
@@ -67,6 +69,7 @@ PostLoadEventListener, PreLoadEventListener {
 		registry.getEventListenerGroup(EventType.POST_LOAD).appendListener(this);
 		registry.getEventListenerGroup(EventType.PRE_LOAD).appendListener(this);
 	}
+	
 	
 	@Override
 	public void onPostLoad(PostLoadEvent event) {
@@ -83,6 +86,7 @@ PostLoadEventListener, PreLoadEventListener {
 	public String onPrepareStatement(String sql) {
 		return resolver.resolveStringValue(sql);
 	}
+
 	
 	
 

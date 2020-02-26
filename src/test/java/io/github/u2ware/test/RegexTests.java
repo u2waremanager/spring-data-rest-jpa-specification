@@ -1,4 +1,4 @@
-package io.github.u2ware.test.example8;
+package io.github.u2ware.test;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

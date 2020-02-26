@@ -1,8 +1,4 @@
-package io.github.u2ware.test.example2;
-
-import java.util.UUID;
-
-import javax.persistence.EntityManagerFactory;
+package io.github.u2ware.test.example8;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,9 +8,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
-import org.springframework.data.jpa.repository.query.PredicateBuilder;
-import org.springframework.data.rest.webmvc.config.HibernateAddtionalConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -38,28 +31,13 @@ public class ApplicationTests {
 		MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
 		this.$ = new RestMockMvc(mvc, springDataRestBasePath);
 	}
-
-	protected @Autowired FooRepository fooRepository;
-	protected @Autowired BarRepository barRepository;
 	
+//	protected @Autowired FooRepository fooRepository;
+//	protected @Autowired BarRepository barRepository;
+//	
 	@Test
 	public void contextLoads() throws Exception {
-
-		fooRepository.save(new Foo(UUID.randomUUID(), "a", 1));		
-		fooRepository.save(new Foo(UUID.randomUUID(), "b", 2));		
-		fooRepository.save(new Foo(UUID.randomUUID(), "c", 3));		
-
-		barRepository.save(new Bar(UUID.randomUUID(), "a", 4));		
-		barRepository.save(new Bar(UUID.randomUUID(), "b", 5));		
-		
-
-		fooRepository.findAll((root, query, builder) -> {
-			return PredicateBuilder.of(root, query, builder).where().and().eq("name", "a").build();
-		}).forEach(foo->{
-			logger.info(foo.getCount1());
-			logger.info(foo.getCount2());
-		});;
+//		RepositoryRestMvcConfiguration v;
+//		https://www.baeldung.com/spring-data-jpa-multiple-databases
 	}
-	
-	
 }

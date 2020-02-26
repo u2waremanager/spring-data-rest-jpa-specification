@@ -17,11 +17,6 @@ import org.springframework.data.rest.webmvc.support.UriLinkParser;
 public class RepositoryRestMvcAddtionalConfiguration {
 	
 	@Bean 
-	public HibernateAddtionalConfiguration hibernateAddtionalConfiguration() {
-		return new HibernateAddtionalConfiguration();
-	}
-
-	@Bean 
 	public AnnotatedReadEventHandlerInvoker annotatedReadEventHandlerInvoker() {
 		return new AnnotatedReadEventHandlerInvoker();
 	}
