@@ -1,5 +1,6 @@
 package io.github.u2ware.test.example4;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,6 +35,7 @@ public class ApplicationTests {
 	private @Autowired ManyToOneSample3Repository manyToOneSample3Repository;
 	private @Autowired ManyToOneSample4Repository manyToOneSample4Repository;
 	private @Autowired ManyToOneSample5Repository manyToOneSample5Repository;
+	private @Autowired ManyToOneSample6Repository manyToOneSample6Repository;
 	
 	private @Autowired DomainSampleRepository domainSampleRepository;
 	
@@ -71,6 +73,10 @@ public class ApplicationTests {
 		ManyToOneSample5 mto5Json1 = manyToOneSample5Repository.save(new ManyToOneSample5("mto5Json1"));		
 		ManyToOneSample5 mto5Json2 = manyToOneSample5Repository.save(new ManyToOneSample5("mto5Json2"));		
 		
+		String mto6link1 = $.POST("/manyToOneSample6s").C(new ManyToOneSample6("mto6link1")).is2xx().andReturn().link();
+		String mto6Link2 = $.POST("/manyToOneSample6s").C(new ManyToOneSample6("mto6link2")).is2xx().andReturn().link();
+		ManyToOneSample6 mto6Json1 = manyToOneSample6Repository.save(new ManyToOneSample6("mto6Json1"));		
+		ManyToOneSample6 mto6Json2 = manyToOneSample6Repository.save(new ManyToOneSample6("mto6Json2"));		
 		
 		///////////////////////////////////////////////
 		// POST
@@ -84,6 +90,7 @@ public class ApplicationTests {
 		c.put("sample3", mto3Json1);  //link(X) json(O)  
 		c.put("sample4", mto4Link1);  //link(O) json(O)  
 		c.put("sample5", mto5link1);  //link(O) json(O)  
+		c.put("sample6", mto6Json1);  //link(O) json(O)  
 		
 
 		$.POST("/domainSamples").C(c).is2xx().andReturn("uri");
@@ -102,6 +109,7 @@ public class ApplicationTests {
 		u1.put("sample3", null);       //link(X)  json(X) null(O) 
 		u1.put("sample4", mto4Link2);  //link(O)  json(X) null(O) 
 		u1.put("sample5", mto5Link2);  //link(O)  json(X) null(O) 
+		u1.put("sample6", mto6Json2);  //link(O)  json(O) null(O) 
 
 		$.PATCH("{uri}").C(u1).is2xx();
 		$.GET("{uri}").is2xx().andReturn("patch");
@@ -119,6 +127,7 @@ public class ApplicationTests {
 		u2.put("sample3", mto3Json2);  //link(X) json(O) null(O) 
 		u2.put("sample4", mto4Link2);  //link(O) json(O) null(O) 
 		u2.put("sample5", mto5Link2);  //link(O) json(O) null(O) 
+		u2.put("sample6", mto6Json1);  //link(O) json(O) null(O) 
 
 		$.PUT("{uri}").C(u2).is2xx();
 		$.GET("{uri}").is2xx().andReturn("put");
@@ -129,6 +138,19 @@ public class ApplicationTests {
 		// Search EntityGraphics
 		////////////////////////////////////////////////////
 		$.GET("/domainSamples").H("query","true").C("sample4", mto4Link2).is2xx().andExpect(1);
+		$.GET("/domainSamples").H("query","true").C("sample4", mto4Link1).is2xx().andExpect(0);
+		$.GET("/domainSamples").H("query","true").C("sample4", mto4Json1).is2xx().andExpect(0);
+		$.GET("/domainSamples").H("query","true").C("sample3Names", Arrays.asList("mto3Json2")).is2xx().andExpect(1);
 		$.GET("/domainSamples").H("query","true").C("sample3Name", "mto3Json2").is2xx().andExpect(1);
+		$.GET("/domainSamples").H("query","true").C("sample3Name", "mto3Json2ttt").is2xx().andExpect(0);
+
+		
+		////////////////////////////////////////////////////
+		// DELETE
+		////////////////////////////////////////////////////
+		$.DELETE("{uri}").is2xx();
+		
+		
+		
 	}
 }

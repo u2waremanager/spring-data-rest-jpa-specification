@@ -32,6 +32,7 @@ public class DomainSampleHandler {
 			.where()
 			.and().eq("sample4", e.getSample4())
 			.and().eq("sample3.name", e.getSample3Name())
+			.and().in("sample3.name", e.getSample3Names())
 			.build();
 	}
 }

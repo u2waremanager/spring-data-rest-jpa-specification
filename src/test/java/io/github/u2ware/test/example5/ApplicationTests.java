@@ -18,7 +18,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import io.github.u2ware.test.RestMockMvc;
-import io.github.u2ware.test.example5.DomainSample.OneToManySample5;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

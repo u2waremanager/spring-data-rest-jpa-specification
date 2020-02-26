@@ -1,5 +1,6 @@
 package io.github.u2ware.test.example4;
 
+import java.util.Set;
 import java.util.UUID;
 
 import javax.persistence.ConstraintMode;
@@ -11,12 +12,16 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.data.rest.webmvc.support.EntityViewDeserializer;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import lombok.Data;
@@ -29,9 +34,11 @@ import lombok.Data;
 			@NamedAttributeNode("sample3"),
 			@NamedAttributeNode("sample4"),
 			@NamedAttributeNode("sample5"),
+			@NamedAttributeNode("sample6Response"),
 	}
 )
-public @Data class DomainSample {
+@Data 
+public class DomainSample {
 
 	@Id 
 	@GeneratedValue(generator = "UUID") @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
@@ -47,13 +54,22 @@ public @Data class DomainSample {
 		this.age = age;
 	}
 	
-//	@NotFound(action = NotFoundAction.IGNORE)	
+	@PrePersist 
+	private void handlePrePersist(){
+		sample6Response = sample6Request;
+	}
+
+	@PreUpdate
+	private void handlePreUpdate(){
+		sample6Response = sample6Request;
+	}
 	
-	@Transient 
-	private String sample3Name; 
+
+	
+	
 	
 	///////////////////////////////////////////////////////////////////
-	// @ManyToOne physical foreign key
+	// @ManyToOne physical or logical foreign key
 	//////////////////////////////////////////////////////////////////
 	@ManyToOne
 	@JoinColumn(name=/*DomainSample*/"sample1" , referencedColumnName=/*ManyToOnePhysicalColumn1 primary*/"seq")
@@ -87,22 +103,26 @@ public @Data class DomainSample {
 	private ManyToOneSample5View sample5; /*request: uri & json , response:  body */
 
 	
-//	///////////////////////////////////////////////////////////////////
-//	// @ManyToOne Transient
-//	////////////////////////////////////////////////////////////////////
-//	@Transient @JsonProperty(access=Access.WRITE_ONLY) 
-//	@JsonDeserialize(using=EntityViewDeserializer.class) 
-//	private ManyToOneSample1 bar1;
-//
-//	@Transient @JsonProperty(access=Access.WRITE_ONLY) 
-//	private ManyToOneSample2 bar2;
-//	
-//	@Transient @JsonProperty(access=Access.WRITE_ONLY) 
-//	@JsonDeserialize(using=EntityViewDeserializer.class) 
-//	private ManyToOneSample3 bar3;
-//
-//	@Transient @JsonProperty(access=Access.WRITE_ONLY) 
-//	@JsonDeserialize(using=EntityViewDeserializer.class) 
-//	private ManyToOneSample4 bar4;
+	///////////////////////////////////////////////////////////////////
+	// 
+	////////////////////////////////////////////////////////////////////
+	@Transient
+	@JsonDeserialize(using=EntityViewDeserializer.class)
+	@JsonProperty(access = Access.WRITE_ONLY, value = "sample6")
+	private ManyToOneSample6 sample6Request; 
 	
+	@ManyToOne 
+	@JoinColumn(name=/*DomainSample*/"sample6" , referencedColumnName=/* ManyToOnePhysicalColumn5 primary*/"seq")
+	@JsonProperty(access = Access.READ_ONLY, value = "sample6")
+	private ManyToOneSample6 sample6Response; 
+	
+	
+	///////////////////////////////////////////////////////////////////
+	// Parameters
+	///////////////////////////////////////////////////////////////////
+	@Transient
+	private String sample3Name;
+	
+	@Transient
+	private Set<String> sample3Names;
 }

@@ -163,21 +163,6 @@ public class DomainSample {
 	@CollectionTable(name="one_to_many_sample5", joinColumns=@JoinColumn(name="domainSample"))
 	private Set<OneToManySample5> sample5;
 
-	@Embeddable
-	public @Data static class OneToManySample5 {
-		
-		private String name;
-
-		private Integer age;
-		
-		public OneToManySample5() {
-			
-		}
-		public OneToManySample5(String name) {
-			this.name = name;
-		}
-	}
-	
 	///////////////////////////////////////////////////////////////////
 	// Parameters
 	///////////////////////////////////////////////////////////////////

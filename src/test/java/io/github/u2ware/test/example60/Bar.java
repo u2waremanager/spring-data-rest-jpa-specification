@@ -31,4 +31,7 @@ public @Data class Bar {
 	}
 	  @Enumerated(EnumType.STRING)
 	    private GroupMemberType type
+	    
+	    //	@NotFound(action = NotFoundAction.IGNORE)	
+
 }
