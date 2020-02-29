@@ -1,6 +1,6 @@
-# This project has closed. Move to link:https://github.com/u2waremanager/spring-data-rest-jpa[spring-data-rest-jpa].
+# This project has closed. Move to link:https://github.com/u2ware/u2ware-data-rest/[u2ware-data-rest].
 
-# 이 프로젝트는 종료되었습니다. link:https://github.com/u2waremanager/spring-data-rest-jpa[spring-data-rest-jpa] 로 이관하였습니다.
+# 이 프로젝트는 종료되었습니다. link:https://github.com/u2ware/u2ware-data-rest/[u2ware-data-rest] 로 이관하였습니다.
 
 
 = spring-data-rest-jpa-specification
